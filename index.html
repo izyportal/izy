@@ -551,11 +551,6 @@
       <!-- Top Navbar -->
       <header class="h-12 bg-white border-b border-slate-200 flex items-center justify-between px-5 shadow-sm z-10 shrink-0">
         <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2.5">
-            <i id="headerIcon" class="fa-solid fa-chart-pie text-teal-600 text-base"></i>
-            <h2 id="pageTitle" class="text-teal-950 font-black text-xs md:text-sm uppercase tracking-wider">DASHBOARD</h2>
-          </div>
-          <span class="text-slate-300">|</span>
           <button type="button" id="tabBtnInbox" onclick="pindahMenu('inbox')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 text-[11px] font-extrabold uppercase tracking-wider transition cursor-pointer shadow-sm">
             <i class="fa-solid fa-inbox text-teal-600"></i>
             <span>Inbox</span>
@@ -3110,26 +3105,23 @@
 
           <section id="panelCapaianTahfizh" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
             <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-4.5rem)]">
-              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2.5 flex justify-between items-center text-white shrink-0">
+              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2.5 flex flex-wrap justify-between items-center gap-2 text-white shrink-0">
                 <div>
                   <h2 class="text-xs font-black tracking-widest uppercase">Capaian Beban Tahfizh</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Ketuntasan target bacaan per ustadz &amp; pencarian detail santri — Semester 1 TA 2026/2027</p>
                 </div>
-                <button type="button" onclick="pindahMenu('inputTasmi')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1.5"><i class="fa-solid fa-quran"></i> Input Tasmi'</button>
+                <div class="flex items-center gap-1.5">
+                  <button id="ct_btnViewRekap" type="button" onclick="ct_switchView('rekap')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-chart-column"></i> Rekap Ustadz
+                  </button>
+                  <button id="ct_btnViewSearch" type="button" onclick="ct_switchView('search')" class="bg-white/15 hover:bg-white/25 text-white border border-white/20 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow-sm flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-magnifying-glass"></i> Pencarian Santri
+                  </button>
+                </div>
               </div>
 
               <div class="p-4 flex flex-col flex-1 overflow-hidden bg-slate-50/50">
                 <div class="overflow-y-auto flex-1 flex flex-col gap-4 pr-1">
-
-                  <!-- Tombol Navigasi Antar View -->
-                  <div class="flex justify-center gap-2 shrink-0">
-                    <button id="ct_btnViewRekap" type="button" onclick="ct_switchView('rekap')" class="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md hover:bg-emerald-700 transition flex items-center gap-1.5">
-                      <i class="fa-solid fa-chart-column"></i> Rekap Ustadz
-                    </button>
-                    <button id="ct_btnViewSearch" type="button" onclick="ct_switchView('search')" class="px-4 py-2 bg-white text-slate-600 border border-slate-200 text-xs font-bold rounded-xl shadow-sm hover:bg-slate-50 transition flex items-center gap-1.5">
-                      <i class="fa-solid fa-magnifying-glass"></i> Pencarian Santri
-                    </button>
-                  </div>
 
                   <!-- Loading -->
                   <div id="ct_loadingArea" class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center justify-center py-16 text-slate-400 gap-3 shrink-0">
@@ -3870,8 +3862,6 @@
         btnKontrolReset.classList.add('bg-sky-50', 'text-sky-900', 'border-sky-200');
       }
 
-      const titleEl = document.getElementById('pageTitle');
-      const iconEl = document.getElementById('headerIcon');
       const mainScroll = document.getElementById('mainScrollArea');
 
       if (menu === 'beranda' || menu === 'inputSoal' || menu === 'settingSoal' || menu === 'inbox' || menu === 'ujian') {
@@ -3883,154 +3873,98 @@
       if (menu === 'beranda') {
         document.getElementById('panelBeranda').classList.remove('hidden');
         const _btnBeranda = document.getElementById('tabBtnBeranda'); if (_btnBeranda) _btnBeranda.classList.add('active');
-        titleEl.innerText = 'DASHBOARD';
-        iconEl.className = 'fa-solid fa-chart-pie text-teal-600 text-base';
       } else if (menu === 'inputSoal') {
         document.getElementById('panelInputSoal').classList.remove('hidden');
         document.getElementById('tabBtnInputSoal').classList.add('active');
-        titleEl.innerText = 'Input Bank Soal';
-        iconEl.className = 'fa-solid fa-file-circle-plus text-teal-600 text-base';
       } else if (menu === 'daftarSoal') {
         document.getElementById('panelDaftarSoal').classList.remove('hidden');
         document.getElementById('tabBtnDaftarSoal').classList.add('active');
-        titleEl.innerText = 'Daftar Bank Soal';
-        iconEl.className = 'fa-solid fa-folder-open text-teal-600 text-base';
       } else if (menu === 'settingSoal') {
         document.getElementById('panelSettingSoal').classList.remove('hidden');
         document.getElementById('tabBtnSettingSoal').classList.add('active');
-        titleEl.innerText = 'Setting';
-        iconEl.className = 'fa-solid fa-sliders text-teal-600 text-base';
       } else if (menu === 'setoran') {
         document.getElementById('panelSetoran').classList.remove('hidden');
         document.getElementById('tabBtnSetoran').classList.add('active');
-        titleEl.innerText = 'Setoran Tahfizh';
-        iconEl.className = 'fa-solid fa-book-quran text-teal-600 text-base';
       } else if (menu === 'inputTasmi') {
         document.getElementById('panelInputTasmi').classList.remove('hidden');
         document.getElementById('tabBtnInputTasmi').classList.add('active');
-        titleEl.innerText = "Input Tasmi' Juz'iyyah";
-        iconEl.className = 'fa-solid fa-quran text-teal-600 text-base';
         if (typeof window.muatInputTasmi === 'function') window.muatInputTasmi();
       } else if (menu === 'inputKbm') {
         document.getElementById('panelInputKbm').classList.remove('hidden');
         document.getElementById('tabBtnInputKbm').classList.add('active');
-        titleEl.innerText = 'Jurnal Mengajar KBM';
-        iconEl.className = 'fa-solid fa-chalkboard-user text-teal-600 text-base';
       } else if (menu === 'nilaiKbm') {
         document.getElementById('panelNilaiKbm').classList.remove('hidden');
         document.getElementById('tabBtnNilaiKbm').classList.add('active');
-        titleEl.innerText = 'Nilai KBM Santri';
-        iconEl.className = 'fa-solid fa-star-half-stroke text-teal-600 text-base';
       } else if (menu === 'absenKbm') {
         document.getElementById('panelAbsenKbm').classList.remove('hidden');
         document.getElementById('tabBtnAbsenKbm').classList.add('active');
-        titleEl.innerText = 'Absensi KBM Santri';
-        iconEl.className = 'fa-solid fa-user-check text-teal-600 text-base';
       } else if (menu === 'absenKst') {
         document.getElementById('panelAbsenKst').classList.remove('hidden');
         document.getElementById('tabBtnAbsenKst').classList.add('active');
-        titleEl.innerText = 'Absensi KST Halaqoh';
-        iconEl.className = 'fa-solid fa-clipboard-user text-teal-600 text-base';
       } else if (menu === 'adab') {
         document.getElementById('panelAdab').classList.remove('hidden');
         document.getElementById('tabBtnAdab').classList.add('active');
-        titleEl.innerText = 'Catatan Adab Santri';
-        iconEl.className = 'fa-solid fa-scale-balanced text-teal-600 text-base';
       } else if (menu === 'rekapKbm') {
         document.getElementById('panelRekapKbm').classList.remove('hidden');
         document.getElementById('tabBtnRekapKbm').classList.add('active');
-        titleEl.innerText = 'Rekap Jurnal KBM';
-        iconEl.className = 'fa-solid fa-table-list text-teal-600 text-base';
       } else if (menu === 'rekapTahfizh') {
         document.getElementById('panelRekapTahfizh').classList.remove('hidden');
         document.getElementById('tabBtnRekapTahfizh').classList.add('active');
-        titleEl.innerText = 'Setoran Harian';
-        iconEl.className = 'fa-solid fa-book-open-reader text-teal-600 text-base';
       } else if (menu === 'rekapTasmi') {
         document.getElementById('panelRekapTasmi').classList.remove('hidden');
         document.getElementById('tabBtnRekapTasmi').classList.add('active');
-        titleEl.innerText = "Rekap Tasmi' Qur'an";
-        iconEl.className = 'fa-solid fa-scroll text-teal-600 text-base';
         if (typeof window.muatRekapTasmi === 'function') window.muatRekapTasmi();
       } else if (menu === 'rekapNilai') {
         document.getElementById('panelRekapNilai').classList.remove('hidden');
         document.getElementById('tabBtnRekapNilai').classList.add('active');
-        titleEl.innerText = 'Rekap Nilai Mapel';
-        iconEl.className = 'fa-solid fa-file-signature text-teal-600 text-base';
       } else if (menu === 'rekapAbsenKbm') {
         document.getElementById('panelRekapAbsenKbm').classList.remove('hidden');
         document.getElementById('tabBtnRekapAbsenKbm').classList.add('active');
-        titleEl.innerText = 'Rekap Absensi KBM';
-        iconEl.className = 'fa-solid fa-calendar-check text-teal-600 text-base';
       } else if (menu === 'rekapAdab') {
         document.getElementById('panelRekapAdab').classList.remove('hidden');
         document.getElementById('tabBtnRekapAdab').classList.add('active');
-        titleEl.innerText = 'Catatan Adab';
-        iconEl.className = 'fa-solid fa-scale-balanced text-teal-600 text-base';
       } else if (menu === 'rekapKinerja') {
         document.getElementById('panelRekapKinerja').classList.remove('hidden');
         document.getElementById('tabBtnRekapKinerja').classList.add('active');
-        titleEl.innerText = 'Cek Jumlah Input Guru';
-        iconEl.className = 'fa-solid fa-list-ol text-teal-600 text-base';
         if (typeof window.loadDataKinerjaGuru === 'function') window.loadDataKinerjaGuru(false);
       } else if (menu === 'cekInputNilai') {
         document.getElementById('panelCekInputNilai').classList.remove('hidden');
         document.getElementById('tabBtnCekInputNilai').classList.add('active');
-        titleEl.innerText = 'Cek Input Nilai';
-        iconEl.className = 'fa-solid fa-clipboard-check text-teal-600 text-base';
         if (typeof window.loadMasterDataCekNilai === 'function' && window.masterDataGuruMapel.length === 0) window.loadMasterDataCekNilai();
       } else if (menu === 'cekJurnal') {
         document.getElementById('panelCekJurnal').classList.remove('hidden');
         document.getElementById('tabBtnCekJurnal').classList.add('active');
-        titleEl.innerText = 'Cek Jurnal';
-        iconEl.className = 'fa-solid fa-magnifying-glass text-teal-600 text-base';
         if (typeof window.muatCekJurnal === 'function') window.muatCekJurnal();
       } else if (menu === 'rekapPrestasi') {
         document.getElementById('panelRekapPrestasi').classList.remove('hidden');
         document.getElementById('tabBtnRekapPrestasi').classList.add('active');
-        titleEl.innerText = 'Santri Berprestasi';
-        iconEl.className = 'fa-solid fa-trophy text-amber-500 text-base';
         if (typeof window.loadDataPrestasi === 'function') window.loadDataPrestasi(false);
       } else if (menu === 'profilData') {
         document.getElementById('panelProfilData').classList.remove('hidden');
         document.getElementById('tabBtnProfilData').classList.add('active');
-        titleEl.innerText = 'Profil Lembaga';
-        iconEl.className = 'fa-solid fa-building text-teal-600 text-base';
       } else if (menu === 'rosterMapel') {
         document.getElementById('panelRosterMapel').classList.remove('hidden');
         document.getElementById('tabBtnRosterMapel').classList.add('active');
-        titleEl.innerText = 'Jadwal Roster KBM';
-        iconEl.className = 'fa-solid fa-calendar-days text-teal-600 text-base';
         if (typeof window.renderRosterMapel === 'function' && window.globalJadwalKBM) window.renderRosterMapel(window.globalJadwalKBM);
       } else if (menu === 'rankingKelas') {
         document.getElementById('panelRankingKelas').classList.remove('hidden');
         document.getElementById('tabBtnRankingKelas').classList.add('active');
-        titleEl.innerText = 'Ranking Kelas Santri';
-        iconEl.className = 'fa-solid fa-ranking-star text-teal-600 text-base';
         if (typeof window.muatRankingKelas === 'function') window.muatRankingKelas();
       } else if (menu === 'klasemenAdab') {
         document.getElementById('panelKlasemenAdab').classList.remove('hidden');
         document.getElementById('tabBtnKlasemenAdab').classList.add('active');
-        titleEl.innerText = 'Klasemen Adab Santri';
-        iconEl.className = 'fa-solid fa-trophy text-teal-600 text-base';
         if (typeof window.muatKlasemenAdab === 'function') window.muatKlasemenAdab();
       } else if (menu === 'capaianTahfizh') {
         document.getElementById('panelCapaianTahfizh').classList.remove('hidden');
         document.getElementById('tabBtnCapaianTahfizh').classList.add('active');
-        titleEl.innerText = 'Capaian Beban Tahfizh';
-        iconEl.className = 'fa-solid fa-bullseye text-teal-600 text-base';
         if (typeof window.muatCapaianTahfizh === 'function') window.muatCapaianTahfizh();
       } else if (menu === 'belumSetoran') {
         document.getElementById('panelBelumSetoran').classList.remove('hidden');
         document.getElementById('tabBtnBelumSetoran').classList.add('active');
-        titleEl.innerText = 'Yang Belum Setoran';
-        iconEl.className = 'fa-solid fa-circle-exclamation text-teal-600 text-base';
         if (typeof window.muatBelumSetoran === 'function') window.muatBelumSetoran();
       } else if (menu === 'download') {
         document.getElementById('panelDownload').classList.remove('hidden');
         document.getElementById('tabBtnDownload').classList.add('active');
-        titleEl.innerText = 'Download';
-        iconEl.className = 'fa-solid fa-cloud-arrow-down text-teal-600 text-base';
       } else if (menu === 'inbox') {
         document.getElementById('panelInbox').classList.remove('hidden');
         const btnInb = document.getElementById('tabBtnInbox');
@@ -4038,8 +3972,6 @@
           btnInb.classList.remove('bg-teal-50', 'text-teal-900', 'border-teal-200');
           btnInb.classList.add('bg-teal-800', 'text-white', 'border-teal-800');
         }
-        titleEl.innerText = 'Inbox Wali & Santri';
-        iconEl.className = 'fa-solid fa-inbox text-teal-600 text-base';
         if (window.lastInboxSnapshot && typeof window.renderDaftarInbox === 'function') {
           window.renderDaftarInbox(window.lastInboxSnapshot);
         }
@@ -4050,8 +3982,6 @@
           btnUj.classList.remove('bg-amber-50', 'text-amber-900', 'border-amber-200');
           btnUj.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
         }
-        titleEl.innerText = 'Ujian Online Santri';
-        iconEl.className = 'fa-solid fa-file-pen text-amber-600 text-base';
         const fr = document.getElementById('ujianFrame');
         if (fr && !fr.dataset.loaded) loadUjianFrame();
       } else if (menu === 'kontrolUjian') {
@@ -4061,20 +3991,14 @@
           btnKont.classList.remove('bg-sky-50', 'text-sky-900', 'border-sky-200');
           btnKont.classList.add('bg-sky-600', 'text-white', 'border-sky-600');
         }
-        titleEl.innerText = 'Data Kontrol Ujian';
-        iconEl.className = 'fa-solid fa-clipboard-list text-sky-600 text-base';
         if (typeof renderKontrolUjian === 'function') renderKontrolUjian();
       } else if (menu === 'kaldik') {
         document.getElementById('panelKaldik').classList.remove('hidden');
         document.getElementById('tabBtnKaldik').classList.add('active');
-        titleEl.innerText = 'KALENDER';
-        iconEl.className = 'fa-solid fa-calendar-days text-rose-600 text-base';
         if (typeof window.muatKaldik === 'function') window.muatKaldik();
       } else if (menu === 'daftar') {
         document.getElementById('panelDaftar').classList.remove('hidden');
         document.getElementById('tabBtnDaftar').classList.add('active');
-        titleEl.innerText = 'DAFTAR';
-        iconEl.className = 'fa-solid fa-user-plus text-violet-600 text-base';
         if (typeof window.muatDaftarSantriBaru === 'function') window.muatDaftarSantriBaru();
       }
       
@@ -9957,8 +9881,8 @@ let inboxSesiAktifNamaID = "";
       const btnSearch = document.getElementById("ct_btnViewSearch");
       const divRekap = document.getElementById("ct_viewRekap");
       const divSearch = document.getElementById("ct_viewSearch");
-      const activeCls = "px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md hover:bg-emerald-700 transition flex items-center gap-1.5";
-      const inactiveCls = "px-4 py-2 bg-white text-slate-600 border border-slate-200 text-xs font-bold rounded-xl shadow-sm hover:bg-slate-50 transition flex items-center gap-1.5";
+      const activeCls = "bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1.5 cursor-pointer";
+      const inactiveCls = "bg-white/15 hover:bg-white/25 text-white border border-white/20 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow-sm flex items-center gap-1.5 cursor-pointer";
       if (view === 'rekap') {
         divRekap.classList.remove("hidden");
         divSearch.classList.add("hidden"); divSearch.classList.remove("flex");
