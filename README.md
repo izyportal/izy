@@ -1,1 +1,1 @@
-# izy-portal
+# izy
