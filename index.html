@@ -20,6 +20,7 @@
   
   <!-- SheetJS (Ekspor Excel) & Chart.js (Grafik Statistik) -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -43,11 +44,22 @@
       var m = String(str).match(/\d{1,2}[\.:]\d{2}([\.:]\d{2})?/);
       return m ? m[0] : '-';
     }
+    function hitungJumlahSoalUjian(r) {
+      const selesai = (r.selesai === true) || (r.score !== undefined && r.score !== null);
+      const dikerjakan = (r.soal_dikerjakan !== undefined) ? r.soal_dikerjakan : (selesai ? (r.totalSoal || '-') : '-');
+      const belum = (r.soal_belum !== undefined) ? r.soal_belum : (selesai ? 0 : '-');
+      if (r.totalSoal !== undefined && r.totalSoal !== null && r.totalSoal !== '') return r.totalSoal;
+      const dNum = parseInt(dikerjakan, 10);
+      const bNum = parseInt(belum, 10);
+      if (!isNaN(dNum) && !isNaN(bNum)) return dNum + bNum;
+      if (!isNaN(dNum)) return dNum;
+      return '-';
+    }
     function renderTbodyKontrol(rows) {
       const tbody = document.getElementById('tbodyKontrolUjian');
       if (!tbody) return;
       if (rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:#94a3b8;font-size:12px;">Belum ada data ujian.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:28px;color:#94a3b8;font-size:12px;">Belum ada data ujian.</td></tr>';
         return;
       }
       tbody.innerHTML = rows.map(function(r, i){
@@ -57,11 +69,13 @@
           : '<i class="fa-solid fa-circle-check text-slate-400 text-lg" title="Belum selesai"></i>';
         const dikerjakan = (r.soal_dikerjakan !== undefined) ? r.soal_dikerjakan : (selesai ? (r.totalSoal || '-') : '-');
         const belum = (r.soal_belum !== undefined) ? r.soal_belum : (selesai ? 0 : '-');
+        const jumlahSoal = hitungJumlahSoalUjian(r);
         return '<tr class="hover:bg-teal-50/60 transition">'
           + '<td class="px-3 py-2 text-center text-xs font-bold text-slate-500 border-b border-slate-100">' + (i+1) + '</td>'
           + '<td class="px-3 py-2 text-xs text-slate-700 border-b border-slate-100">' + (r.tanggal || '-') + '</td>'
           + '<td class="px-3 py-2 text-xs text-slate-700 border-b border-slate-100">' + ambilWaktu(r.waktu_mulai || r.waktu) + '</td>'
           + '<td class="px-3 py-2 text-xs font-semibold text-slate-800 border-b border-slate-100">' + (r.nama || '-') + '<div class="text-[9px] text-slate-400 font-medium">' + (r.mapel || '') + ' • ' + (r.kelas || '') + ' • ' + (r.kategori || '') + (r.score !== undefined ? ' • Nilai: ' + r.score : '') + '</div></td>'
+          + '<td class="px-3 py-2 text-center text-xs font-bold text-sky-700 border-b border-slate-100">' + jumlahSoal + '</td>'
           + '<td class="px-3 py-2 text-center text-xs font-bold text-emerald-600 border-b border-slate-100">' + dikerjakan + '</td>'
           + '<td class="px-3 py-2 text-center text-xs font-bold text-rose-500 border-b border-slate-100">' + belum + '</td>'
           + '<td class="px-3 py-2 text-center border-b border-slate-100">' + icon + '</td>'
@@ -69,6 +83,8 @@
       }).join('');
     }
     function terapkanFilter() {
+      const inpCari = document.getElementById('searchNamaKontrol');
+      const cari = inpCari ? inpCari.value.trim().toLowerCase() : '';
       const sel = document.getElementById('filterMapelKontrol');
       const mapel = sel ? sel.value : '';
       const selTgl = document.getElementById('filterTanggalKontrol');
@@ -78,12 +94,11 @@
       const selGru = document.getElementById('filterGuruKontrol');
       const gru = selGru ? selGru.value : '';
       let rows = _rowsKontrol.slice();
+      if (cari) rows = rows.filter(function(r){ return String(r.nama || '').toLowerCase().indexOf(cari) !== -1; });
       if (mapel) rows = rows.filter(function(r){ return (r.mapel || '-') === mapel; });
       if (tgl) rows = rows.filter(function(r){ return (r.tanggal || '-') === tgl; });
       if (kls) rows = rows.filter(function(r){ return (r.kelas || '-') === kls; });
       if (gru) rows = rows.filter(function(r){ return (r.guru || '-') === gru; });
-      const info = document.getElementById('infoKontrolUjian');
-      if (info) info.textContent = rows.length + ' Santri';
       renderTbodyKontrol(rows);
     }
     function renderKontrolUjian() {
@@ -135,7 +150,319 @@
         terapkanFilter();
       }
     }
-    document.addEventListener('change', function(e){ if (e.target && (e.target.id === 'filterMapelKontrol' || e.target.id === 'filterTanggalKontrol' || e.target.id === 'filterKelasKontrol' || e.target.id === 'filterGuruKontrol')) terapkanFilter(); });
+    document.addEventListener('change', function(e){
+      if (e.target && (e.target.id === 'filterMapelKontrol' || e.target.id === 'filterTanggalKontrol' || e.target.id === 'filterKelasKontrol' || e.target.id === 'filterGuruKontrol')) terapkanFilter();
+      if (e.target && (e.target.id === 'dlHasilMapel' || e.target.id === 'dlHasilTanggal' || e.target.id === 'dlHasilKelas' || e.target.id === 'dlHasilGuru' || e.target.id === 'dlHasilKategori')) updateInfoDownloadHasilUjian();
+    });
+    document.addEventListener('input', function(e){ if (e.target && e.target.id === 'searchNamaKontrol') terapkanFilter(); });
+
+    function isiDropdownModalDownloadHasilUjian() {
+      const mapels = [], tgls = [], klss = [], grus = [];
+      _rowsKontrol.forEach(function(r){
+        const mp = r.mapel || '-';
+        if (mp !== '-' && mapels.indexOf(mp) === -1) mapels.push(mp);
+        const t = r.tanggal || '-';
+        if (t !== '-' && tgls.indexOf(t) === -1) tgls.push(t);
+        const k = r.kelas || '-';
+        if (k !== '-' && klss.indexOf(k) === -1) klss.push(k);
+        const g = r.guru || '-';
+        if (g !== '-' && grus.indexOf(g) === -1) grus.push(g);
+      });
+      mapels.sort(); tgls.sort(); klss.sort(); grus.sort();
+
+      const elM = document.getElementById('dlHasilMapel');
+      const elT = document.getElementById('dlHasilTanggal');
+      const elK = document.getElementById('dlHasilKelas');
+      const elG = document.getElementById('dlHasilGuru');
+      const elKat = document.getElementById('dlHasilKategori');
+
+      if (elM) {
+        elM.innerHTML = '<option value="">-- Semua Mapel --</option>' + mapels.map(function(x){ return '<option value="' + x + '">' + x + '</option>'; }).join('');
+        const curM = document.getElementById('filterMapelKontrol');
+        if (curM && curM.value) elM.value = curM.value;
+      }
+      if (elT) {
+        elT.innerHTML = '<option value="">-- Semua Tanggal --</option>' + tgls.map(function(x){ return '<option value="' + x + '">' + x + '</option>'; }).join('');
+        const curT = document.getElementById('filterTanggalKontrol');
+        if (curT && curT.value) elT.value = curT.value;
+      }
+      if (elK) {
+        elK.innerHTML = '<option value="">-- Semua Kelas --</option>' + klss.map(function(x){ return '<option value="' + x + '">' + x + '</option>'; }).join('');
+        const curK = document.getElementById('filterKelasKontrol');
+        if (curK && curK.value) elK.value = curK.value;
+      }
+      if (elG) {
+        elG.innerHTML = '<option value="">-- Semua Guru --</option>' + grus.map(function(x){ return '<option value="' + x + '">' + x + '</option>'; }).join('');
+        const curG = document.getElementById('filterGuruKontrol');
+        if (curG && curG.value) elG.value = curG.value;
+      }
+      if (elKat) {
+        elKat.value = '';
+      }
+      updateInfoDownloadHasilUjian();
+    }
+
+    function getFilteredRowsDownloadHasilUjian() {
+      const mp = (document.getElementById('dlHasilMapel') || {}).value || '';
+      const tg = (document.getElementById('dlHasilTanggal') || {}).value || '';
+      const kl = (document.getElementById('dlHasilKelas') || {}).value || '';
+      const gr = (document.getElementById('dlHasilGuru') || {}).value || '';
+      const kt = (document.getElementById('dlHasilKategori') || {}).value || '';
+      let rows = _rowsKontrol.slice();
+      if (mp) rows = rows.filter(function(r){ return (r.mapel || '-') === mp; });
+      if (tg) rows = rows.filter(function(r){ return (r.tanggal || '-') === tg; });
+      if (kl) rows = rows.filter(function(r){ return (r.kelas || '-') === kl; });
+      if (gr) rows = rows.filter(function(r){ return (r.guru || '-') === gr; });
+      if (kt) rows = rows.filter(function(r){ return String(r.kategori || '').toUpperCase() === kt.toUpperCase(); });
+      return rows;
+    }
+
+    function updateInfoDownloadHasilUjian() {
+      const infoEl = document.getElementById('dlHasilInfo');
+      const btnEl = document.getElementById('btnProsesDownloadHasilUjian');
+      const rows = getFilteredRowsDownloadHasilUjian();
+      if (infoEl) {
+        if (rows.length > 0) {
+          infoEl.textContent = rows.length + ' data hasil ujian siap didownload (Format Excel A4)';
+          infoEl.className = 'text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-200 rounded-lg px-3 py-2 text-center';
+        } else {
+          infoEl.textContent = 'Tidak ada data ujian yang cocok dengan filter di atas.';
+          infoEl.className = 'text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-center';
+        }
+      }
+      if (btnEl) btnEl.disabled = (rows.length === 0);
+    }
+
+    function bukaModalDownloadHasilUjian() {
+      const modal = document.getElementById('modalDownloadHasilUjian');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      if (!kontrolListenerAttached) {
+        renderKontrolUjian();
+      }
+      if (_rowsKontrol.length === 0) {
+        dbKontrol.ref('hasil_ujian').once('value').then(function(snap){
+          const data = snap.val() || {};
+          _rowsKontrol = Object.values(data).sort(function(a,b){ return (a.waktu_mulai || a.waktu || '') < (b.waktu_mulai || b.waktu || '') ? -1 : 1; });
+          isiDropdownModalDownloadHasilUjian();
+        });
+      } else {
+        isiDropdownModalDownloadHasilUjian();
+      }
+    }
+
+    function tutupModalDownloadHasilUjian() {
+      const modal = document.getElementById('modalDownloadHasilUjian');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function downloadHasilUjianExcel() {
+      const rows = getFilteredRowsDownloadHasilUjian();
+      if (rows.length === 0) {
+        Swal.fire({ title: 'Belum Ada Data', text: 'Tidak ada data hasil ujian yang sesuai dengan filter pilihan Anda.', icon: 'warning', confirmButtonColor: '#0284c7' });
+        return;
+      }
+
+      const selKat = (document.getElementById('dlHasilKategori') || {}).value || '';
+      let katJudul = 'PH/PTS/PAS';
+      if (selKat) {
+        katJudul = selKat.toUpperCase();
+      } else {
+        const unikKat = [];
+        ['PH', 'PTS', 'PAS'].forEach(function(k){
+          if (rows.some(function(r){ return String(r.kategori || '').toUpperCase() === k; })) unikKat.push(k);
+        });
+        rows.forEach(function(r){
+          const k = String(r.kategori || '').trim().toUpperCase();
+          if (k && k !== '-' && unikKat.indexOf(k) === -1) unikKat.push(k);
+        });
+        if (unikKat.length === 1) katJudul = unikKat[0];
+        else if (unikKat.length > 1) katJudul = unikKat.join('/');
+      }
+
+      const judul1 = 'HASIL UJIAN ' + katJudul + ' SEMESTER GANJIL TP. 2026/2027';
+      const judul2 = 'PONDOK PESANTREN IBNUL JAUZY - KEC. BINJAI - KAB. LANGKAT';
+
+      const selMapel = (document.getElementById('dlHasilMapel') || {}).value || 'Semua Mapel';
+      const selTgl = (document.getElementById('dlHasilTanggal') || {}).value || 'Semua Tanggal';
+      const selKelas = (document.getElementById('dlHasilKelas') || {}).value || 'Semua Kelas';
+      const selGuru = (document.getElementById('dlHasilGuru') || {}).value || 'Semua Guru';
+
+      const now = new Date();
+      const pad = function(n){ return String(n).padStart(2, '0'); };
+      const tglFile = pad(now.getDate()) + pad(now.getMonth() + 1) + now.getFullYear();
+      const jamFile = pad(now.getHours()) + '.' + pad(now.getMinutes());
+      const namaFile = 'REKAP HASIL UJIAN -SEM.1_TP.2026_2027_' + tglFile + '_' + jamFile + '.xlsx';
+
+      const headers = [
+        'NO.',
+        'TANGGAL',
+        'WAKTU UJIAN',
+        'NAMA SANTRI',
+        'KELAS',
+        'MATA PELAJARAN',
+        'GURU MAPEL',
+        'KATEGORI',
+        'JUMLAH SOAL',
+        'SUDAH DIJAWAB',
+        'BELUM DIJAWAB',
+        'NILAI',
+        'STATUS'
+      ];
+
+      const dataRows = rows.map(function(r, idx){
+        const selesai = (r.selesai === true) || (r.score !== undefined && r.score !== null);
+        const dikerjakan = (r.soal_dikerjakan !== undefined) ? r.soal_dikerjakan : (selesai ? (r.totalSoal || '-') : '-');
+        const belum = (r.soal_belum !== undefined) ? r.soal_belum : (selesai ? 0 : '-');
+        const jumlahSoal = hitungJumlahSoalUjian(r);
+        const nilai = (r.score !== undefined && r.score !== null && r.score !== '') ? Number(r.score) : '-';
+        const statusTeks = selesai ? 'Selesai' : 'Belum Selesai';
+        return [
+          idx + 1,
+          r.tanggal || '-',
+          ambilWaktu(r.waktu_mulai || r.waktu),
+          r.nama || '-',
+          r.kelas || '-',
+          r.mapel || '-',
+          r.guru || '-',
+          r.kategori || '-',
+          jumlahSoal !== '-' && !isNaN(Number(jumlahSoal)) ? Number(jumlahSoal) : jumlahSoal,
+          dikerjakan !== '-' && !isNaN(Number(dikerjakan)) ? Number(dikerjakan) : dikerjakan,
+          belum !== '-' && !isNaN(Number(belum)) ? Number(belum) : belum,
+          nilai !== '-' && !isNaN(nilai) ? nilai : (r.score || '-'),
+          statusTeks
+        ];
+      });
+
+      if (window.ExcelJS && window.saveAs) {
+        try {
+          const wb = new ExcelJS.Workbook();
+          wb.creator = 'IZY PORTAL - Pondok Pesantren Ibnul Jauzy';
+          wb.created = now;
+          const ws = wb.addWorksheet('Hasil Ujian', {
+            pageSetup: {
+              paperSize: 9,
+              orientation: 'landscape',
+              fitToPage: true,
+              fitToWidth: 1,
+              fitToHeight: 0,
+              horizontalCentered: true,
+              margins: { left: 0.35, right: 0.35, top: 0.45, bottom: 0.45, header: 0.25, footer: 0.25 }
+            }
+          });
+
+          const totalCols = headers.length;
+
+          // Row 1: Judul Utama
+          const r1 = ws.addRow([judul1]);
+          ws.mergeCells(1, 1, 1, totalCols);
+          r1.height = 24;
+          r1.getCell(1).font = { name: 'Arial', size: 13, bold: true, color: { argb: 'FF0F766E' } };
+          r1.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+          // Row 2: Nama Pondok Pesantren
+          const r2 = ws.addRow([judul2]);
+          ws.mergeCells(2, 1, 2, totalCols);
+          r2.height = 20;
+          r2.getCell(1).font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FF1E293B' } };
+          r2.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+          // Row 3: Ringkasan Filter
+          const infoSub = 'Mapel: ' + selMapel + '   |   Kelas: ' + selKelas + '   |   Tanggal: ' + selTgl + '   |   Guru: ' + selGuru + '   |   Kategori: ' + katJudul;
+          const r3 = ws.addRow([infoSub]);
+          ws.mergeCells(3, 1, 3, totalCols);
+          r3.height = 18;
+          r3.getCell(1).font = { name: 'Arial', size: 9, italic: true, bold: true, color: { argb: 'FF475569' } };
+          r3.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+          // Row 4: Spasi kosong
+          const r4 = ws.addRow([]);
+          r4.height = 8;
+
+          // Row 5: Header Tabel
+          const rHeader = ws.addRow(headers);
+          rHeader.height = 26;
+          rHeader.eachCell(function(cell){
+            cell.font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FFFFFFFF' } };
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0F766E' } };
+            cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+            cell.border = {
+              top: { style: 'thin', color: { argb: 'FF0A443F' } },
+              left: { style: 'thin', color: { argb: 'FF0A443F' } },
+              bottom: { style: 'medium', color: { argb: 'FF0A443F' } },
+              right: { style: 'thin', color: { argb: 'FF0A443F' } }
+            };
+          });
+
+          // Data Rows
+          const centerCols = [1, 2, 3, 5, 8, 9, 10, 11, 12, 13];
+          dataRows.forEach(function(rowVals, idx){
+            const row = ws.addRow(rowVals);
+            row.height = 20;
+            const isEven = (idx % 2 === 1);
+            const rowBg = isEven ? 'FFF0FDFA' : 'FFFFFFFF';
+            row.eachCell({ includeEmpty: true }, function(cell, colNumber){
+              const isCentered = centerCols.indexOf(colNumber) !== -1;
+              let fontColor = 'FF1E293B';
+              let isBold = (colNumber === 4 || colNumber === 12);
+              if (colNumber === 10) { fontColor = 'FF059669'; isBold = true; }
+              else if (colNumber === 11) { fontColor = 'FFE11D48'; isBold = true; }
+              else if (colNumber === 13) {
+                fontColor = (cell.value === 'Selesai') ? 'FF059669' : 'FFD97706';
+                isBold = true;
+              }
+              cell.font = { name: 'Arial', size: 9, bold: isBold, color: { argb: fontColor } };
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowBg } };
+              cell.alignment = { horizontal: isCentered ? 'center' : 'left', vertical: 'middle', wrapText: false };
+              cell.border = {
+                top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+                right: { style: 'thin', color: { argb: 'FFCBD5E1' } }
+              };
+            });
+          });
+
+          // Lebar kolom profesional proporsional A4
+          const colWidths = [6, 13, 13, 28, 12, 20, 26, 11, 13, 15, 15, 10, 14];
+          colWidths.forEach(function(w, i){
+            ws.getColumn(i + 1).width = w;
+          });
+
+          const buf = await wb.xlsx.writeBuffer();
+          const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          saveAs(blob, namaFile);
+          tutupModalDownloadHasilUjian();
+          Swal.fire({ title: 'Berhasil Didownload', text: 'File Excel ' + namaFile + ' telah berhasil diunduh.', icon: 'success', timer: 2200, showConfirmButton: false });
+          return;
+        } catch (err) {
+          console.error('ExcelJS export fallback to SheetJS:', err);
+        }
+      }
+
+      // Fallback SheetJS (XLSX)
+      const nCol = headers.length;
+      const infoSub = 'Mapel: ' + selMapel + ' | Kelas: ' + selKelas + ' | Tanggal: ' + selTgl + ' | Guru: ' + selGuru + ' | Kategori: ' + katJudul;
+      const aoa = [[judul1], [judul2], [infoSub], [], headers].concat(dataRows);
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: nCol - 1 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: nCol - 1 } },
+        { s: { r: 2, c: 0 }, e: { r: 2, c: nCol - 1 } }
+      ];
+      ws['!cols'] = [
+        { wch: 5 }, { wch: 13 }, { wch: 13 }, { wch: 28 }, { wch: 12 },
+        { wch: 20 }, { wch: 26 }, { wch: 11 }, { wch: 13 }, { wch: 15 },
+        { wch: 15 }, { wch: 10 }, { wch: 14 }
+      ];
+      ws['!pageSetup'] = { orientation: 'landscape', paperSize: 9, fitToWidth: 1, fitToHeight: 0 };
+      ws['!printOptions'] = { horizontalCentered: true };
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Hasil Ujian');
+      XLSX.writeFile(wb, namaFile);
+      tutupModalDownloadHasilUjian();
+      Swal.fire({ title: 'Berhasil Didownload', text: 'File Excel ' + namaFile + ' telah berhasil diunduh.', icon: 'success', timer: 2200, showConfirmButton: false });
+    }
   </script>
 
   <style>
@@ -562,7 +889,7 @@
           </button>
           <button type="button" id="tabBtnKontrolUjian" onclick="pindahMenu('kontrolUjian')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 text-[11px] font-extrabold uppercase tracking-wider transition cursor-pointer shadow-sm">
             <i class="fa-solid fa-clipboard-list text-sky-600"></i>
-            <span>Kontrol Ujian</span>
+            <span>MONITORING</span>
           </button>
           <button type="button" id="tabBtnProfilData" onclick="pindahMenu('profilData')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-[11px] font-extrabold uppercase tracking-wider transition cursor-pointer shadow-sm">
             <i class="fa-solid fa-building text-emerald-600"></i>
@@ -736,12 +1063,16 @@
           <!-- ========================================== -->
           <section id="panelKontrolUjian" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
             <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-              <div class="bg-gradient-to-r from-sky-700 to-sky-600 px-5 py-3 flex justify-between items-center text-white shrink-0">
+              <div class="bg-gradient-to-r from-sky-700 to-sky-600 px-5 py-3 flex flex-wrap justify-between items-center gap-2 text-white shrink-0">
                 <div>
-                  <h2 class="text-xs font-black tracking-widest uppercase">Data Kontrol Ujian</h2>
-                  <p class="text-[9px] text-sky-100 font-medium">Pemantauan live santri yang sedang mengerjakan ujian</p>
+                  <h2 class="text-xs font-black tracking-widest uppercase">MONITORING UJIAN</h2>
+                  <p class="text-[9px] text-sky-100 font-medium">Pemantauan Live Ujian Santri</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                  <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-sky-700 text-[10px] pointer-events-none"></i>
+                    <input type="text" id="searchNamaKontrol" oninput="terapkanFilter()" placeholder="Cari nama santri..." class="text-[10px] font-bold text-sky-900 placeholder-sky-700/60 bg-white/90 border border-white/40 rounded-lg pl-7 pr-2.5 py-1 outline-none focus:bg-white w-36 md:w-44" />
+                  </div>
                   <select id="filterMapelKontrol" class="text-[10px] font-bold text-sky-900 bg-white/90 border border-white/40 rounded-lg px-2 py-1 outline-none cursor-pointer">
                     <option value="">Semua Mapel</option>
                   </select>
@@ -751,27 +1082,31 @@
                   <select id="filterKelasKontrol" class="text-[10px] font-bold text-sky-900 bg-white/90 border border-white/40 rounded-lg px-2 py-1 outline-none cursor-pointer">
                     <option value="">Semua Kelas</option>
                   </select>
-                  <select id="filterGuruKontrol" class="text-[10px] font-bold text-sky-900 bg-white/90 border border-white/40 rounded-lg px-2 py-1 outline-none cursor-pointer">
+                  <select id="filterGuruKontrol" class="text-[10px] font-bold text-sky-900 bg-white/90 border border-white/40 rounded-lg px-2 py-1 outline-none cursor-pointer max-w-[180px] truncate">
                     <option value="">Semua Guru</option>
                   </select>
-                  <span id="infoKontrolUjian" class="text-[10px] font-bold bg-white/20 px-2.5 py-1 rounded-lg">0 Santri</span>
+                  <button type="button" onclick="bukaModalDownloadHasilUjian()" class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider bg-amber-400 hover:bg-amber-500 text-slate-900 px-3 py-1 rounded-lg shadow-sm transition cursor-pointer shrink-0">
+                    <i class="fa-solid fa-download"></i>
+                    <span>DOWNLOAD</span>
+                  </button>
                 </div>
               </div>
               <div class="overflow-x-auto">
-                <table class="w-full min-w-[860px]">
+                <table class="w-full min-w-[920px]">
                   <thead>
                     <tr class="bg-slate-800 text-white text-[10px] uppercase tracking-wider">
                       <th class="px-3 py-2.5 text-center font-black w-12">No.</th>
                       <th class="px-3 py-2.5 text-left font-black">Tanggal</th>
                       <th class="px-3 py-2.5 text-left font-black">Waktu Ujian</th>
                       <th class="px-3 py-2.5 text-left font-black">Nama Santri</th>
-                      <th class="px-3 py-2.5 text-center font-black w-28">Soal Dikerjakan</th>
-                      <th class="px-3 py-2.5 text-center font-black w-28">Soal Belum</th>
-                      <th class="px-3 py-2.5 text-center font-black w-24">Keterangan</th>
+                      <th class="px-3 py-2.5 text-center font-black w-28">Jumlah Soal</th>
+                      <th class="px-3 py-2.5 text-center font-black w-28">Sudah Dijawab</th>
+                      <th class="px-3 py-2.5 text-center font-black w-28">Belum Dijawab</th>
+                      <th class="px-3 py-2.5 text-center font-black w-24">Status</th>
                     </tr>
                   </thead>
                   <tbody id="tbodyKontrolUjian">
-                    <tr><td colspan="7" style="text-align:center;padding:28px;color:#94a3b8;font-size:12px;">Memuat data...</td></tr>
+                    <tr><td colspan="8" style="text-align:center;padding:28px;color:#94a3b8;font-size:12px;">Memuat data...</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -779,6 +1114,72 @@
                 <span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-orange-500"></i> Selesai semua soal</span>
                 <span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-slate-400"></i> Belum selesai</span>
                 <span class="ml-auto text-slate-400">Data ter-update otomatis secara live</span>
+              </div>
+            </div>
+
+            <!-- Modal Download Hasil Ujian -->
+            <div id="modalDownloadHasilUjian" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[110] p-4 animate-[fadeIn_0.2s]" onclick="if(event.target===this)tutupModalDownloadHasilUjian()">
+              <div class="bg-white rounded-xl shadow-2xl max-w-md w-full border border-slate-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-sky-700 to-sky-600 px-5 py-3 flex items-center justify-between text-white">
+                  <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-file-excel text-amber-300 text-base"></i>
+                    <div>
+                      <h3 class="text-xs font-black uppercase tracking-widest">Download Hasil Ujian</h3>
+                      <p class="text-[9px] text-sky-100 font-medium">Rekap Hasil Ujian Santri &mdash; Format Excel (Ukuran A4)</p>
+                    </div>
+                  </div>
+                  <button type="button" onclick="tutupModalDownloadHasilUjian()" class="text-white/80 hover:text-white text-lg leading-none w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition cursor-pointer">&times;</button>
+                </div>
+                <div class="p-5 space-y-3">
+                  <p class="text-[10px] text-slate-500 font-semibold text-center -mb-1">Pilih Filter Hasil Ujian yang Ingin Didownload</p>
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1 tracking-wide">Mata Pelajaran (Mapel)</label>
+                    <select id="dlHasilMapel" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-bold text-slate-700 outline-none focus:border-sky-600 bg-white cursor-pointer">
+                      <option value="">-- Semua Mapel --</option>
+                    </select>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1 tracking-wide">Tanggal</label>
+                      <select id="dlHasilTanggal" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-bold text-slate-700 outline-none focus:border-sky-600 bg-white cursor-pointer">
+                        <option value="">-- Semua Tanggal --</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1 tracking-wide">Kelas</label>
+                      <select id="dlHasilKelas" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-bold text-slate-700 outline-none focus:border-sky-600 bg-white cursor-pointer">
+                        <option value="">-- Semua Kelas --</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1 tracking-wide">Guru</label>
+                    <select id="dlHasilGuru" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-bold text-slate-700 outline-none focus:border-sky-600 bg-white cursor-pointer">
+                      <option value="">-- Semua Guru --</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1 tracking-wide">Kategori Ujian (PH / PTS / PAS)</label>
+                    <select id="dlHasilKategori" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-bold text-slate-700 outline-none focus:border-sky-600 bg-white cursor-pointer">
+                      <option value="">-- Semua Kategori (Otomatis Sesuai Soal) --</option>
+                      <option value="PH">PH (Penilaian Harian)</option>
+                      <option value="PTS">PTS (Penilaian Tengah Semester)</option>
+                      <option value="PAS">PAS (Penilaian Akhir Semester)</option>
+                    </select>
+                  </div>
+                  <div id="dlHasilInfo" class="text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-200 rounded-lg px-3 py-2 text-center">
+                    Memuat data hasil ujian...
+                  </div>
+                  <div class="flex items-center gap-2 pt-1">
+                    <button type="button" onclick="tutupModalDownloadHasilUjian()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-lg text-[10px] uppercase tracking-wider transition cursor-pointer">
+                      Batal
+                    </button>
+                    <button type="button" id="btnProsesDownloadHasilUjian" onclick="downloadHasilUjianExcel()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-lg text-[11px] uppercase tracking-wider shadow transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                      <i class="fa-solid fa-file-excel"></i>
+                      <span>Download Excel</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
