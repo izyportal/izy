@@ -4455,11 +4455,12 @@
     import { getDatabase, ref, push, set, get, onValue, query, orderByChild, limitToLast, off, remove, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     // ============================================================
-    // WORKER PROXY — dbBiodata & dbJurnal (kredensial disembunyikan
-    // di sisi server Cloudflare Worker, tidak terlihat di HTML)
+    // WORKER PROXY (dbBiodata) & CLOUDFLARE D1 WORKER (Jurnal KBM)
     // ============================================================
     const WORKER_PROXY_URL = "https://proxy-biodata-jurnal.nurwalad88.workers.dev/";
     window.WORKER_PROXY_URL = WORKER_PROXY_URL;
+    const WORKER_JURNAL_URL = "https://jurnal-kbm-guru.nurwalad88.workers.dev";
+    window.WORKER_JURNAL_URL = WORKER_JURNAL_URL;
     async function apiProxy(db, action, path, data, query, auth) {
       try {
         const res = await fetch(WORKER_PROXY_URL, {
@@ -4491,7 +4492,7 @@
       projectId: "data-setoran-hafalan-quran"
     }, "appSetoran"));
 
-    // (dbJurnal diakses via WORKER_PROXY — lihat apiGet/apiPush di atas)
+    // (dbJurnal diakses via Cloudflare Worker + D1 — lihat WORKER_JURNAL_URL di atas)
     const dbKBM = getDatabase(initializeApp({
       apiKey: "AIzaSyBAfPvt8dcH5Wj-zzTjBS0x7Vv5jM3HhHw",
       authDomain: "nilaikbm-2b05b.firebaseapp.com",
@@ -5748,7 +5749,7 @@
         pertemuan: isG ? "-" : document.getElementById('kbmPertemuan').value,
         statusJurnal: isG ? "-" : document.getElementById('kbmStatusJurnal').value,
         judul: document.getElementById('kbmJudul').value.trim(), ringkasan: document.getElementById('kbmRingkasan').value.trim(),
-        timestamp: serverTimestamp()
+        timestamp: Date.now()
       };
 
       currentActiveModule = "kbm";
@@ -6285,17 +6286,34 @@
     ['filterMapel', 'filterKelas', 'filterGuru'].forEach(i => document.getElementById(i).addEventListener("change", () => { rekapItemsShown = 10; filterRekap(); }));
     document.getElementById("btnNext").addEventListener("click", () => { rekapItemsShown += 10; renderRekapList(); });
 
-    document.getElementById("rppList").addEventListener("click", (e) => {
+    document.getElementById("rppList").addEventListener("click", async (e) => {
       const key = e.target.closest('button')?.getAttribute("data-key");
       if (!key) return;
       const it = rekapAllData.find(d => d.key === key);
+      if (!it) return;
       
       if (e.target.closest('.btn-hapus')) {
         if (getPasswordForStaf(it.guru) === null) return Swal.fire('Error', 'Password guru tidak ditemukan.', 'error');
         if (confirm(`Hapus catatan milik ${it.guru}?`)) {
           const p = prompt(`Masukkan password untuk ${it.guru}:`);
-          if (p !== null && verifyStafPassword(it.guru, p)) apiRemove("jurnal", "jurnal/" + key, { guru: it.guru, password: p });
-          else if(p !== null) Swal.fire('Gagal', 'Password salah!', 'error');
+          if (p !== null && verifyStafPassword(it.guru, p)) {
+            try {
+              const res = await fetch(`${WORKER_JURNAL_URL}?id=${encodeURIComponent(key)}`, { method: "DELETE" });
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              rekapAllData = rekapAllData.filter(d => d.key !== key);
+              window.rekapAllData = rekapAllData;
+              try { localStorage.setItem('izy_rekap_jurnal_cache', JSON.stringify(rekapAllData)); } catch (err) {}
+              if (typeof filterRekap === "function") filterRekap();
+              if (typeof hitungPertemuanKbm === "function") hitungPertemuanKbm();
+              if (typeof updateKbmJudulDatalist === "function") updateKbmJudulDatalist();
+              if (typeof window.syncCekJurnalData === "function") window.syncCekJurnalData(rekapAllData);
+              Swal.fire('Terhapus', 'Catatan jurnal berhasil dihapus!', 'success');
+            } catch (err) {
+              Swal.fire('Gagal', 'Gagal menghapus data dari Cloudflare: ' + err.message, 'error');
+            }
+          } else if (p !== null) {
+            Swal.fire('Gagal', 'Password salah!', 'error');
+          }
         }
       }
       if (e.target.closest('.btn-edit')) {
@@ -6309,19 +6327,55 @@
       }
     });
 
-    document.getElementById("editForm").addEventListener("submit", (e) => {
+    document.getElementById("editForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const k = document.getElementById("editKey").value;
       const gu = document.getElementById("editGuru").value;
-      const p = prompt(`Konfirmasi Password (${gu}):`);
-      if (p !== null && verifyStafPassword(gu, p)) {
-        apiUpdate("jurnal", "jurnal/" + k, { guru: gu, judul: document.getElementById("editJudul").value, ringkasan: document.getElementById("editRingkasan").value }, { guru: gu, password: p })
-          .then((h) => {
-            if (h && h.status !== "sukses") throw new Error(h.pesan || "Server menolak pembaruan.");
-            document.getElementById("editModal").classList.add("hidden"); Swal.fire('Berhasil', 'Data berhasil diperbarui!', 'success');
-          })
-          .catch(err => Swal.fire('Gagal', err.message, 'error'));
-      } else if (p !== null) Swal.fire('Gagal', 'Password salah!', 'error');
+      const existingItem = rekapAllData.find(d => d.key === k);
+      const guruAuth = (existingItem && existingItem.guru) ? existingItem.guru : gu;
+      const p = prompt(`Konfirmasi Password (${guruAuth}):`);
+      if (p !== null && (verifyStafPassword(guruAuth, p) || verifyStafPassword(gu, p))) {
+        try {
+          const updatedPayload = {
+            ...(existingItem || {}),
+            guru: gu,
+            judul: document.getElementById("editJudul").value.trim(),
+            ringkasan: document.getElementById("editRingkasan").value.trim()
+          };
+          delete updatedPayload.key;
+          delete updatedPayload.id;
+          delete updatedPayload.bulan;
+
+          const bulanItem = (existingItem && existingItem.bulan)
+            || (updatedPayload.tanggal ? String(updatedPayload.tanggal).substring(0, 7) : new Date().toISOString().substring(0, 7));
+
+          const res = await fetch(WORKER_JURNAL_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: k, bulan: bulanItem, payload: updatedPayload })
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const h = await res.json();
+          if (h && h.status !== "sukses") throw new Error(h.error || h.pesan || "Server menolak pembaruan.");
+
+          const idx = rekapAllData.findIndex(d => d.key === k);
+          if (idx !== -1) {
+            rekapAllData[idx] = { ...updatedPayload, id: k, key: k, bulan: bulanItem };
+          }
+          window.rekapAllData = rekapAllData;
+          try { localStorage.setItem('izy_rekap_jurnal_cache', JSON.stringify(rekapAllData)); } catch (err) {}
+          if (typeof filterRekap === "function") filterRekap();
+          if (typeof updateKbmJudulDatalist === "function") updateKbmJudulDatalist();
+          if (typeof window.syncCekJurnalData === "function") window.syncCekJurnalData(rekapAllData);
+
+          document.getElementById("editModal").classList.add("hidden");
+          Swal.fire('Berhasil', 'Data berhasil diperbarui!', 'success');
+        } catch (err) {
+          Swal.fire('Gagal', err.message, 'error');
+        }
+      } else if (p !== null) {
+        Swal.fire('Gagal', 'Password salah!', 'error');
+      }
     });
 
     // ==========================================
@@ -6857,9 +6911,30 @@
           const b = document.getElementById('btnSimpanKbm');
           b.disabled = true; b.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
           try {
-            const hasilPush = await apiPush("jurnal", "jurnal", pendingKbmPayload, { guru: pendingKbmPayload.guru, password: p });
-            if (hasilPush.status !== "sukses") throw new Error(hasilPush.pesan || "Server menolak penyimpanan.");
-            Swal.fire('Alhamdulillah', `Jurnal materi <b>${pendingKbmPayload.judul}</b> berhasil disimpan!`, 'success');
+            const nowTs = Date.now();
+            const idUnik = `jurnal_${nowTs}_${Math.random().toString(36).substring(2, 8)}`;
+            const bulanStr = pendingKbmPayload.tanggal
+              ? String(pendingKbmPayload.tanggal).substring(0, 7)
+              : new Date().toISOString().substring(0, 7);
+            pendingKbmPayload.timestamp = nowTs;
+
+            const resPush = await fetch(WORKER_JURNAL_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: idUnik, bulan: bulanStr, payload: pendingKbmPayload })
+            });
+            if (!resPush.ok) throw new Error(`HTTP ${resPush.status}`);
+            const hasilPush = await resPush.json();
+            if (hasilPush.status !== "sukses") throw new Error(hasilPush.error || hasilPush.pesan || "Server menolak penyimpanan.");
+
+            rekapAllData.unshift({ ...pendingKbmPayload, id: idUnik, key: idUnik, bulan: bulanStr });
+            window.rekapAllData = rekapAllData;
+            try { localStorage.setItem('izy_rekap_jurnal_cache', JSON.stringify(rekapAllData)); } catch (err) {}
+            if (typeof filterRekap === "function") filterRekap();
+            if (typeof updateKbmJudulDatalist === "function") updateKbmJudulDatalist();
+            if (typeof window.syncCekJurnalData === "function") window.syncCekJurnalData(rekapAllData);
+
+            Swal.fire('Alhamdulillah', `Jurnal materi <b>${pendingKbmPayload.judul}</b> berhasil disimpan ke Cloudflare D1!`, 'success');
             document.getElementById('kbmJudul').value = "";
             document.getElementById('kbmRingkasan').value = "";
             hitungPertemuanKbm();
@@ -8877,13 +8952,15 @@
 
       async function loadRekapJurnalViaProxy() {
         try {
-          const snap = await apiGet("jurnal", "jurnal");
-          const tempArr = [];
-          snap.forEach(c => { if (c.val()) tempArr.push({ ...c.val(), key: c.key }); });
+          const res = await fetch(`${WORKER_JURNAL_URL}?bulan=all`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          const tempArr = Array.isArray(data)
+            ? data.filter(Boolean).map(item => ({ ...item, key: item.id || item.key }))
+            : [];
           if (tempArr.length > 0) {
             rekapAllData = tempArr;
-            rekapAllData.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-            rekapAllData.reverse();
+            rekapAllData.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             try { localStorage.setItem('izy_rekap_jurnal_cache', JSON.stringify(rekapAllData)); } catch (e) {}
           } else if (rekapAllData.length === 0) {
             try {
@@ -8905,7 +8982,7 @@
           if (typeof updateKbmJudulDatalist === "function") updateKbmJudulDatalist();
           if (typeof window.syncCekJurnalData === "function") window.syncCekJurnalData(rekapAllData);
         } catch (e) {
-          console.error("loadRekapJurnalViaProxy error:", e);
+          console.error("loadRekapJurnalViaProxy (Cloudflare D1) error:", e);
           if (rekapAllData.length === 0) {
             try {
               const cached = JSON.parse(localStorage.getItem('izy_rekap_jurnal_cache') || '[]');
@@ -8922,7 +8999,7 @@
       loadRekapJurnalViaProxy();
       setInterval(() => {
         if (!document.hidden) loadRekapJurnalViaProxy();
-      }, 60000);
+      }, 180000);
 
       onValue(ref(dbSetoran, "setoran_hafalan"), snap => {
         dataSetoranAll = [];
@@ -11517,7 +11594,7 @@ let inboxSesiAktifNamaID = "";
       list.forEach(item => {
         if (!item || !item.guru || !item.tanggal) return;
         jurnalArray.push({
-          tanggal: item.tanggal,
+          tanggal: String(item.tanggal).split('T')[0],
           guru: item.guru,
           mapel: item.mapel || "",
           kelas: item.kelas || "",
@@ -11725,13 +11802,12 @@ let inboxSesiAktifNamaID = "";
       }
       if (!isJurnalLoaded) {
         try {
-          const rJurnal = await fetch(proxyUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ db: "jurnal", action: "get", path: "jurnal" })
-          }).then(r => r.json());
-          if (rJurnal && rJurnal.data) {
-            window.syncCekJurnalData(rJurnal.data);
+          const jurnalWorkerUrl = window.WORKER_JURNAL_URL || "https://jurnal-kbm-guru.nurwalad88.workers.dev";
+          const resJurnal = await fetch(`${jurnalWorkerUrl}?bulan=all`);
+          if (!resJurnal.ok) throw new Error(`HTTP ${resJurnal.status}`);
+          const dataJurnal = await resJurnal.json();
+          if (Array.isArray(dataJurnal)) {
+            window.syncCekJurnalData(dataJurnal);
           } else {
             const cachedR = JSON.parse(localStorage.getItem('izy_rekap_jurnal_cache') || '[]');
             window.syncCekJurnalData(cachedR);
