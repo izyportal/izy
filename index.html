@@ -765,7 +765,7 @@
               <i class="fa-solid fa-table-list w-4 text-center"></i> Rekap Jurnal KBM
             </button>
             <button id="tabBtnCekJurnal" onclick="pindahMenu('cekJurnal')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
-              <i class="fa-solid fa-magnifying-glass w-4 text-center"></i> Cek Jurnal
+              <i class="fa-solid fa-magnifying-glass w-4 text-center"></i> Cek Jurnal KBM
             </button>
             <button id="tabBtnRekapNilai" onclick="pindahMenu('rekapNilai')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
               <i class="fa-solid fa-file-signature w-4 text-center"></i> Rekap Nilai Mapel
@@ -866,7 +866,7 @@
       </div>
 
       <div class="p-3 border-t border-teal-800/60 text-center">
-        <p class="text-[9px] text-emerald-400 font-bold tracking-widest">UPDATE : 17.11.2026</p>
+        <p class="text-[9px] text-emerald-400 font-bold tracking-widest">UPDATE : 20.11.2026</p>
       </div>
     </aside>
 
@@ -2349,7 +2349,7 @@
                 </div>
               </div>
 
-              <div class="p-4 flex flex-col flex-1 overflow-hidden space-y-3 max-w-4xl mx-auto w-full">
+              <div class="p-4 flex flex-col flex-1 overflow-hidden space-y-3 bg-slate-50/50">
                 <!-- Search Box -->
                 <div class="relative shrink-0">
                   <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -2501,7 +2501,7 @@
             <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-4.5rem)]">
               <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2.5 flex justify-between items-center text-white shrink-0">
                 <div>
-                  <h2 class="text-xs font-black tracking-widest uppercase">Cek Jurnal KBM</h2>
+                  <h2 class="text-xs font-black tracking-widest uppercase">CEK KEPATUHAN JURNAL KBM</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Pemeriksaan & verifikasi kelengkapan jurnal mengajar guru</p>
                 </div>
               </div>
@@ -2522,7 +2522,6 @@
                   #panelCekJurnal .cj-loading { text-align:center; padding:18px; font-weight:bold; color:#00897b; font-size:12px; }
                   #panelCekJurnal .cj-nodata { text-align:center; padding:18px; color:#94a3b8; font-style:italic; font-size:12px; }
                 </style>
-                <h3 class="cj-title" id="cj_mainTitle">Cek Kepatuhan Jurnal KBM</h3>
                 <div id="cj_timeWarningBox" class="cj-time-box"><span id="cj_timeWarningText">Menghitung sisa waktu...</span></div>
                 <div class="cj-filters">
                   <select id="cj_bulanSelect">
@@ -2726,54 +2725,61 @@
 
           <!-- ========================================== -->
                                         <!-- 12E. PANEL: KALENDER PENDIDIKAN (KALDIK) -->
-          <section id="panelKaldik" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
-            <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-              <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-                <h2 class="text-sm font-black uppercase tracking-wide text-teal-800 flex items-center gap-2 m-0"><i class="fa-regular fa-calendar text-teal-600"></i> Agenda IZY</h2>
-                <button type="button" id="btnAdminKaldik" onclick="window.toggleAdminKaldik && window.toggleAdminKaldik()" class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-teal-200 text-teal-700 hover:bg-teal-50 cursor-pointer transition">
-                  <i class="fa-solid fa-lock"></i> <span id="lblAdminKaldik">Admin Login</span>
-                </button>
-              </div>
-
-              <div class="flex flex-wrap items-center justify-between gap-2 px-3 pt-3">
-                <div id="navBulanKaldik" class="flex items-center gap-1">
-                  <button type="button" onclick="window.pindahBulanKaldik && window.pindahBulanKaldik(-1)" class="w-9 h-9 rounded-full text-slate-500 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition"><i class="fa-solid fa-chevron-left text-sm"></i></button>
-                  <div id="judulBulanKaldik" class="text-base font-black text-slate-800 uppercase tracking-wide min-w-[150px] text-center">—</div>
-                  <button type="button" onclick="window.pindahBulanKaldik && window.pindahBulanKaldik(1)" class="w-9 h-9 rounded-full text-slate-500 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition"><i class="fa-solid fa-chevron-right text-sm"></i></button>
+          <section id="panelKaldik" class="w-full h-[calc(100vh-4.3rem)] hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <div class="w-full h-full bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+              <!-- Bar Atas Ringkas -->
+              <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-slate-200 bg-white shrink-0">
+                <div class="flex items-center gap-3">
+                  <h2 class="text-sm font-black uppercase tracking-wide text-teal-800 flex items-center gap-2 m-0"><i class="fa-regular fa-calendar text-teal-600"></i> Agenda IZY</h2>
+                  <div id="navBulanKaldik" class="flex items-center gap-1 ml-1">
+                    <button type="button" onclick="window.pindahBulanKaldik && window.pindahBulanKaldik(-1)" class="w-8 h-8 rounded-full text-slate-500 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                    <div id="judulBulanKaldik" class="text-sm font-black text-teal-800 uppercase tracking-wide min-w-[140px] text-center">—</div>
+                    <button type="button" onclick="window.pindahBulanKaldik && window.pindahBulanKaldik(1)" class="w-8 h-8 rounded-full text-slate-500 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                  </div>
                 </div>
-                <select id="filterKaldikView" onchange="window.gantiViewKaldik && window.gantiViewKaldik(this.value)" class="text-[11px] font-bold border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white text-slate-700 outline-none focus:border-teal-500 cursor-pointer shadow-sm">
-                  <option value="semua">Tampilkan Semua Bulan</option>
-                  <option value="2026-7">Juli 2026</option>
-                  <option value="2026-8">Agustus 2026</option>
-                  <option value="2026-9">September 2026</option>
-                  <option value="2026-10">Oktober 2026</option>
-                  <option value="2026-11" selected>November 2026</option>
-                  <option value="2026-12">Desember 2026</option>
-                  <option value="2027-1">Januari 2027</option>
-                  <option value="2027-2">Februari 2027</option>
-                  <option value="2027-3">Maret 2027</option>
-                  <option value="2027-4">April 2027</option>
-                  <option value="2027-5">Mei 2027</option>
-                  <option value="2027-6">Juni 2027</option>
-                </select>
-              </div>
-
-              <div class="p-3">
-                <div id="gridHariKaldik" class="grid grid-cols-7 text-center mb-1"></div>
-                <div id="gridKaldik" class="grid grid-cols-7 gap-y-1"></div>
-                <div id="gridKaldikSemua" class="hidden grid grid-cols-2 md:grid-cols-3 gap-3"></div>
-              </div>
-
-              <div id="rundownKaldikDetail" class="hidden mx-3 mb-3 border border-teal-200 rounded-xl overflow-hidden shadow-sm"></div>
-
-              <div class="border-t border-slate-100">
-                <div class="grid grid-cols-[100px_1fr] bg-slate-50 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  <div class="px-4 py-2">Tanggal</div>
-                  <div class="px-4 py-2">Catatan Agenda</div>
+                <div class="flex items-center gap-2">
+                  <select id="filterKaldikView" onchange="window.gantiViewKaldik && window.gantiViewKaldik(this.value)" class="text-[11px] font-bold border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white text-slate-700 outline-none focus:border-teal-500 cursor-pointer shadow-sm">
+                    <option value="semua">Tampilkan Semua Bulan</option>
+                    <option value="2026-7">Juli 2026</option>
+                    <option value="2026-8">Agustus 2026</option>
+                    <option value="2026-9">September 2026</option>
+                    <option value="2026-10">Oktober 2026</option>
+                    <option value="2026-11" selected>November 2026</option>
+                    <option value="2026-12">Desember 2026</option>
+                    <option value="2027-1">Januari 2027</option>
+                    <option value="2027-2">Februari 2027</option>
+                    <option value="2027-3">Maret 2027</option>
+                    <option value="2027-4">April 2027</option>
+                    <option value="2027-5">Mei 2027</option>
+                    <option value="2027-6">Juni 2027</option>
+                  </select>
+                  <button type="button" id="btnAdminKaldik" onclick="window.toggleAdminKaldik && window.toggleAdminKaldik()" class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-teal-200 text-teal-700 hover:bg-teal-50 cursor-pointer transition">
+                    <i class="fa-solid fa-lock"></i> <span id="lblAdminKaldik">Admin Login</span>
+                  </button>
                 </div>
-                <div id="agendaKaldikList" class="divide-y divide-slate-50 text-[11px] max-h-56 overflow-y-auto"></div>
               </div>
-              <p id="kaldikHint" class="text-center text-[10px] text-slate-400 px-3 py-2 hidden border-t border-slate-100 m-0"><i class="fa-solid fa-pen-to-square"></i> Mode edit aktif: klik tanggal untuk mengubah agenda &amp; rundown.</p>
+
+              <!-- Layout 2 Kolom: Kiri Kalender (Full Tinggi), Kanan Catatan Agenda -->
+              <div class="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
+                <!-- KIRI: Kalender -->
+                <div class="lg:w-[58%] flex-1 lg:flex-none h-full flex flex-col min-h-0 px-2.5 py-1.5 border-b lg:border-b-0 lg:border-r border-slate-200 bg-white">
+                  <div id="gridHariKaldik" class="grid grid-cols-7 text-center shrink-0 pb-1"></div>
+                  <div id="gridKaldik" class="flex-1 min-h-0 grid grid-cols-7 gap-1.5"></div>
+                  <div id="gridKaldikSemua" class="hidden flex-1 min-h-0 overflow-y-auto grid grid-cols-2 md:grid-cols-3 gap-2.5 pr-1"></div>
+                </div>
+
+                <!-- KANAN: Catatan Agenda & Rundown -->
+                <div class="lg:w-[42%] flex-1 lg:flex-none h-full flex flex-col min-h-0 bg-slate-50/40 overflow-hidden">
+                  <div class="grid grid-cols-[96px_1fr] bg-slate-100/90 border-b border-slate-200 text-[10px] font-extrabold uppercase tracking-wider text-slate-500 shrink-0">
+                    <div class="px-3 py-2">Tanggal</div>
+                    <div class="px-3 py-2">Catatan Agenda</div>
+                  </div>
+                  <div id="agendaKaldikList" class="flex-1 min-h-0 overflow-y-auto divide-y divide-slate-100 text-xs"></div>
+                  <div id="rundownKaldikDetail" class="hidden mx-2.5 mb-2.5 mt-1 border border-teal-200 rounded-xl overflow-hidden shadow-sm shrink-0 max-h-[45%] overflow-y-auto bg-white"></div>
+                </div>
+              </div>
+
+              <p id="kaldikHint" class="text-center text-[10px] text-slate-400 px-3 py-1.5 hidden border-t border-slate-100 m-0 shrink-0"><i class="fa-solid fa-pen-to-square"></i> Mode edit aktif: klik tanggal untuk mengubah agenda &amp; rundown.</p>
             </div>
           </section>
 
@@ -3197,9 +3203,9 @@
                   <span class="bg-white/15 border border-white/20 text-white px-2.5 py-1 rounded text-[9px] font-bold shadow-sm border border-teal-700 uppercase tracking-wider">
                     Auto-Sync
                   </span>
-                  <button type="button" onclick="kirimWaRoster()" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1.5">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> Excel
-                  </button>
+                  <a href="https://6ab8572b6482efa64806aa50--unrivaled-jelly-d3640b.netlify.app/" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1.5">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Download
+                  </a>
                 </div>
               </div>
 
@@ -3426,9 +3432,9 @@
                 <span class="bg-white/15 border border-white/20 text-white px-2.5 py-1 rounded text-[9px] font-bold shadow-sm uppercase tracking-wider"><i class="fas fa-shield-alt mr-1"></i> IZY 2026</span>
               </div>
 
-              <div class="p-4 flex-1 overflow-y-auto bg-slate-50/50">
-                <form id="itm_tasmiForm" class="max-w-2xl mx-auto bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-3">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="p-4 md:p-5 flex-1 overflow-y-auto bg-white flex flex-col">
+                <form id="itm_tasmiForm" class="w-full flex-1 flex flex-col justify-between space-y-4">
+                  <div class="bg-slate-50/70 p-4 rounded-lg border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-3.5">
                     <div class="md:col-span-2">
                       <label class="block font-bold text-[10px] uppercase tracking-wider text-slate-500 mb-1">Nama Santri</label>
                       <select id="itm_nama" name="nama" required class="w-full py-2.5 px-3 text-sm rounded-lg border border-slate-200 bg-slate-50 outline-none focus:border-teal-600 text-slate-700">
@@ -4265,7 +4271,7 @@
 
       const mainScroll = document.getElementById('mainScrollArea');
 
-      if (menu === 'beranda' || menu === 'inputSoal' || menu === 'settingSoal' || menu === 'inbox' || menu === 'ujian') {
+      if (menu === 'beranda' || menu === 'inputSoal' || menu === 'settingSoal' || menu === 'inbox' || menu === 'ujian' || menu === 'kaldik') {
         mainScroll.classList.add('no-scroll-dashboard');
       } else {
         mainScroll.classList.remove('no-scroll-dashboard');
@@ -10777,13 +10783,26 @@ let inboxSesiAktifNamaID = "";
   function inAY(k){ var p = parseKey(k); return !!AYSET[p.y + '-' + p.m]; }
 
   function warna(c){
-    c = String(c||'').toLowerCase();
-    if(c.indexOf('yellow')!==-1 || c.indexOf('kuning')!==-1 || c.indexOf('amber')!==-1) return {cell:'bg-amber-50', dot:'bg-amber-500', badge:'bg-amber-100 text-amber-800'};
-    if(c.indexOf('green')!==-1 || c.indexOf('hijau')!==-1) return {cell:'bg-emerald-50', dot:'bg-emerald-500', badge:'bg-emerald-100 text-emerald-800'};
-    if(c.indexOf('blue')!==-1 || c.indexOf('biru')!==-1) return {cell:'bg-sky-50', dot:'bg-sky-500', badge:'bg-sky-100 text-sky-800'};
-    if(c.indexOf('purple')!==-1 || c.indexOf('ungu')!==-1 || c.indexOf('violet')!==-1) return {cell:'bg-violet-50', dot:'bg-violet-500', badge:'bg-violet-100 text-violet-800'};
-    if(c.indexOf('orange')!==-1 || c.indexOf('oranye')!==-1) return {cell:'bg-orange-50', dot:'bg-orange-500', badge:'bg-orange-100 text-orange-800'};
-    return {cell:'bg-rose-50', dot:'bg-rose-500', badge:'bg-rose-100 text-rose-800'};
+    var raw = String(c||'').trim();
+    var s = raw.toLowerCase();
+    if(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(raw) || /^rgba?\(/i.test(raw) || /^hsla?\(/i.test(raw)){
+      return { bg: raw, text: '#ffffff', dot: raw };
+    }
+    if(s.indexOf('yellow')!==-1 || s.indexOf('kuning')!==-1 || s.indexOf('amber')!==-1 || s.indexOf('gold')!==-1)
+      return { bg: '#e2cf3c', text: '#ffffff', dot: '#e2cf3c' };
+    if(s.indexOf('pink')!==-1 || s.indexOf('rose')!==-1 || s.indexOf('merah muda')!==-1)
+      return { bg: '#e57399', text: '#ffffff', dot: '#e57399' };
+    if(s.indexOf('green')!==-1 || s.indexOf('hijau')!==-1)
+      return { bg: '#10b981', text: '#ffffff', dot: '#10b981' };
+    if(s.indexOf('blue')!==-1 || s.indexOf('biru')!==-1)
+      return { bg: '#0b1ef5', text: '#ffffff', dot: '#0b1ef5' };
+    if(s.indexOf('purple')!==-1 || s.indexOf('ungu')!==-1 || s.indexOf('violet')!==-1)
+      return { bg: '#9333ea', text: '#ffffff', dot: '#9333ea' };
+    if(s.indexOf('orange')!==-1 || s.indexOf('oranye')!==-1)
+      return { bg: '#f97316', text: '#ffffff', dot: '#f97316' };
+    if(s.indexOf('teal')!==-1 || s.indexOf('cyan')!==-1)
+      return { bg: '#0f766e', text: '#ffffff', dot: '#0f766e' };
+    return { bg: '#f50a0a', text: '#ffffff', dot: '#f50a0a' };
   }
 
   function durasiMenit(mulai, selesai){
@@ -10800,34 +10819,50 @@ let inboxSesiAktifNamaID = "";
     return m + 'm';
   }
 
-  // ---- Render 1 bulan ----
+  // ---- Render 1 bulan (full tinggi atas-bawah tanpa ruang kosong) ----
   function renderBulan(){
     var judul = document.getElementById('judulBulanKaldik');
     if(judul) judul.textContent = BULAN[_bulan.getMonth()] + ' ' + _bulan.getFullYear();
     var gh = document.getElementById('gridHariKaldik');
-    if(gh) gh.innerHTML = HARI.map(function(h){ return '<div class="text-[10px] font-bold text-slate-400 uppercase py-1">'+h+'</div>'; }).join('');
+    if(gh) gh.innerHTML = HARI.map(function(h){ return '<div class="text-[11px] font-bold text-slate-400 uppercase py-1">'+h+'</div>'; }).join('');
     var g = document.getElementById('gridKaldik');
     if(!g) return;
     var y = _bulan.getFullYear(), m = _bulan.getMonth();
     var firstDay = new Date(y, m, 1).getDay();
     var days = new Date(y, m+1, 0).getDate();
+    var totalRows = Math.ceil((firstDay + days) / 7);
+    g.style.gridTemplateRows = 'repeat(' + totalRows + ', minmax(0, 1fr))';
     var tk = todayKey();
     var htmlStr = '';
-    for(var i=0;i<firstDay;i++){ htmlStr += '<div></div>'; }
+    for(var i=0;i<firstDay;i++){ htmlStr += '<div class="h-full w-full"></div>'; }
     for(var d=1; d<=days; d++){
       var k = keyOf(y, m, d);
       var ev = _notes[k];
       var w = ev ? warna(ev.color) : null;
       var isToday = (k === tk);
-      var cls = 'relative h-10 md:h-11 flex items-center justify-center rounded-lg cursor-pointer transition ';
-      if(w) cls += w.cell + ' hover:brightness-95 ';
-      else cls += 'hover:bg-slate-100 ';
-      var angka;
-      if(isToday) angka = '<span class="w-7 h-7 rounded-full bg-teal-600 text-white flex items-center justify-center text-[13px] font-bold shadow-sm">'+d+'</span>';
-      else angka = '<span class="text-[13px] '+(w?'font-bold text-slate-800':'text-slate-600')+'">'+d+'</span>';
-      var dot = w ? '<span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full '+w.dot+'"></span>' : '';
+      var isSel = (_selectedKey === k);
+      var cls = 'relative h-full w-full flex flex-col items-center justify-center rounded-xl cursor-pointer transition select-none ';
+      var styleAttr = '';
+      if(isToday){
+        cls += 'shadow-sm hover:brightness-105 ';
+        styleAttr = ' style="background-color:#0b6b66;color:#ffffff;"';
+      } else if(w){
+        cls += 'shadow-sm hover:brightness-95 ';
+        styleAttr = ' style="background-color:'+escAttr(w.bg)+';color:'+escAttr(w.text)+';"';
+      } else {
+        cls += 'hover:bg-slate-100 text-slate-700 ';
+      }
+      if(isSel) cls += 'ring-2 ring-slate-900 ring-offset-1 ';
+      var innerHtml;
+      if(isToday){
+        innerHtml = '<span class="text-[9px] font-black tracking-wider uppercase leading-none mb-0.5" style="color:#facc15;">SKRG</span><span class="text-base md:text-lg font-extrabold leading-none">'+d+'</span>';
+      } else if(w){
+        innerHtml = '<span class="text-base md:text-lg font-extrabold leading-none" style="text-shadow:0 1px 2px rgba(0,0,0,0.18);">'+d+'</span>';
+      } else {
+        innerHtml = '<span class="text-sm md:text-base font-bold text-slate-700 leading-none">'+d+'</span>';
+      }
       var noteAttr = (ev && stripTags(ev.text)) ? ' data-kaldik-note="'+escAttr(stripTags(ev.text))+'"' : '';
-      htmlStr += '<div class="'+cls+'" data-k="'+k+'"'+noteAttr+' onclick="window.klikTanggalKaldik(\''+k+'\')">'+angka+dot+'</div>';
+      htmlStr += '<div class="'+cls+'"'+styleAttr+' data-k="'+k+'"'+noteAttr+' onclick="window.klikTanggalKaldik(\''+k+'\')">'+innerHtml+'</div>';
     }
     g.innerHTML = htmlStr;
   }
@@ -10845,20 +10880,27 @@ let inboxSesiAktifNamaID = "";
       html += '<div class="border border-slate-200 rounded-xl p-2 bg-white shadow-sm">';
       html += '<div class="text-[11px] font-black text-teal-800 uppercase tracking-wide mb-1 text-center">'+BULAN[m]+' '+y+'</div>';
       html += '<div class="grid grid-cols-7 text-center mb-0.5">'+HARI.map(function(h){ return '<div class="text-[8px] font-bold text-slate-400 py-0.5">'+h.charAt(0)+'</div>'; }).join('')+'</div>';
-      html += '<div class="grid grid-cols-7 gap-y-0.5">';
+      html += '<div class="grid grid-cols-7 gap-0.5">';
       for(var i=0;i<firstDay;i++){ html += '<div></div>'; }
       for(var d=1; d<=days; d++){
         var k = keyOf(y, m, d);
         var ev = _notes[k];
         var w = ev ? warna(ev.color) : null;
         var isToday = (k === tk);
-        var cls = 'relative h-5 flex items-center justify-center rounded cursor-pointer text-[9px] ' + (w ? w.cell + ' hover:brightness-95 ' : 'hover:bg-slate-100 ');
-        var angka = isToday
-          ? '<span class="w-4 h-4 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">'+d+'</span>'
-          : '<span class="'+(w?'font-bold text-slate-700':'text-slate-500')+'">'+d+'</span>';
-        var dot = w ? '<span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full '+w.dot+'"></span>' : '';
+        var isSel = (_selectedKey === k);
+        var cls = 'relative h-5 flex items-center justify-center rounded cursor-pointer text-[9px] font-bold transition ';
+        var styleAttr = '';
+        if(isToday){
+          styleAttr = ' style="background-color:#0b6b66;color:#ffffff;"';
+        } else if(w){
+          cls += 'hover:brightness-95 ';
+          styleAttr = ' style="background-color:'+escAttr(w.bg)+';color:'+escAttr(w.text)+';"';
+        } else {
+          cls += 'hover:bg-slate-100 text-slate-600 ';
+        }
+        if(isSel) cls += 'ring-1 ring-slate-900 ';
         var noteAttr = (ev && stripTags(ev.text)) ? ' data-kaldik-note="'+escAttr(stripTags(ev.text))+'"' : '';
-        html += '<div class="'+cls+'" data-k="'+k+'"'+noteAttr+' onclick="window.klikTanggalKaldik(\''+k+'\')">'+angka+dot+'</div>';
+        html += '<div class="'+cls+'"'+styleAttr+' data-k="'+k+'"'+noteAttr+' onclick="window.klikTanggalKaldik(\''+k+'\')">'+d+'</div>';
       }
       html += '</div></div>';
     });
@@ -10893,20 +10935,26 @@ let inboxSesiAktifNamaID = "";
       var p = parseKey(k); return p.y===y && p.m===m;
     }).sort(function(a,b){ return padKey(a) < padKey(b) ? -1 : 1; });
     if(dates.length === 0){
-      list.innerHTML = '<div class="px-4 py-6 text-center text-[10px] text-slate-400">Tidak ada agenda pada periode ini.</div>';
+      list.innerHTML = '<div class="px-4 py-6 text-center text-[11px] text-slate-400">Tidak ada agenda pada periode ini.</div>';
       return;
     }
     list.innerHTML = dates.map(function(k){
       var p = parseKey(k);
       var ev = _notes[k] || {};
       var w = warna(ev.color);
+      var isSel = (_selectedKey === k);
       var dd = String(p.d).padStart(2,'0') + ' ' + BULAN_P[p.m-1] + ( _view==='semua' ? ' '+p.y : '' );
       var txt = stripTags(ev.text) || '(tanpa keterangan)';
-      var waktu = ev.time ? '<span class="text-slate-400 text-[10px] ml-1"><i class="fa-regular fa-clock"></i> '+ev.time+'</span>' : '';
-      var adaRd = (ev.rundown && ev.rundown.length) ? '<span class="ml-1 text-teal-500" title="Ada rundown acara"><i class="fa-solid fa-list-check"></i></span>' : '';
-      return '<div class="grid grid-cols-[100px_1fr] items-center cursor-pointer hover:bg-slate-50 transition" onclick="window.klikTanggalKaldik(\''+k+'\')">'
-        + '<div class="px-4 py-2 font-black text-teal-700 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full '+w.dot+' shrink-0"></span>'+dd+'</div>'
-        + '<div class="px-4 py-2 text-slate-700 truncate">'+txt+waktu+adaRd+'</div>'
+      var waktu = ev.time ? '<span class="'+(isSel?'text-white/90':'text-slate-400')+' text-[10px] ml-1.5"><i class="fa-regular fa-clock"></i> '+ev.time+'</span>' : '';
+      var adaRd = (ev.rundown && ev.rundown.length) ? '<span class="ml-1.5 '+(isSel?'text-white':'text-teal-500')+'" title="Ada rundown acara"><i class="fa-solid fa-list-check"></i></span>' : '';
+      var rowStyle = isSel ? ' style="background-color:'+escAttr(w.bg)+';color:#ffffff;"' : '';
+      var rowCls = 'grid grid-cols-[96px_1fr] items-center cursor-pointer transition ' + (isSel ? 'shadow-sm font-bold' : 'hover:bg-slate-100/80 bg-white');
+      var dotStyle = isSel ? 'background-color:#ffffff;' : 'background-color:'+escAttr(w.dot)+';';
+      var tglCls = 'px-3 py-2.5 font-black flex items-center gap-1.5 text-[11px] ' + (isSel ? 'text-white' : 'text-teal-800');
+      var txtCls = 'px-3 py-2.5 leading-snug ' + (isSel ? 'text-white font-bold' : 'text-slate-700');
+      return '<div class="'+rowCls+'"'+rowStyle+' data-agenda-key="'+k+'" onclick="window.klikTanggalKaldik(\''+k+'\')">'
+        + '<div class="'+tglCls+'"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="'+dotStyle+'"></span>'+dd+'</div>'
+        + '<div class="'+txtCls+'">'+txt+waktu+adaRd+'</div>'
         + '</div>';
     }).join('');
   }
@@ -10915,42 +10963,51 @@ let inboxSesiAktifNamaID = "";
   function renderRundownDetail(){
     var box = document.getElementById('rundownKaldikDetail');
     if(!box) return;
-    if(!_selectedKey){ box.classList.add('hidden'); box.innerHTML=''; return; }
+    if(!_selectedKey || !_notes[_selectedKey]){ box.classList.add('hidden'); box.innerHTML=''; return; }
     var ev = _notes[_selectedKey] || {};
+    var rd = Array.isArray(ev.rundown) ? ev.rundown : [];
+    if(rd.length === 0){ box.classList.add('hidden'); box.innerHTML=''; return; }
+    var w = warna(ev.color);
     var p = parseKey(_selectedKey);
     var tgl = String(p.d).padStart(2,'0') + ' ' + BULAN[p.m-1] + ' ' + p.y;
-    var html = '<div class="px-4 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 flex items-center justify-between text-white">'
+    var html = '<div class="px-3.5 py-2 flex items-center justify-between text-white" style="background-color:'+escAttr(w.bg)+';">'
       + '<div class="font-black text-xs uppercase tracking-wide"><i class="fa-regular fa-calendar-check mr-1.5"></i>'+tgl+'</div>'
-      + '<button type="button" onclick="window.tutupRundownKaldik && window.tutupRundownKaldik()" class="text-white/80 hover:text-white text-xs font-bold cursor-pointer w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>'
+      + '<button type="button" onclick="window.tutupRundownKaldik && window.tutupRundownKaldik()" class="text-white/85 hover:text-white text-xs font-bold cursor-pointer w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>'
       + '</div>';
     var catatan = stripTags(ev.text);
-    if(catatan) html += '<div class="px-4 py-2 text-xs text-slate-700 bg-teal-50 border-b border-teal-100"><span class="font-bold text-teal-700">Catatan:</span> '+catatan+'</div>';
-    var rd = Array.isArray(ev.rundown) ? ev.rundown : [];
-    if(rd.length === 0){
-      html += '<div class="px-4 py-4 text-center text-[11px] text-slate-400">Belum ada susunan acara (rundown) untuk tanggal ini.</div>';
-    } else {
-      html += '<table class="w-full text-[11px] border-collapse"><thead><tr class="bg-teal-700 text-white uppercase text-[10px] tracking-wider">'
-        + '<th class="px-3 py-2 text-left font-bold">Rentang Waktu</th>'
-        + '<th class="px-3 py-2 text-left font-bold">Susunan Acara</th>'
-        + '<th class="px-3 py-2 text-right font-bold">Durasi</th></tr></thead><tbody>';
-      var total = 0;
-      rd.forEach(function(r){
-        var mn = durasiMenit(r.mulai, r.selesai); total += mn;
-        var rentang = (r.mulai||'00:00') + ' – ' + (r.selesai||'00:00');
-        html += '<tr class="border-b border-teal-100 bg-white">'
-          + '<td class="px-3 py-2 font-bold text-teal-800 whitespace-nowrap">'+rentang+'</td>'
-          + '<td class="px-3 py-2 text-slate-700">'+String(r.acara||'-')+'</td>'
-          + '<td class="px-3 py-2 text-right font-semibold text-slate-600 whitespace-nowrap">'+fmtDurasi(mn)+'</td></tr>';
-      });
-      html += '</tbody><tfoot><tr class="bg-teal-100 font-black text-teal-900">'
-        + '<td class="px-3 py-2 uppercase tracking-wide text-[10px]" colspan="2">Total Waktu</td>'
-        + '<td class="px-3 py-2 text-right text-sm">'+fmtDurasi(total)+'</td></tr></tfoot></table>';
-    }
+    if(catatan) html += '<div class="px-3.5 py-2 text-xs text-slate-700 bg-teal-50/70 border-b border-teal-100"><span class="font-bold text-teal-800">Catatan:</span> '+catatan+'</div>';
+    html += '<table class="w-full text-[11px] border-collapse"><thead><tr class="bg-teal-700 text-white uppercase text-[10px] tracking-wider">'
+      + '<th class="px-3 py-1.5 text-left font-bold">Rentang Waktu</th>'
+      + '<th class="px-3 py-1.5 text-left font-bold">Susunan Acara</th>'
+      + '<th class="px-3 py-1.5 text-right font-bold">Durasi</th></tr></thead><tbody>';
+    var total = 0;
+    rd.forEach(function(r){
+      var mn = durasiMenit(r.mulai, r.selesai); total += mn;
+      var rentang = (r.mulai||'00:00') + ' – ' + (r.selesai||'00:00');
+      html += '<tr class="border-b border-teal-100 bg-white">'
+        + '<td class="px-3 py-1.5 font-bold text-teal-800 whitespace-nowrap">'+rentang+'</td>'
+        + '<td class="px-3 py-1.5 text-slate-700">'+String(r.acara||'-')+'</td>'
+        + '<td class="px-3 py-1.5 text-right font-semibold text-slate-600 whitespace-nowrap">'+fmtDurasi(mn)+'</td></tr>';
+    });
+    html += '</tbody><tfoot><tr class="bg-teal-100 font-black text-teal-900">'
+      + '<td class="px-3 py-1.5 uppercase tracking-wide text-[10px]" colspan="2">Total Waktu</td>'
+      + '<td class="px-3 py-1.5 text-right text-xs">'+fmtDurasi(total)+'</td></tr></tfoot></table>';
     box.innerHTML = html;
     box.classList.remove('hidden');
   }
 
   function render(){ renderKalender(); renderAgenda(); renderRundownDetail(); }
+
+  function labelSelisihHari(k){
+    var p = parseKey(k);
+    var now = new Date();
+    var tNow = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    var tTarget = Date.UTC(p.y, p.m - 1, p.d);
+    var diff = Math.round((tTarget - tNow) / 86400000);
+    if(diff > 0) return ' (H-' + diff + ')';
+    if(diff < 0) return ' (H+' + Math.abs(diff) + ')';
+    return ' (Hari Ini)';
+  }
 
   // ---- Tooltip hover ----
   function initTooltip(){
@@ -10960,7 +11017,12 @@ let inboxSesiAktifNamaID = "";
     if(!tip) return;
     document.addEventListener('mouseover', function(e){
       var t = e.target.closest ? e.target.closest('[data-kaldik-note]') : null;
-      if(t){ tip.textContent = t.getAttribute('data-kaldik-note'); tip.classList.remove('hidden'); }
+      if(t){
+        var kAttr = t.getAttribute('data-k');
+        var suffix = kAttr ? labelSelisihHari(kAttr) : '';
+        tip.textContent = t.getAttribute('data-kaldik-note') + suffix;
+        tip.classList.remove('hidden');
+      }
     });
     document.addEventListener('mousemove', function(e){
       if(tip.classList.contains('hidden')) return;
@@ -11018,8 +11080,10 @@ let inboxSesiAktifNamaID = "";
     _selectedKey = (_selectedKey === k) ? null : k;
     render();
     if(_selectedKey){
-      var box = document.getElementById('rundownKaldikDetail');
-      if(box) setTimeout(function(){ try{ box.scrollIntoView({behavior:'smooth', block:'nearest'}); }catch(e){} }, 60);
+      setTimeout(function(){
+        var item = document.querySelector('#agendaKaldikList [data-agenda-key="'+_selectedKey+'"]');
+        if(item) try{ item.scrollIntoView({behavior:'smooth', block:'nearest'}); }catch(e){}
+      }, 60);
     }
   };
 
@@ -11054,7 +11118,7 @@ let inboxSesiAktifNamaID = "";
       html:
         '<textarea id="kaldikEditText" rows="3" placeholder="Catatan singkat (boleh kosong). Boleh menyertakan tag <img>." class="w-full text-xs border border-slate-300 rounded-lg p-2 outline-none focus:border-teal-500 mb-2">'+curText.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</textarea>'
         + '<select id="kaldikEditColor" class="w-full text-xs border border-slate-300 rounded-lg p-2 outline-none focus:border-teal-500 bg-white mb-2">'
-        + ['red','yellow','green','blue','purple','orange'].map(function(c){ return '<option value="'+c+'"'+(curColor.indexOf(c)!==-1?' selected':'')+'>Warna: '+c.charAt(0).toUpperCase()+c.slice(1)+'</option>'; }).join('')
+        + ['red','pink','yellow','green','blue','purple','orange'].map(function(c){ return '<option value="'+c+'"'+(curColor.indexOf(c)!==-1?' selected':'')+'>Warna: '+c.charAt(0).toUpperCase()+c.slice(1)+'</option>'; }).join('')
         + '</select>'
         + '<div class="text-left border-t border-slate-200 pt-2">'
         + '<div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1.5"><i class="fa-solid fa-list-check mr-1"></i>Susunan Acara (Rundown) — diisi guru</div>'
@@ -11158,7 +11222,7 @@ let inboxSesiAktifNamaID = "";
   };
 })();
 </script>
-  <div id="kaldikTooltip" class="hidden fixed z-[300] max-w-[240px] bg-slate-900/95 text-white text-[11px] rounded-lg px-3 py-2 shadow-xl pointer-events-none leading-snug"></div>
+  <div id="kaldikTooltip" class="hidden fixed z-[300] max-w-[280px] bg-slate-900/95 text-white text-[11px] rounded-lg px-3 py-2 shadow-xl pointer-events-none leading-snug"></div>
 
   <!-- Modal Rumus & Simbol Matematika (tengah-depan, tertutup otomatis setelah simbol dipilih) -->
   <div id="mathModal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
