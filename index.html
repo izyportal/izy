@@ -1836,8 +1836,20 @@
                       </select>
                     </div>
                   </div>
-                  <div>
-                    <input type="text" id="nilaiJudulTugas" class="w-full p-2 text-xs border border-slate-300 rounded bg-white font-semibold text-slate-700 outline-none focus:ring-1 focus:ring-teal-600 transition" placeholder="Tuliskan Judul Tugas Anda..." oninput="this.style.border=''; this.style.backgroundColor='';">
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                    <div>
+                      <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1">Kategori <span class="text-rose-500">*</span></label>
+                      <select id="nilaiKategori" required onchange="this.style.border=''; this.style.backgroundColor='';" class="w-full p-1.5 text-xs border border-slate-300 rounded bg-white font-bold text-slate-700 outline-none focus:ring-1 focus:ring-teal-600 transition">
+                        <option value="" disabled selected>Pilih Kategori</option>
+                        <option value="Lisan">Lisan</option>
+                        <option value="Tulis">Tulis</option>
+                        <option value="Praktek">Praktek</option>
+                      </select>
+                    </div>
+                    <div class="md:col-span-3">
+                      <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1">Judul Tugas <span class="text-rose-500">*</span></label>
+                      <input type="text" id="nilaiJudulTugas" required class="w-full p-1.5 text-xs border border-slate-300 rounded bg-white font-semibold text-slate-700 outline-none focus:ring-1 focus:ring-teal-600 transition" placeholder="Tuliskan Judul Tugas Anda..." oninput="this.style.border=''; this.style.backgroundColor='';">
+                    </div>
                   </div>
                 </div>
 
@@ -5839,12 +5851,20 @@
       const namaGuru = document.getElementById('nilaiGuru').value;
       const klsRaw = document.getElementById('nilaiFilterKelas').value; 
       const genRaw = document.getElementById('nilaiFilterJK').value; 
+      const selectKategoriEl = document.getElementById('nilaiKategori');
+      const kategoriNilai = selectKategoriEl.value;
       const inputJudulEl = document.getElementById('nilaiJudulTugas');
       const judulTugas = inputJudulEl.value.trim();
       
       if(!klsRaw || !genRaw) return Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Pilih Kelas dan JK terlebih dahulu!', confirmButtonColor: '#008080' }); 
       if(!mpl) return Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Pilih Mapel terlebih dahulu!', confirmButtonColor: '#008080' }); 
       if(!namaGuru) return Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Pilih Nama Guru terlebih dahulu!', confirmButtonColor: '#008080' }); 
+
+      if(!kategoriNilai) {
+        selectKategoriEl.style.border = "2px solid red";
+        selectKategoriEl.style.backgroundColor = "#ffe6e6";
+        return Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Harap pilih Kategori (Lisan, Tulis, atau Praktek) terlebih dahulu!', confirmButtonColor: '#008080' });
+      }
 
       if(!judulTugas) { 
         inputJudulEl.style.border = "2px solid red";
@@ -6969,6 +6989,7 @@
             const inps = document.querySelectorAll('.input-nilai-kbm');
             const kls = document.getElementById('nilaiFilterKelas').value;
             const mpl = document.getElementById('nilaiMapel').value;
+            const kategoriNilai = document.getElementById('nilaiKategori').value;
             const judulTugas = document.getElementById('nilaiJudulTugas').value;
             const akademikRef = ref(dbKBM, `akademik/${window.currentTipeNilai}`);
 
@@ -6987,6 +7008,7 @@
                 skor: skor, 
                 mapel: mpl,
                 nama_guru: namaGuru, 
+                kategori: kategoriNilai,
                 nama_tugas: judulTugas,
                 timestamp: new Date().getTime()
               }));
