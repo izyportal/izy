@@ -652,6 +652,19 @@
     /* Ujian: layar penuh, sembunyikan semua elemen lain */
     #panelUjian:not(.hidden) { position: fixed !important; inset: 0 !important; z-index: 999 !important; height: 100vh !important; background: #0f766e !important; margin: 0 !important; padding: 0 !important; }
     #panelUjian .ujian-fullscreen-frame { width: 100% !important; height: 100% !important; display: block !important; border: 0 !important; }
+
+    /* === GALERI DOKUMENTASI PESANTREN === */
+    #panelGaleri.hidden, #galeriLightbox.hidden, #modalGaleriAlbum.hidden, #modalGaleriTambahFoto.hidden, #modalGaleriEditFoto.hidden {
+      display: none !important;
+    }
+    .galeri-album-card {
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+    .galeri-album-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px -8px rgba(15, 118, 110, 0.18);
+      border-color: #14b8a6;
+    }
   </style>
 </head>
 <body>
@@ -902,6 +915,10 @@
           <button type="button" id="tabBtnDaftar" onclick="pindahMenu('daftar')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-900 border border-violet-200 text-[11px] font-extrabold uppercase tracking-wider transition cursor-pointer shadow-sm">
             <i class="fa-solid fa-user-plus text-violet-600"></i>
             <span>Daftar</span>
+          </button>
+          <button type="button" id="tabBtnGaleri" onclick="pindahMenu('galeri')" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-cyan-50 hover:bg-cyan-100 text-cyan-900 border border-cyan-200 text-[11px] font-extrabold uppercase tracking-wider transition cursor-pointer shadow-sm">
+            <i class="fa-solid fa-images text-cyan-600"></i>
+            <span>Galeri</span>
           </button>
         </div>
         <div class="flex items-center gap-3">
@@ -3202,6 +3219,293 @@
           }
           </script>
 
+          <!-- ========================================== -->
+          <!-- 12G. PANEL: GALERI DOKUMENTASI PESANTREN   -->
+          <!-- ========================================== -->
+          <section id="panelGaleri" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-4.5rem)]">
+              <!-- Header Panel Galeri -->
+              <div class="bg-gradient-to-r from-teal-950 via-teal-800 to-cyan-800 px-5 py-2.5 flex flex-wrap justify-between items-center gap-2 text-white shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-8 h-8 rounded-lg bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-amber-300 shrink-0">
+                    <i class="fa-solid fa-images text-sm"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <h2 class="text-xs font-black tracking-widest uppercase truncate">Galeri Dokumentasi Pesantren</h2>
+                    <p class="text-[9px] text-teal-100 font-medium truncate">Arsip Album Foto Kegiatan Pondok Pesantren Ibnul Jauzy</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" id="btnGaleriModeEdit" onclick="galeriAktifkanModeEdit()" class="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white border border-white/25 text-[10px] font-extrabold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5" title="Masuk Mode Edit (Khusus Ust. Nur Walad)">
+                    <i class="fa-solid fa-pen-to-square text-amber-300"></i>
+                    <span>Mode Edit</span>
+                  </button>
+                  <button type="button" id="btnGaleriAdminTambah" onclick="galeriAksiAdminAlbum()" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 text-[10px] font-black uppercase tracking-wider transition shadow cursor-pointer flex items-center gap-1.5">
+                    <i id="iconGaleriAdminBtn" class="fa-solid fa-lock"></i>
+                    <span id="lblGaleriAdminBtn">Tambah Album</span>
+                  </button>
+                  <button type="button" id="btnGaleriKunciAdmin" onclick="galeriKunciSesiAdmin()" class="hidden px-2.5 py-1.5 rounded-lg bg-rose-500/80 hover:bg-rose-600 text-white border border-rose-300/30 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1" title="Selesai Edit & Kunci Kembali">
+                    <i class="fa-solid fa-lock-open text-amber-200"></i>
+                    <span>Selesai Edit</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Bar Status Mode Edit (hanya tampil setelah login password Ust. Nur Walad) -->
+              <div id="galeriAdminStatusBar" class="hidden bg-emerald-50 border-b border-emerald-200 px-4 py-1.5 flex items-center justify-between gap-2 text-[10px] text-emerald-900 shrink-0">
+                <div class="flex items-center gap-1.5 font-bold truncate">
+                  <i class="fa-solid fa-circle-check text-emerald-600 shrink-0"></i>
+                  <span class="truncate">Mode Edit Aktif (Ust. Nur Walad) — Anda dapat mengedit, menambah, dan menghapus album serta catatan/caption foto.</span>
+                </div>
+                <span class="shrink-0 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black uppercase tracking-wider">Admin Aktif</span>
+              </div>
+
+              <!-- VIEW 1: DAFTAR ALBUM -->
+              <div id="galeriAlbumsView" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-slate-50/60">
+                <!-- Toolbar Filter & Pencarian -->
+                <div class="px-4 py-2.5 bg-white border-b border-slate-200 flex flex-wrap items-center gap-2 shrink-0">
+                  <div class="relative flex-1 min-w-[180px]">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="galeriSearchInput" oninput="renderGaleriAlbums()" placeholder="Cari judul album atau kegiatan..." class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white text-xs font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500">
+                  </div>
+                  <select id="galeriFilterKategori" onchange="renderGaleriAlbums()" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 outline-none focus:border-teal-500 cursor-pointer">
+                    <option value="">Semua Kategori</option>
+                    <option value="Kegiatan Santri">Kegiatan Santri</option>
+                    <option value="Tahfizh Al-Qur'an">Tahfizh Al-Qur'an</option>
+                    <option value="KBM & Akademik">KBM &amp; Akademik</option>
+                    <option value="Acara Besar">Acara Besar</option>
+                    <option value="Asrama & Pengasuhan">Asrama &amp; Pengasuhan</option>
+                    <option value="Fasilitas & Lingkungan">Fasilitas &amp; Lingkungan</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                  <span id="galeriStatsInfo" class="text-[10px] font-extrabold text-teal-800 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-lg uppercase tracking-wider ml-auto">0 Album &bull; 0 Foto</span>
+                </div>
+
+                <!-- Grid Kartu Album -->
+                <div class="flex-1 overflow-y-auto p-4">
+                  <div id="galeriLoading" class="py-16 text-center text-teal-700 font-bold text-xs">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block"></i>
+                    Memuat album dokumentasi pesantren...
+                  </div>
+                  <div id="galeriAlbumGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                  <div id="galeriEmptyState" class="hidden max-w-md mx-auto my-10 bg-white border border-dashed border-slate-300 rounded-2xl p-8 text-center shadow-sm">
+                    <div class="w-14 h-14 rounded-2xl bg-teal-50 border border-teal-100 text-teal-700 flex items-center justify-center text-2xl mx-auto mb-3">
+                      <i class="fa-solid fa-photo-film"></i>
+                    </div>
+                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide mb-1">Belum Ada Album Dokumentasi</h3>
+                    <p class="text-[11px] text-slate-500 leading-relaxed mb-4">Album foto kegiatan Pondok Pesantren Ibnul Jauzy akan tampil rapi di sini. Klik tombol di bawah untuk mulai menambahkan album &amp; link foto.</p>
+                    <button type="button" onclick="galeriAksiAdminAlbum()" class="px-4 py-2 rounded-lg bg-teal-800 hover:bg-teal-900 text-white text-[10px] font-black uppercase tracking-wider shadow transition cursor-pointer inline-flex items-center gap-1.5">
+                      <i class="fa-solid fa-lock text-amber-300"></i> Buat Album Pertama (Ust. Nur Walad)
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIEW 2: ISI ALBUM (GRID FOTO) -->
+              <div id="galeriDetailView" class="hidden flex-1 flex-col min-h-0 overflow-hidden bg-slate-50/60">
+                <!-- Header Detail Album -->
+                <div class="px-4 py-3 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <button type="button" onclick="galeriKembaliKeAlbum()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 shrink-0">
+                      <i class="fa-solid fa-arrow-left"></i> Album
+                    </button>
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <h3 id="galeriDetailJudul" class="text-sm font-black text-teal-950 uppercase tracking-wide truncate">Judul Album</h3>
+                        <span id="galeriDetailKategori" class="px-2 py-0.5 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[9px] font-bold uppercase">Kategori</span>
+                      </div>
+                      <p id="galeriDetailMeta" class="text-[10px] text-slate-500 font-medium truncate mt-0.5">-</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <button type="button" onclick="galeriAksiTambahFoto()" class="px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-[10px] font-extrabold uppercase tracking-wider shadow-sm transition cursor-pointer flex items-center gap-1.5">
+                      <i class="fa-solid fa-plus"></i> Tambah Link Foto
+                    </button>
+                    <button type="button" id="btnGaleriEditAlbumDetail" onclick="galeriEditAlbumAktif()" class="hidden px-2.5 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer inline-flex items-center gap-1" title="Edit Info Album">
+                      <i class="fa-solid fa-pen-to-square"></i> Edit Album
+                    </button>
+                    <button type="button" id="btnGaleriHapusAlbumDetail" onclick="galeriHapusAlbumAktif()" class="hidden px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer" title="Hapus Album">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Deskripsi Album (jika ada) -->
+                <div id="galeriDetailDeskripsiBox" class="hidden px-4 py-2 bg-teal-50/50 border-b border-teal-100 text-[11px] text-slate-600 font-medium shrink-0"></div>
+
+                <!-- Grid Foto dalam Album -->
+                <div class="flex-1 overflow-y-auto p-4">
+                  <div id="galeriPhotoGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5"></div>
+                  <div id="galeriPhotoEmpty" class="hidden max-w-sm mx-auto my-10 bg-white border border-dashed border-slate-300 rounded-xl p-6 text-center">
+                    <i class="fa-regular fa-image text-3xl text-slate-300 mb-2 block"></i>
+                    <p class="text-xs font-bold text-slate-500 mb-3">Belum ada foto di dalam album ini.</p>
+                    <button type="button" onclick="galeriAksiTambahFoto()" class="px-3.5 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-[10px] font-bold uppercase tracking-wider transition cursor-pointer">
+                      <i class="fa-solid fa-plus mr-1"></i> Tempel Link Foto
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Modal Admin: Buat / Edit Album Galeri -->
+          <div id="modalGaleriAlbum" class="hidden fixed inset-0 z-[140] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this)galeriTutupModalAlbum()">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200">
+              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-3 flex items-center justify-between text-white">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-folder-plus text-amber-300"></i>
+                  <h3 id="modalGaleriAlbumTitle" class="text-xs font-black uppercase tracking-widest">Buat Album Dokumentasi Baru</h3>
+                </div>
+                <button type="button" onclick="galeriTutupModalAlbum()" class="w-7 h-7 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center transition cursor-pointer">&times;</button>
+              </div>
+              <form id="formGaleriAlbum" class="p-5 space-y-3">
+                <input type="hidden" id="galeriEditAlbumId" value="">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Judul Album <span class="text-rose-500">*</span></label>
+                  <input type="text" id="galeriInputJudul" required placeholder="Contoh: Wisuda Tahfizh Angkatan IV" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-bold text-slate-800 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tanggal Kegiatan</label>
+                    <input type="date" id="galeriInputTanggal" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-bold text-slate-700 outline-none focus:border-teal-600">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Kategori</label>
+                    <select id="galeriInputKategori" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-bold text-slate-700 bg-white outline-none focus:border-teal-600">
+                      <option value="Kegiatan Santri">Kegiatan Santri</option>
+                      <option value="Tahfizh Al-Qur'an">Tahfizh Al-Qur'an</option>
+                      <option value="KBM & Akademik">KBM &amp; Akademik</option>
+                      <option value="Acara Besar">Acara Besar</option>
+                      <option value="Asrama & Pengasuhan">Asrama &amp; Pengasuhan</option>
+                      <option value="Fasilitas & Lingkungan">Fasilitas &amp; Lingkungan</option>
+                      <option value="Lainnya">Lainnya</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Deskripsi Singkat (Opsional)</label>
+                  <textarea id="galeriInputDeskripsi" rows="2" placeholder="Keterangan singkat tentang dokumentasi kegiatan ini..." class="w-full p-2 text-xs border border-slate-300 rounded-lg font-medium text-slate-700 outline-none focus:border-teal-600 resize-none"></textarea>
+                </div>
+                <div id="galeriInitialLinksWrap">
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tempel Link Foto Awal (Opsional — 1 link per baris)</label>
+                  <textarea id="galeriInputInitialLinks" rows="3" placeholder="https://i.postimg.cc/...&#10;https://i.ibb.co/...&#10;https://drive.google.com/file/d/.../view" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-mono text-slate-700 outline-none focus:border-teal-600 resize-y"></textarea>
+                  <p class="text-[9px] text-slate-400 mt-1"><i class="fa-solid fa-circle-info text-teal-600 mr-1"></i>Mendukung link gambar langsung (Postimg, ImgBB, dll.) maupun link berbagi Google Drive (otomatis dikonversi).</p>
+                </div>
+                <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                  <button type="button" onclick="galeriTutupModalAlbum()" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer">Batal</button>
+                  <button type="submit" id="btnGaleriSimpanAlbum" class="flex-1 py-2 rounded-lg bg-teal-800 hover:bg-teal-900 text-white text-[10px] font-black uppercase tracking-wider shadow transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Album
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Modal Admin: Tambah Link Foto ke Album -->
+          <div id="modalGaleriTambahFoto" class="hidden fixed inset-0 z-[140] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this)galeriTutupModalFoto()">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200">
+              <div class="bg-gradient-to-r from-teal-900 to-cyan-800 px-5 py-3 flex items-center justify-between text-white">
+                <div class="flex items-center gap-2 min-w-0">
+                  <i class="fa-solid fa-link text-amber-300"></i>
+                  <div class="min-w-0">
+                    <h3 class="text-xs font-black uppercase tracking-widest">Tempel Link Foto ke Album</h3>
+                    <p id="galeriTambahFotoAlbumNama" class="text-[9px] text-teal-100 truncate">-</p>
+                  </div>
+                </div>
+                <button type="button" onclick="galeriTutupModalFoto()" class="w-7 h-7 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center transition cursor-pointer">&times;</button>
+              </div>
+              <form id="formGaleriTambahFoto" class="p-5 space-y-3">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase">Daftar Link Foto (1 link per baris) <span class="text-rose-500">*</span></label>
+                    <span id="galeriLinkCountBadge" class="text-[9px] font-extrabold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">0 link</span>
+                  </div>
+                  <textarea id="galeriInputFotoLinks" rows="5" required oninput="galeriUpdateLinkCounter()" placeholder="Tempel satu atau banyak link foto di sini (pisahkan dengan baris baru / Enter)...&#10;https://i.postimg.cc/...&#10;https://drive.google.com/file/d/.../view" class="w-full p-2.5 text-xs border border-slate-300 rounded-lg font-mono text-slate-700 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 resize-y"></textarea>
+                  <p class="text-[9px] text-slate-400 mt-1"><i class="fa-solid fa-wand-magic-sparkles text-teal-600 mr-1"></i>Link Google Drive (pastikan akses "Siapa saja yang memiliki link") otomatis dikonversi agar langsung tampil.</p>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Keterangan / Caption Foto (Opsional)</label>
+                  <input type="text" id="galeriInputFotoCaption" placeholder="Contoh: Suasana pembukaan kegiatan di aula pesantren" class="w-full p-2 text-xs border border-slate-300 rounded-lg font-semibold text-slate-700 outline-none focus:border-teal-600">
+                </div>
+                <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                  <button type="button" onclick="galeriTutupModalFoto()" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer">Batal</button>
+                  <button type="submit" id="btnGaleriSimpanFoto" class="flex-1 py-2 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-[10px] font-black uppercase tracking-wider shadow transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Tambahkan ke Album
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Modal Admin: Edit Catatan / Caption & Link Foto -->
+          <div id="modalGaleriEditFoto" class="hidden fixed inset-0 z-[190] bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this)galeriTutupModalEditFoto()">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
+              <div class="bg-gradient-to-r from-sky-800 to-teal-700 px-5 py-3 flex items-center justify-between text-white">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-pen-to-square text-amber-300"></i>
+                  <h3 class="text-xs font-black uppercase tracking-widest">Edit Foto &amp; Catatan</h3>
+                </div>
+                <button type="button" onclick="galeriTutupModalEditFoto()" class="w-7 h-7 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center transition cursor-pointer">&times;</button>
+              </div>
+              <form id="formGaleriEditFoto" class="p-5 space-y-3">
+                <input type="hidden" id="galeriEditFotoAlbumId" value="">
+                <input type="hidden" id="galeriEditFotoId" value="">
+                <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-900 aspect-[16/9] flex items-center justify-center">
+                  <img id="galeriEditFotoPreview" src="" alt="Preview Foto" referrerpolicy="no-referrer" class="w-full h-full object-contain">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Catatan / Caption Foto</label>
+                  <textarea id="galeriEditFotoCaption" rows="3" placeholder="Tuliskan keterangan atau catatan untuk foto ini..." class="w-full p-2.5 text-xs border border-slate-300 rounded-lg font-semibold text-slate-700 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 resize-y"></textarea>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Link Foto (URL) <span class="text-rose-500">*</span></label>
+                  <input type="text" id="galeriEditFotoUrl" required oninput="galeriPreviewEditFotoUrl()" placeholder="https://..." class="w-full p-2 text-xs border border-slate-300 rounded-lg font-mono text-slate-700 outline-none focus:border-teal-600">
+                </div>
+                <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                  <button type="button" onclick="galeriTutupModalEditFoto()" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer">Batal</button>
+                  <button type="submit" id="btnGaleriSimpanEditFoto" class="flex-1 py-2 rounded-lg bg-teal-800 hover:bg-teal-900 text-white text-[10px] font-black uppercase tracking-wider shadow transition cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Lightbox Layar Penuh -->
+          <div id="galeriLightbox" class="hidden fixed inset-0 z-[180] bg-slate-950/95 backdrop-blur-md flex flex-col">
+            <!-- Top bar Lightbox -->
+            <div class="px-5 py-3 flex items-center justify-between text-white border-b border-white/10 shrink-0">
+              <div class="min-w-0">
+                <div id="galeriLbAlbum" class="text-xs font-black uppercase tracking-wider truncate">Album</div>
+                <div id="galeriLbCounter" class="text-[10px] text-teal-300 font-bold">1 / 1</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" id="btnGaleriLbEdit" onclick="galeriEditFotoDariLightbox()" class="hidden px-3 py-1.5 rounded-full bg-sky-600 hover:bg-sky-500 text-white text-[10px] font-bold uppercase tracking-wider transition cursor-pointer inline-flex items-center gap-1.5">
+                  <i class="fa-solid fa-pen-to-square"></i> Edit Catatan
+                </button>
+                <button type="button" onclick="galeriTutupLightbox()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-rose-500 text-white flex items-center justify-center text-base transition cursor-pointer" title="Tutup (Esc)">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+            <!-- Tengah: Foto + Navigasi -->
+            <div class="flex-1 relative flex items-center justify-center p-4 overflow-hidden">
+              <button type="button" onclick="galeriNavLightbox(-1)" class="absolute left-3 sm:left-5 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-teal-600 text-white flex items-center justify-center transition cursor-pointer shadow-lg" title="Foto Sebelumnya">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <div class="relative inline-flex items-center justify-center max-w-[90vw] max-h-[76vh] rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black/40">
+                <img id="galeriLbImg" src="" alt="Dokumentasi Pesantren" referrerpolicy="no-referrer" class="max-w-[90vw] max-h-[76vh] object-contain block">
+              </div>
+              <button type="button" onclick="galeriNavLightbox(1)" class="absolute right-3 sm:right-5 z-20 w-10 h-10 rounded-full bg-white/10 hover:bg-teal-600 text-white flex items-center justify-center transition cursor-pointer shadow-lg" title="Foto Berikutnya">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+            <!-- Bottom Caption -->
+            <div class="px-5 py-3 text-center border-t border-white/10 shrink-0">
+              <p id="galeriLbCaption" class="text-xs text-slate-200 font-medium"></p>
+            </div>
+          </div>
+
 <!-- 12C. PANEL: ROSTER & MAPEL KBM             -->
           <!-- ========================================== -->
           <section id="panelRosterMapel" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
@@ -4249,7 +4553,7 @@
       const panels = [
         'panelBeranda', 'panelInputSoal', 'panelDaftarSoal', 'panelSettingSoal',
         'panelSetoran', 'panelInputKbm', 'panelNilaiKbm', 'panelAbsenKbm', 'panelAbsenKst', 'panelAdab',
-        'panelRekapKbm', 'panelRekapTahfizh', 'panelRekapNilai', 'panelRekapAbsenKbm', 'panelRekapAdab', 'panelRekapKinerja', 'panelCekInputNilai', 'panelCekJurnal', 'panelRekapPrestasi', 'panelProfilData', 'panelRosterMapel', 'panelRankingKelas', 'panelKlasemenAdab', 'panelRekapTasmi', 'panelInputTasmi', 'panelCapaianTahfizh', 'panelBelumSetoran', 'panelDownload', 'panelInbox', 'panelUjian', 'panelKontrolUjian', 'panelKaldik', 'panelDaftar'
+        'panelRekapKbm', 'panelRekapTahfizh', 'panelRekapNilai', 'panelRekapAbsenKbm', 'panelRekapAdab', 'panelRekapKinerja', 'panelCekInputNilai', 'panelCekJurnal', 'panelRekapPrestasi', 'panelProfilData', 'panelRosterMapel', 'panelRankingKelas', 'panelKlasemenAdab', 'panelRekapTasmi', 'panelInputTasmi', 'panelCapaianTahfizh', 'panelBelumSetoran', 'panelDownload', 'panelInbox', 'panelUjian', 'panelKontrolUjian', 'panelKaldik', 'panelDaftar', 'panelGaleri'
       ];
       panels.forEach(p => {
         const el = document.getElementById(p);
@@ -4259,7 +4563,7 @@
       const tabs = [
         'tabBtnBeranda', 'tabBtnInputSoal', 'tabBtnDaftarSoal', 'tabBtnSettingSoal',
         'tabBtnSetoran', 'tabBtnInputKbm', 'tabBtnNilaiKbm', 'tabBtnAbsenKbm', 'tabBtnAbsenKst', 'tabBtnAdab',
-        'tabBtnRekapKbm', 'tabBtnRekapTahfizh', 'tabBtnRekapNilai', 'tabBtnRekapAbsenKbm', 'tabBtnRekapAdab', 'tabBtnRekapKinerja', 'tabBtnCekInputNilai', 'tabBtnCekJurnal', 'tabBtnRekapPrestasi', 'tabBtnProfilData', 'tabBtnRosterMapel', 'tabBtnRankingKelas', 'tabBtnKlasemenAdab', 'tabBtnRekapTasmi', 'tabBtnInputTasmi', 'tabBtnCapaianTahfizh', 'tabBtnBelumSetoran', 'tabBtnDownload', 'tabBtnInbox', 'tabBtnUjian', 'tabBtnKontrolUjian', 'tabBtnKaldik', 'tabBtnDaftar'
+        'tabBtnRekapKbm', 'tabBtnRekapTahfizh', 'tabBtnRekapNilai', 'tabBtnRekapAbsenKbm', 'tabBtnRekapAdab', 'tabBtnRekapKinerja', 'tabBtnCekInputNilai', 'tabBtnCekJurnal', 'tabBtnRekapPrestasi', 'tabBtnProfilData', 'tabBtnRosterMapel', 'tabBtnRankingKelas', 'tabBtnKlasemenAdab', 'tabBtnRekapTasmi', 'tabBtnInputTasmi', 'tabBtnCapaianTahfizh', 'tabBtnBelumSetoran', 'tabBtnDownload', 'tabBtnInbox', 'tabBtnUjian', 'tabBtnKontrolUjian', 'tabBtnKaldik', 'tabBtnDaftar', 'tabBtnGaleri'
       ];
       tabs.forEach(t => {
         const el = document.getElementById(t);
@@ -4279,6 +4583,11 @@
       if (btnKontrolReset) {
         btnKontrolReset.classList.remove('bg-sky-600', 'text-white', 'border-sky-600');
         btnKontrolReset.classList.add('bg-sky-50', 'text-sky-900', 'border-sky-200');
+      }
+      const btnGaleriReset = document.getElementById('tabBtnGaleri');
+      if (btnGaleriReset) {
+        btnGaleriReset.classList.remove('bg-cyan-700', 'text-white', 'border-cyan-700');
+        btnGaleriReset.classList.add('bg-cyan-50', 'text-cyan-900', 'border-cyan-200');
       }
 
       const mainScroll = document.getElementById('mainScrollArea');
@@ -4419,6 +4728,14 @@
         document.getElementById('panelDaftar').classList.remove('hidden');
         document.getElementById('tabBtnDaftar').classList.add('active');
         if (typeof window.muatDaftarSantriBaru === 'function') window.muatDaftarSantriBaru();
+      } else if (menu === 'galeri') {
+        document.getElementById('panelGaleri').classList.remove('hidden');
+        const btnGal = document.getElementById('tabBtnGaleri');
+        if (btnGal) {
+          btnGal.classList.remove('bg-cyan-50', 'text-cyan-900', 'border-cyan-200');
+          btnGal.classList.add('bg-cyan-700', 'text-white', 'border-cyan-700');
+        }
+        if (typeof window.muatGaleriPesantren === 'function') window.muatGaleriPesantren();
       }
       
       mainScroll.scrollTop = 0;
@@ -10754,7 +11071,7 @@ let inboxSesiAktifNamaID = "";
 
   <!-- PROTEKSI AKSES -->
   <script>
-    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('contextmenu', e => { if (e.target && e.target.closest && (e.target.closest('#panelGaleri') || e.target.closest('#galeriLightbox'))) return; e.preventDefault(); });
     document.onkeydown = function(e) {
       if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
         return false;
@@ -11914,6 +12231,753 @@ let inboxSesiAktifNamaID = "";
 
   // Jalankan inisialisasi awal
   setTimeout(() => { window.muatCekJurnal(); }, 400);
+})();
+</script>
+
+<script>
+/* ============================================================
+   MODUL GALERI DOKUMENTASI PESANTREN (ALBUM + EDIT FOTO/CAPTION + OTORISASI UST. NUR WALAD)
+   ============================================================ */
+(function() {
+  let _galeriAlbums = {};
+  let _galeriListenerAttached = false;
+  let _galeriAdminUnlocked = false;
+  let _galeriActiveAlbumId = null;
+  let _galeriLightboxPhotos = [];
+  let _galeriLightboxIndex = 0;
+
+  function escHtmlGal(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  function normalizePhotoUrl(raw) {
+    let url = String(raw || '').trim();
+    if (!url) return '';
+    if (!/^https?:\/\//i.test(url)) return '';
+    const mDrive1 = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (mDrive1 && mDrive1[1]) {
+      return 'https://lh3.googleusercontent.com/d/' + mDrive1[1];
+    }
+    const mDrive2 = url.match(/drive\.google\.com\/(?:open|uc)\?[^#]*id=([a-zA-Z0-9_-]+)/);
+    if (mDrive2 && mDrive2[1]) {
+      return 'https://lh3.googleusercontent.com/d/' + mDrive2[1];
+    }
+    return url;
+  }
+
+  function formatTanggalIndoGal(tglStr) {
+    if (!tglStr) return '-';
+    try {
+      const d = new Date(tglStr + (tglStr.length === 10 ? 'T00:00:00' : ''));
+      if (isNaN(d.getTime())) return tglStr;
+      return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch (e) { return tglStr; }
+  }
+
+  function getPhotosArray(album) {
+    if (!album || !album.photos) return [];
+    if (Array.isArray(album.photos)) {
+      return album.photos.map((p, idx) => ({ id: String(idx), ...p })).filter(p => p && p.url);
+    }
+    return Object.keys(album.photos).map(k => ({ id: k, ...(album.photos[k] || {}) }))
+      .filter(p => p && p.url)
+      .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+  }
+
+  function updateAdminUI() {
+    const iconBtn = document.getElementById('iconGaleriAdminBtn');
+    const lblBtn = document.getElementById('lblGaleriAdminBtn');
+    const btnModeEdit = document.getElementById('btnGaleriModeEdit');
+    const btnKunci = document.getElementById('btnGaleriKunciAdmin');
+    const statusBar = document.getElementById('galeriAdminStatusBar');
+    const btnEditDetail = document.getElementById('btnGaleriEditAlbumDetail');
+    const btnHapusDetail = document.getElementById('btnGaleriHapusAlbumDetail');
+    const btnLbEdit = document.getElementById('btnGaleriLbEdit');
+
+    if (_galeriAdminUnlocked) {
+      if (iconBtn) iconBtn.className = 'fa-solid fa-folder-plus';
+      if (lblBtn) lblBtn.textContent = 'Buat Album Baru';
+      if (btnModeEdit) btnModeEdit.classList.add('hidden');
+      if (btnKunci) btnKunci.classList.remove('hidden');
+      if (statusBar) statusBar.classList.remove('hidden');
+      if (btnEditDetail) btnEditDetail.classList.remove('hidden');
+      if (btnHapusDetail) btnHapusDetail.classList.remove('hidden');
+      if (btnLbEdit) btnLbEdit.classList.remove('hidden');
+    } else {
+      if (iconBtn) iconBtn.className = 'fa-solid fa-lock';
+      if (lblBtn) lblBtn.textContent = 'Tambah Album';
+      if (btnModeEdit) btnModeEdit.classList.remove('hidden');
+      if (btnKunci) btnKunci.classList.add('hidden');
+      if (statusBar) statusBar.classList.add('hidden');
+      if (btnEditDetail) btnEditDetail.classList.add('hidden');
+      if (btnHapusDetail) btnHapusDetail.classList.add('hidden');
+      if (btnLbEdit) btnLbEdit.classList.add('hidden');
+    }
+  }
+
+  // Otorisasi Password KHUSUS Ust. Nur Walad (sinkron dengan password_staf di Firebase via WORKER_PROXY_URL)
+  async function verifikasiAdminNurWalad() {
+    if (_galeriAdminUnlocked) return true;
+    const { value: ok } = await Swal.fire({
+      title: 'Otorisasi Khusus Ust. Nur Walad',
+      text: 'Masukkan password Ust. Nur Walad untuk menambah atau mengedit album & foto.',
+      icon: 'lock',
+      input: 'password',
+      inputPlaceholder: 'Masukkan password Ust. Nur Walad...',
+      inputAttributes: { autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' },
+      showCancelButton: true,
+      confirmButtonText: 'Verifikasi',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#0f766e',
+      showLoaderOnConfirm: true,
+      preConfirm: async (pwd) => {
+        const inputClean = String(pwd || '').trim();
+        if (!inputClean) {
+          Swal.showValidationMessage('Password wajib diisi.');
+          return false;
+        }
+        try {
+          const allowed = new Set();
+          const proxyUrl = window.WORKER_PROXY_URL || 'https://proxy-biodata-jurnal.nurwalad88.workers.dev/';
+          const resp = await fetch(proxyUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ db: 'biodata', action: 'get', path: 'password_staf' })
+          }).then(r => r.json());
+          const obj = (resp && resp.data) || {};
+          const candidateKeys = [
+            'Ust_ Nur Walad, S_Pd_I_, C_PQI_, C_EQL_',
+            'UUst_ Nur Walad, S_Pd_I_, C_PQI_, C_EQL_',
+            'Ust. Nur Walad, S.Pd.I., C.PQI., C.EQL.'
+          ];
+          candidateKeys.forEach(k => {
+            const v = obj[k];
+            if (typeof v === 'object' && v !== null && v.password) allowed.add(String(v.password).trim());
+            else if (v !== undefined && v !== null && String(v).trim() !== '') allowed.add(String(v).trim());
+          });
+          Object.keys(obj).forEach(k => {
+            const v = obj[k];
+            const namaAsli = (v && typeof v === 'object' && v.namaAsli) ? String(v.namaAsli) : '';
+            if (k.toLowerCase().includes('nur walad') || namaAsli.toLowerCase().includes('nur walad')) {
+              if (typeof v === 'object' && v !== null && v.password) allowed.add(String(v.password).trim());
+              else if (typeof v === 'string' && v.trim() !== '') allowed.add(v.trim());
+            }
+          });
+          if (allowed.size === 0) {
+            Swal.showValidationMessage('Data password Ust. Nur Walad belum tersedia di server.');
+            return false;
+          }
+          if (!allowed.has(inputClean)) {
+            Swal.showValidationMessage('Password salah! Hanya Ust. Nur Walad yang berwenang mengelola galeri.');
+            return false;
+          }
+          return true;
+        } catch (err) {
+          Swal.showValidationMessage('Gagal memeriksa password: ' + (err && err.message ? err.message : err));
+          return false;
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    });
+
+    if (ok) {
+      _galeriAdminUnlocked = true;
+      updateAdminUI();
+      renderGaleriAlbums();
+      if (_galeriActiveAlbumId) renderGaleriDetail(_galeriActiveAlbumId);
+      return true;
+    }
+    return false;
+  }
+
+  window.galeriAktifkanModeEdit = async function() {
+    const ok = await verifikasiAdminNurWalad();
+    if (ok) {
+      Swal.fire({ icon: 'success', title: 'Mode Edit Aktif', text: 'Tombol edit kini tampil di setiap album dan foto.', timer: 1600, showConfirmButton: false });
+    }
+  };
+
+  window.galeriKunciSesiAdmin = function() {
+    _galeriAdminUnlocked = false;
+    updateAdminUI();
+    renderGaleriAlbums();
+    if (_galeriActiveAlbumId) renderGaleriDetail(_galeriActiveAlbumId);
+    Swal.fire({ icon: 'info', title: 'Mode Edit Ditutup', timer: 1400, showConfirmButton: false });
+  };
+
+  window.muatGaleriPesantren = function() {
+    updateAdminUI();
+    if (_galeriListenerAttached) {
+      renderGaleriAlbums();
+      if (_galeriActiveAlbumId) renderGaleriDetail(_galeriActiveAlbumId);
+      return;
+    }
+    _galeriListenerAttached = true;
+
+    try {
+      const cached = JSON.parse(localStorage.getItem('izy_galeri_cache') || 'null');
+      if (cached && typeof cached === 'object') {
+        _galeriAlbums = cached;
+        renderGaleriAlbums();
+      }
+    } catch (e) {}
+
+    if (typeof dbKontrol !== 'undefined' && dbKontrol) {
+      dbKontrol.ref('galeri_pesantren').on('value', function(snap) {
+        _galeriAlbums = (snap && snap.val()) ? snap.val() : {};
+        try { localStorage.setItem('izy_galeri_cache', JSON.stringify(_galeriAlbums)); } catch (e) {}
+        const loading = document.getElementById('galeriLoading');
+        if (loading) loading.classList.add('hidden');
+        renderGaleriAlbums();
+        if (_galeriActiveAlbumId) {
+          if (_galeriAlbums[_galeriActiveAlbumId]) {
+            renderGaleriDetail(_galeriActiveAlbumId);
+            const lb = document.getElementById('galeriLightbox');
+            if (lb && !lb.classList.contains('hidden')) updateLightboxUI();
+          } else {
+            window.galeriKembaliKeAlbum();
+          }
+        }
+      }, function(err) {
+        console.error('Gagal memuat galeri:', err);
+        const loading = document.getElementById('galeriLoading');
+        if (loading) loading.classList.add('hidden');
+        renderGaleriAlbums();
+      });
+    } else {
+      const loading = document.getElementById('galeriLoading');
+      if (loading) loading.classList.add('hidden');
+      renderGaleriAlbums();
+    }
+  };
+
+  window.renderGaleriAlbums = function() {
+    const grid = document.getElementById('galeriAlbumGrid');
+    const empty = document.getElementById('galeriEmptyState');
+    const loading = document.getElementById('galeriLoading');
+    const statsEl = document.getElementById('galeriStatsInfo');
+    if (!grid) return;
+    if (loading) loading.classList.add('hidden');
+
+    const keyword = ((document.getElementById('galeriSearchInput') || {}).value || '').trim().toLowerCase();
+    const kategori = ((document.getElementById('galeriFilterKategori') || {}).value || '').trim();
+
+    const allList = Object.keys(_galeriAlbums).map(id => ({ id, ...(_galeriAlbums[id] || {}) }));
+    allList.sort((a, b) => {
+      const tA = a.tanggal || '';
+      const tB = b.tanggal || '';
+      if (tB !== tA) return tB.localeCompare(tA);
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+
+    const totalFotoAll = allList.reduce((acc, alb) => acc + getPhotosArray(alb).length, 0);
+    if (statsEl) statsEl.textContent = `${allList.length} Album • ${totalFotoAll} Foto`;
+
+    const filtered = allList.filter(alb => {
+      const matchKat = !kategori || alb.kategori === kategori;
+      const matchKey = !keyword ||
+        String(alb.judul || '').toLowerCase().includes(keyword) ||
+        String(alb.deskripsi || '').toLowerCase().includes(keyword) ||
+        String(alb.kategori || '').toLowerCase().includes(keyword);
+      return matchKat && matchKey;
+    });
+
+    if (filtered.length === 0) {
+      grid.classList.add('hidden');
+      grid.innerHTML = '';
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+
+    if (empty) empty.classList.add('hidden');
+    grid.classList.remove('hidden');
+
+    grid.innerHTML = filtered.map(alb => {
+      const photos = getPhotosArray(alb);
+      const coverUrl = alb.coverUrl || (photos[0] ? photos[0].url : '');
+      const safeId = escHtmlGal(alb.id);
+      const coverHtml = coverUrl
+        ? `<img src="${escHtmlGal(coverUrl)}" alt="${escHtmlGal(alb.judul)}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden');">
+           <div class="hidden w-full h-full bg-gradient-to-br from-teal-800 to-cyan-900 flex items-center justify-center text-white/40 text-3xl"><i class="fa-solid fa-images"></i></div>`
+        : `<div class="w-full h-full bg-gradient-to-br from-teal-900 via-teal-700 to-emerald-600 flex flex-col items-center justify-center text-white/75 gap-1.5">
+             <i class="fa-solid fa-camera-retro text-3xl text-amber-300/80"></i>
+             <span class="text-[9px] font-bold uppercase tracking-widest opacity-80">Belum Ada Foto</span>
+           </div>`;
+
+      const adminBtns = _galeriAdminUnlocked ? `
+        <div class="flex items-center gap-1" onclick="event.stopPropagation()">
+          <button type="button" onclick="galeriBukaModalFoto('${safeId}')" class="px-2 h-7 rounded-lg bg-teal-50 hover:bg-teal-600 text-teal-700 hover:text-white flex items-center justify-center gap-1 text-[10px] font-bold transition cursor-pointer" title="Tambah Foto">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+          <button type="button" onclick="galeriBukaModalEditAlbum('${safeId}')" class="px-2 h-7 rounded-lg bg-sky-50 hover:bg-sky-600 text-sky-700 hover:text-white flex items-center justify-center gap-1 text-[10px] font-bold transition cursor-pointer" title="Edit Album">
+            <i class="fa-solid fa-pen-to-square"></i> Edit
+          </button>
+          <button type="button" onclick="galeriHapusAlbum('${safeId}')" class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center text-[10px] transition cursor-pointer" title="Hapus Album">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>` : '';
+
+      return `
+        <div onclick="galeriBukaAlbum('${safeId}')" class="galeri-album-card group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm cursor-pointer flex flex-col">
+          <div class="relative aspect-[16/10] bg-slate-900 overflow-hidden">
+            ${coverHtml}
+            <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-[11] pointer-events-none"></div>
+            <span class="absolute top-2.5 left-2.5 z-[12] px-2 py-0.5 rounded-full bg-teal-950/80 backdrop-blur-sm border border-white/20 text-amber-300 text-[9px] font-extrabold uppercase tracking-wider">
+              ${escHtmlGal(alb.kategori || 'Kegiatan')}
+            </span>
+            <span class="absolute top-2.5 right-2.5 z-[12] px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-sm text-white text-[9px] font-bold flex items-center gap-1">
+              <i class="fa-regular fa-image text-teal-300"></i> ${photos.length} Foto
+            </span>
+          </div>
+          <div class="p-3.5 flex-1 flex flex-col justify-between gap-2">
+            <div>
+              <div class="text-[9px] font-bold text-teal-700 uppercase tracking-wider mb-0.5">
+                <i class="fa-regular fa-calendar mr-1"></i>${formatTanggalIndoGal(alb.tanggal)}
+              </div>
+              <h3 class="text-xs font-black text-slate-800 uppercase tracking-wide leading-snug line-clamp-2 group-hover:text-teal-800 transition">${escHtmlGal(alb.judul || 'Tanpa Judul')}</h3>
+              ${alb.deskripsi ? `<p class="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">${escHtmlGal(alb.deskripsi)}</p>` : ''}
+            </div>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+              <span class="text-[10px] font-extrabold text-teal-700 group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
+                Buka Album <i class="fa-solid fa-arrow-right text-[9px]"></i>
+              </span>
+              ${adminBtns}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  window.galeriBukaAlbum = function(albumId) {
+    if (!_galeriAlbums[albumId]) return;
+    _galeriActiveAlbumId = albumId;
+    document.getElementById('galeriAlbumsView').classList.add('hidden');
+    const detail = document.getElementById('galeriDetailView');
+    detail.classList.remove('hidden');
+    detail.classList.add('flex');
+    renderGaleriDetail(albumId);
+  };
+
+  window.galeriKembaliKeAlbum = function() {
+    _galeriActiveAlbumId = null;
+    const detail = document.getElementById('galeriDetailView');
+    detail.classList.add('hidden');
+    detail.classList.remove('flex');
+    document.getElementById('galeriAlbumsView').classList.remove('hidden');
+    renderGaleriAlbums();
+  };
+
+  function renderGaleriDetail(albumId) {
+    const alb = _galeriAlbums[albumId];
+    if (!alb) return;
+    const photos = getPhotosArray(alb);
+
+    document.getElementById('galeriDetailJudul').textContent = alb.judul || 'Tanpa Judul';
+    document.getElementById('galeriDetailKategori').textContent = alb.kategori || 'Kegiatan';
+    document.getElementById('galeriDetailMeta').textContent = `${formatTanggalIndoGal(alb.tanggal)} • ${photos.length} Foto Dokumentasi`;
+
+    const descBox = document.getElementById('galeriDetailDeskripsiBox');
+    if (alb.deskripsi) {
+      descBox.textContent = alb.deskripsi;
+      descBox.classList.remove('hidden');
+    } else {
+      descBox.classList.add('hidden');
+    }
+
+    updateAdminUI();
+
+    const grid = document.getElementById('galeriPhotoGrid');
+    const empty = document.getElementById('galeriPhotoEmpty');
+    if (photos.length === 0) {
+      grid.innerHTML = '';
+      grid.classList.add('hidden');
+      empty.classList.remove('hidden');
+      return;
+    }
+
+    empty.classList.add('hidden');
+    grid.classList.remove('hidden');
+    _galeriLightboxPhotos = photos;
+
+    grid.innerHTML = photos.map((p, idx) => {
+      const safePid = escHtmlGal(p.id);
+      const safeAid = escHtmlGal(albumId);
+      const isCover = alb.coverUrl === p.url;
+      const adminBar = _galeriAdminUnlocked ? `
+        <div class="absolute top-2 right-2 z-20 flex items-center gap-1" onclick="event.stopPropagation()">
+          <button type="button" onclick="galeriBukaModalEditFoto('${safeAid}','${safePid}')" class="px-2 h-7 rounded-full bg-sky-600/90 hover:bg-sky-500 text-white flex items-center justify-center gap-1 text-[10px] font-bold transition cursor-pointer shadow" title="Edit Catatan / Link Foto">
+            <i class="fa-solid fa-pen-to-square"></i> Edit
+          </button>
+          <button type="button" onclick="galeriSetCover('${safeAid}','${safePid}')" class="w-7 h-7 rounded-full ${isCover ? 'bg-amber-400 text-slate-950' : 'bg-black/60 hover:bg-amber-400 text-white hover:text-slate-950'} flex items-center justify-center text-[10px] transition cursor-pointer shadow" title="${isCover ? 'Cover Album Aktif' : 'Jadikan Cover Album'}">
+            <i class="fa-solid fa-star"></i>
+          </button>
+          <button type="button" onclick="galeriHapusFoto('${safeAid}','${safePid}')" class="w-7 h-7 rounded-full bg-black/60 hover:bg-rose-600 text-white flex items-center justify-center text-[10px] transition cursor-pointer shadow" title="Hapus Foto">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>` : '';
+
+      const captionFooter = p.caption
+        ? `<div class="px-2.5 py-2 text-[10px] font-semibold text-slate-700 bg-white border-t border-slate-100 flex items-center justify-between gap-2">
+             <span class="truncate">${escHtmlGal(p.caption)}</span>
+             ${_galeriAdminUnlocked ? `<button type="button" onclick="event.stopPropagation();galeriBukaModalEditFoto('${safeAid}','${safePid}')" class="shrink-0 text-sky-600 hover:text-sky-800 text-[10px] cursor-pointer" title="Edit Catatan"><i class="fa-solid fa-pen"></i></button>` : ''}
+           </div>`
+        : (_galeriAdminUnlocked
+            ? `<div class="px-2.5 py-1.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                 <span class="text-[9px] italic text-slate-400">Belum ada catatan</span>
+                 <button type="button" onclick="event.stopPropagation();galeriBukaModalEditFoto('${safeAid}','${safePid}')" class="text-[9px] font-bold text-sky-700 hover:underline cursor-pointer">+ Tambah catatan</button>
+               </div>`
+            : '');
+
+      return `
+        <div onclick="galeriBukaLightbox(${idx})" class="group bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-teal-400 transition cursor-pointer flex flex-col">
+          <div class="relative aspect-[4/3] bg-slate-900 overflow-hidden">
+            <img src="${escHtmlGal(p.url)}" alt="${escHtmlGal(p.caption || alb.judul)}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.style.display='none';this.nextElementSibling.classList.remove('hidden');">
+            <div class="hidden w-full h-full bg-slate-800 flex flex-col items-center justify-center text-slate-400 text-[10px] p-3 text-center">
+              <i class="fa-regular fa-image text-xl mb-1"></i>
+              <span>Link foto tidak dapat dimuat</span>
+            </div>
+            ${adminBar}
+            <div class="absolute bottom-2 right-2 z-[12] w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition pointer-events-none">
+              <i class="fa-solid fa-expand"></i>
+            </div>
+          </div>
+          ${captionFooter}
+        </div>
+      `;
+    }).join('');
+  }
+
+  // === AKSI ADMIN (DILINDUNGI PASSWORD UST. NUR WALAD) ===
+  window.galeriAksiAdminAlbum = async function() {
+    const ok = await verifikasiAdminNurWalad();
+    if (!ok) return;
+    document.getElementById('galeriEditAlbumId').value = '';
+    document.getElementById('modalGaleriAlbumTitle').textContent = 'Buat Album Dokumentasi Baru';
+    document.getElementById('galeriInputJudul').value = '';
+    document.getElementById('galeriInputTanggal').value = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
+    document.getElementById('galeriInputKategori').value = 'Kegiatan Santri';
+    document.getElementById('galeriInputDeskripsi').value = '';
+    document.getElementById('galeriInputInitialLinks').value = '';
+    document.getElementById('galeriInitialLinksWrap').classList.remove('hidden');
+    document.getElementById('modalGaleriAlbum').classList.remove('hidden');
+  };
+
+  window.galeriBukaModalEditAlbum = async function(albumId) {
+    const ok = await verifikasiAdminNurWalad();
+    if (!ok) return;
+    const alb = _galeriAlbums[albumId];
+    if (!alb) return;
+    document.getElementById('galeriEditAlbumId').value = albumId;
+    document.getElementById('modalGaleriAlbumTitle').textContent = 'Edit Informasi Album';
+    document.getElementById('galeriInputJudul').value = alb.judul || '';
+    document.getElementById('galeriInputTanggal').value = alb.tanggal || '';
+    document.getElementById('galeriInputKategori').value = alb.kategori || 'Kegiatan Santri';
+    document.getElementById('galeriInputDeskripsi').value = alb.deskripsi || '';
+    document.getElementById('galeriInitialLinksWrap').classList.add('hidden');
+    document.getElementById('modalGaleriAlbum').classList.remove('hidden');
+  };
+
+  window.galeriEditAlbumAktif = function() {
+    if (_galeriActiveAlbumId) window.galeriBukaModalEditAlbum(_galeriActiveAlbumId);
+  };
+
+  window.galeriTutupModalAlbum = function() {
+    document.getElementById('modalGaleriAlbum').classList.add('hidden');
+  };
+
+  document.getElementById('formGaleriAlbum').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!_galeriAdminUnlocked) return;
+    const editId = document.getElementById('galeriEditAlbumId').value.trim();
+    const judul = document.getElementById('galeriInputJudul').value.trim();
+    const tanggal = document.getElementById('galeriInputTanggal').value || new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
+    const kategori = document.getElementById('galeriInputKategori').value;
+    const deskripsi = document.getElementById('galeriInputDeskripsi').value.trim();
+
+    if (!judul) return Swal.fire('Perhatian', 'Judul album wajib diisi.', 'warning');
+
+    const btn = document.getElementById('btnGaleriSimpanAlbum');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+
+    try {
+      if (editId && _galeriAlbums[editId]) {
+        await dbKontrol.ref('galeri_pesantren/' + editId).update({ judul, tanggal, kategori, deskripsi });
+        window.galeriTutupModalAlbum();
+        Swal.fire({ icon: 'success', title: 'Album Diperbarui', timer: 1500, showConfirmButton: false });
+      } else {
+        const rawLines = (document.getElementById('galeriInputInitialLinks').value || '').split(/\r?\n/);
+        const photosObj = {};
+        let firstUrl = '';
+        let nowTs = Date.now();
+        rawLines.forEach((line, i) => {
+          const u = normalizePhotoUrl(line);
+          if (u) {
+            if (!firstUrl) firstUrl = u;
+            photosObj['f_' + (nowTs + i)] = { url: u, caption: '', createdAt: nowTs + i };
+          }
+        });
+        const newRef = dbKontrol.ref('galeri_pesantren').push();
+        await newRef.set({
+          judul, tanggal, kategori, deskripsi,
+          coverUrl: firstUrl,
+          photos: photosObj,
+          createdAt: Date.now(),
+          createdBy: 'Ust. Nur Walad'
+        });
+        window.galeriTutupModalAlbum();
+        Swal.fire({ icon: 'success', title: 'Album Berhasil Dibuat', timer: 1600, showConfirmButton: false });
+      }
+    } catch (err) {
+      Swal.fire('Gagal', 'Tidak dapat menyimpan album: ' + (err && err.message ? err.message : err), 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Album';
+    }
+  });
+
+  let _galeriTargetAlbumForFoto = null;
+  window.galeriAksiTambahFoto = async function() {
+    if (!_galeriActiveAlbumId) return;
+    await window.galeriBukaModalFoto(_galeriActiveAlbumId);
+  };
+
+  window.galeriBukaModalFoto = async function(albumId) {
+    const ok = await verifikasiAdminNurWalad();
+    if (!ok) return;
+    const alb = _galeriAlbums[albumId];
+    if (!alb) return;
+    _galeriTargetAlbumForFoto = albumId;
+    document.getElementById('galeriTambahFotoAlbumNama').textContent = 'Album: ' + (alb.judul || '-');
+    document.getElementById('galeriInputFotoLinks').value = '';
+    document.getElementById('galeriInputFotoCaption').value = '';
+    window.galeriUpdateLinkCounter();
+    document.getElementById('modalGaleriTambahFoto').classList.remove('hidden');
+  };
+
+  window.galeriTutupModalFoto = function() {
+    document.getElementById('modalGaleriTambahFoto').classList.add('hidden');
+    _galeriTargetAlbumForFoto = null;
+  };
+
+  window.galeriUpdateLinkCounter = function() {
+    const raw = (document.getElementById('galeriInputFotoLinks') || {}).value || '';
+    const validCount = raw.split(/\r?\n/).map(normalizePhotoUrl).filter(Boolean).length;
+    const badge = document.getElementById('galeriLinkCountBadge');
+    if (badge) badge.textContent = validCount + ' link valid';
+  };
+
+  document.getElementById('formGaleriTambahFoto').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!_galeriAdminUnlocked || !_galeriTargetAlbumForFoto) return;
+    const raw = (document.getElementById('galeriInputFotoLinks').value || '').split(/\r?\n/);
+    const urls = raw.map(normalizePhotoUrl).filter(Boolean);
+    const caption = document.getElementById('galeriInputFotoCaption').value.trim();
+
+    if (urls.length === 0) {
+      return Swal.fire('Perhatian', 'Masukkan minimal satu link foto yang valid (diawali https://).', 'warning');
+    }
+
+    const btn = document.getElementById('btnGaleriSimpanFoto');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+
+    try {
+      const albId = _galeriTargetAlbumForFoto;
+      const alb = _galeriAlbums[albId] || {};
+      const updates = {};
+      const nowTs = Date.now();
+      urls.forEach((u, i) => {
+        const key = 'f_' + (nowTs + i) + '_' + Math.random().toString(36).slice(2, 6);
+        updates['photos/' + key] = { url: u, caption: caption, createdAt: nowTs + i };
+      });
+      if (!alb.coverUrl && urls[0]) {
+        updates['coverUrl'] = urls[0];
+      }
+      await dbKontrol.ref('galeri_pesantren/' + albId).update(updates);
+      window.galeriTutupModalFoto();
+      Swal.fire({ icon: 'success', title: urls.length + ' Foto Ditambahkan', timer: 1600, showConfirmButton: false });
+    } catch (err) {
+      Swal.fire('Gagal', 'Gagal menambahkan foto: ' + (err && err.message ? err.message : err), 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Tambahkan ke Album';
+    }
+  });
+
+  // === EDIT CATATAN / CAPTION & LINK FOTO ===
+  window.galeriBukaModalEditFoto = async function(albumId, photoId) {
+    const ok = await verifikasiAdminNurWalad();
+    if (!ok) return;
+    const alb = _galeriAlbums[albumId];
+    if (!alb || !alb.photos || !alb.photos[photoId]) return;
+    const p = alb.photos[photoId];
+    document.getElementById('galeriEditFotoAlbumId').value = albumId;
+    document.getElementById('galeriEditFotoId').value = photoId;
+    document.getElementById('galeriEditFotoCaption').value = p.caption || '';
+    document.getElementById('galeriEditFotoUrl').value = p.url || '';
+    document.getElementById('galeriEditFotoPreview').src = p.url || '';
+    document.getElementById('modalGaleriEditFoto').classList.remove('hidden');
+  };
+
+  window.galeriPreviewEditFotoUrl = function() {
+    const u = normalizePhotoUrl((document.getElementById('galeriEditFotoUrl') || {}).value || '');
+    if (u) document.getElementById('galeriEditFotoPreview').src = u;
+  };
+
+  window.galeriTutupModalEditFoto = function() {
+    document.getElementById('modalGaleriEditFoto').classList.add('hidden');
+  };
+
+  window.galeriEditFotoDariLightbox = function() {
+    const p = _galeriLightboxPhotos[_galeriLightboxIndex];
+    if (_galeriActiveAlbumId && p) {
+      window.galeriBukaModalEditFoto(_galeriActiveAlbumId, p.id);
+    }
+  };
+
+  document.getElementById('formGaleriEditFoto').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!_galeriAdminUnlocked) return;
+    const albumId = document.getElementById('galeriEditFotoAlbumId').value.trim();
+    const photoId = document.getElementById('galeriEditFotoId').value.trim();
+    const caption = document.getElementById('galeriEditFotoCaption').value.trim();
+    const newUrl = normalizePhotoUrl(document.getElementById('galeriEditFotoUrl').value);
+
+    if (!albumId || !photoId) return;
+    if (!newUrl) return Swal.fire('Perhatian', 'Masukkan link foto yang valid (diawali https://).', 'warning');
+
+    const btn = document.getElementById('btnGaleriSimpanEditFoto');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+
+    try {
+      const alb = _galeriAlbums[albumId] || {};
+      const oldUrl = (alb.photos && alb.photos[photoId]) ? alb.photos[photoId].url : '';
+      const updates = {};
+      updates['photos/' + photoId + '/caption'] = caption;
+      updates['photos/' + photoId + '/url'] = newUrl;
+      if (alb.coverUrl && alb.coverUrl === oldUrl && newUrl !== oldUrl) {
+        updates['coverUrl'] = newUrl;
+      }
+      await dbKontrol.ref('galeri_pesantren/' + albumId).update(updates);
+      window.galeriTutupModalEditFoto();
+      Swal.fire({ icon: 'success', title: 'Foto & Catatan Diperbarui', timer: 1400, showConfirmButton: false });
+    } catch (err) {
+      Swal.fire('Gagal', 'Gagal memperbarui foto: ' + (err && err.message ? err.message : err), 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan';
+    }
+  });
+
+  window.galeriSetCover = async function(albumId, photoId) {
+    if (!_galeriAdminUnlocked) return;
+    const alb = _galeriAlbums[albumId];
+    if (!alb || !alb.photos || !alb.photos[photoId]) return;
+    try {
+      await dbKontrol.ref('galeri_pesantren/' + albumId + '/coverUrl').set(alb.photos[photoId].url);
+      Swal.fire({ icon: 'success', title: 'Cover Album Diperbarui', timer: 1200, showConfirmButton: false });
+    } catch (err) {
+      Swal.fire('Gagal', err.message, 'error');
+    }
+  };
+
+  window.galeriHapusFoto = async function(albumId, photoId) {
+    const ok = await verifikasiAdminNurWalad();
+    if (!ok) return;
+    const res = await Swal.fire({
+      title: 'Hapus Foto Ini?',
+      text: 'Link foto akan dihapus dari album ini.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e11d48',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Ya, Hapus',
+      cancelButtonText: 'Batal'
+    });
+    if (!res.isConfirmed) return;
+    try {
+      await dbKontrol.ref('galeri_pesantren/' + albumId + '/photos/' + photoId).remove();
+    } catch (err) {
+      Swal.fire('Gagal', err.message, 'error');
+    }
+  };
+
+  window.galeriHapusAlbumAktif = function() {
+    if (_galeriActiveAlbumId) window.galeriHapusAlbum(_galeriActiveAlbumId);
+  };
+
+  window.galeriHapusAlbum = async function(albumId) {
+    const ok = await verifikasiAdminNurWalad();
+    if (!ok) return;
+    const alb = _galeriAlbums[albumId];
+    const res = await Swal.fire({
+      title: 'Hapus Album?',
+      text: `Album "${alb ? alb.judul : ''}" beserta seluruh link foto di dalamnya akan dihapus.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e11d48',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Ya, Hapus Album',
+      cancelButtonText: 'Batal'
+    });
+    if (!res.isConfirmed) return;
+    try {
+      await dbKontrol.ref('galeri_pesantren/' + albumId).remove();
+      if (_galeriActiveAlbumId === albumId) window.galeriKembaliKeAlbum();
+      Swal.fire({ icon: 'success', title: 'Album Dihapus', timer: 1400, showConfirmButton: false });
+    } catch (err) {
+      Swal.fire('Gagal', err.message, 'error');
+    }
+  };
+
+  // === LIGHTBOX ===
+  window.galeriBukaLightbox = function(idx) {
+    if (!_galeriLightboxPhotos.length) return;
+    _galeriLightboxIndex = idx;
+    updateLightboxUI();
+    updateAdminUI();
+    document.getElementById('galeriLightbox').classList.remove('hidden');
+  };
+
+  window.galeriTutupLightbox = function() {
+    document.getElementById('galeriLightbox').classList.add('hidden');
+  };
+
+  window.galeriNavLightbox = function(delta) {
+    if (!_galeriLightboxPhotos.length) return;
+    _galeriLightboxIndex = (_galeriLightboxIndex + delta + _galeriLightboxPhotos.length) % _galeriLightboxPhotos.length;
+    updateLightboxUI();
+  };
+
+  function updateLightboxUI() {
+    const p = _galeriLightboxPhotos[_galeriLightboxIndex];
+    if (!p) return;
+    const alb = _galeriAlbums[_galeriActiveAlbumId] || {};
+    document.getElementById('galeriLbAlbum').textContent = alb.judul || 'Dokumentasi Pesantren';
+    document.getElementById('galeriLbCounter').textContent = `${_galeriLightboxIndex + 1} / ${_galeriLightboxPhotos.length}`;
+    document.getElementById('galeriLbImg').src = p.url;
+    document.getElementById('galeriLbCaption').textContent = p.caption || (alb.judul + ' • ' + formatTanggalIndoGal(alb.tanggal));
+  }
+
+  // Navigasi keyboard di Lightbox (Esc, Panah Kiri/Kanan)
+  document.addEventListener('keydown', function(e) {
+    const lb = document.getElementById('galeriLightbox');
+    const modalEdit = document.getElementById('modalGaleriEditFoto');
+    if (modalEdit && !modalEdit.classList.contains('hidden')) {
+      if (e.key === 'Escape') { window.galeriTutupModalEditFoto(); }
+      return;
+    }
+    if (lb && !lb.classList.contains('hidden')) {
+      if (e.key === 'Escape') { window.galeriTutupLightbox(); return; }
+      if (e.key === 'ArrowRight') { window.galeriNavLightbox(1); return; }
+      if (e.key === 'ArrowLeft') { window.galeriNavLightbox(-1); return; }
+    }
+  });
 })();
 </script>
 </body>
