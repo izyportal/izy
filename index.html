@@ -890,6 +890,9 @@
             <button id="tabBtnDaftarSoal" onclick="pindahMenu('daftarSoal')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
               <i class="fa-solid fa-folder-open w-4 text-center"></i> Daftar Bank Soal
             </button>
+            <button id="tabBtnCekBankSoal" onclick="pindahMenu('cekBankSoal')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
+              <i class="fa-solid fa-file-circle-check w-4 text-center"></i> Cek Bank Soal
+            </button>
             <button id="tabBtnRekapKbm" onclick="pindahMenu('rekapKbm')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
               <i class="fa-solid fa-table-list w-4 text-center"></i> Rekap Jurnal KBM
             </button>
@@ -1568,6 +1571,49 @@
                     <button type="button" id="bsBtnResetView" class="py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg text-[10px] uppercase tracking-wider transition flex items-center justify-center gap-1">
                       <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
                     </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================== -->
+          <!-- B2. PANEL: CEK BANK SOAL (REKAP INPUT)     -->
+          <!-- ========================================== -->
+          <section id="panelCekBankSoal" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col h-[calc(100vh-4.5rem)]">
+              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2.5 flex justify-between items-center text-white shrink-0">
+                <div>
+                  <h2 class="text-xs font-black tracking-widest uppercase">Rekap Bank Soal</h2>
+                  <p class="text-[9px] text-teal-100 font-medium">Monitoring Jumlah Input Soal</p>
+                </div>
+                <span class="text-[9px] font-bold text-emerald-100 bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-500/30 uppercase tracking-wider">
+                  <i class="fa-solid fa-rotate mr-1"></i> Auto-Sync
+                </span>
+              </div>
+
+              <div class="p-4 flex flex-col flex-1 overflow-hidden bg-slate-50/50 space-y-3">
+                <!-- Loading State -->
+                <div id="cbsLoader" class="flex-1 flex flex-col items-center justify-center py-12 text-teal-700 font-bold text-xs">
+                  <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                  <span>Sedang memuat data...</span>
+                </div>
+
+                <!-- Main Content -->
+                <div id="cbsMainContent" class="hidden flex-col flex-1 overflow-hidden space-y-3">
+                  <!-- Dropdown Guru -->
+                  <div class="bg-teal-50/80 p-3 rounded-xl border border-teal-200 shrink-0">
+                    <label for="cbsPilihGuru" class="block text-[10px] font-extrabold text-teal-800 uppercase tracking-wider mb-1.5">
+                      <i class="fa-solid fa-chalkboard-user mr-1"></i> Nama Guru Pengampu:
+                    </label>
+                    <select id="cbsPilihGuru" class="w-full p-2 text-xs border border-slate-300 rounded-lg bg-white font-bold text-slate-700 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 cursor-pointer shadow-sm">
+                      <option value="">-- Menunggu Data Guru --</option>
+                    </select>
+                  </div>
+
+                  <!-- Tempat Tabel Hasil -->
+                  <div id="cbsResultContainer" class="flex-1 overflow-y-auto pr-1">
+                    <div class="text-center py-10 text-slate-400 text-xs font-semibold">Silakan pilih nama guru di atas untuk melihat rekap.</div>
                   </div>
                 </div>
               </div>
@@ -4689,7 +4735,7 @@
 
     function pindahMenu(menu) {
       const panels = [
-        'panelBeranda', 'panelInputSoal', 'panelDaftarSoal', 'panelSettingSoal',
+        'panelBeranda', 'panelInputSoal', 'panelDaftarSoal', 'panelCekBankSoal', 'panelSettingSoal',
         'panelSetoran', 'panelInputKbm', 'panelNilaiKbm', 'panelAbsenKbm', 'panelAbsenKst', 'panelAdab',
         'panelRekapKbm', 'panelRekapTahfizh', 'panelRekapNilai', 'panelRekapAbsenKbm', 'panelRekapAdab', 'panelRekapKinerja', 'panelCekInputNilai', 'panelCekJurnal', 'panelRekapPrestasi', 'panelProfilData', 'panelRosterMapel', 'panelRankingKelas', 'panelKlasemenAdab', 'panelRekapTasmi', 'panelInputTasmi', 'panelCapaianTahfizh', 'panelBelumSetoran', 'panelDownload', 'panelInbox', 'panelUjian', 'panelKontrolUjian', 'panelKaldik', 'panelDaftar', 'panelGaleri'
       ];
@@ -4699,7 +4745,7 @@
       });
 
       const tabs = [
-        'tabBtnBeranda', 'tabBtnInputSoal', 'tabBtnDaftarSoal', 'tabBtnSettingSoal',
+        'tabBtnBeranda', 'tabBtnInputSoal', 'tabBtnDaftarSoal', 'tabBtnCekBankSoal', 'tabBtnSettingSoal',
         'tabBtnSetoran', 'tabBtnInputKbm', 'tabBtnNilaiKbm', 'tabBtnAbsenKbm', 'tabBtnAbsenKst', 'tabBtnAdab',
         'tabBtnRekapKbm', 'tabBtnRekapTahfizh', 'tabBtnRekapNilai', 'tabBtnRekapAbsenKbm', 'tabBtnRekapAdab', 'tabBtnRekapKinerja', 'tabBtnCekInputNilai', 'tabBtnCekJurnal', 'tabBtnRekapPrestasi', 'tabBtnProfilData', 'tabBtnRosterMapel', 'tabBtnRankingKelas', 'tabBtnKlasemenAdab', 'tabBtnRekapTasmi', 'tabBtnInputTasmi', 'tabBtnCapaianTahfizh', 'tabBtnBelumSetoran', 'tabBtnDownload', 'tabBtnInbox', 'tabBtnUjian', 'tabBtnKontrolUjian', 'tabBtnKaldik', 'tabBtnDaftar', 'tabBtnGaleri'
       ];
@@ -4745,6 +4791,10 @@
       } else if (menu === 'daftarSoal') {
         document.getElementById('panelDaftarSoal').classList.remove('hidden');
         document.getElementById('tabBtnDaftarSoal').classList.add('active');
+      } else if (menu === 'cekBankSoal') {
+        document.getElementById('panelCekBankSoal').classList.remove('hidden');
+        document.getElementById('tabBtnCekBankSoal').classList.add('active');
+        if (typeof window.updateCekBankSoal === 'function') window.updateCekBankSoal();
       } else if (menu === 'settingSoal') {
         document.getElementById('panelSettingSoal').classList.remove('hidden');
         document.getElementById('tabBtnSettingSoal').classList.add('active');
@@ -5928,12 +5978,216 @@
       bsUpdateSettingFormUI();
     });
 
+    let cbsDataLoaded = false;
+
+    window.updateCekBankSoal = function() {
+      const selectGuru = document.getElementById('cbsPilihGuru');
+      const loader = document.getElementById('cbsLoader');
+      const mainContent = document.getElementById('cbsMainContent');
+      if (!selectGuru || !loader || !mainContent) return;
+
+      if (!cbsDataLoaded) {
+        loader.classList.remove('hidden');
+        mainContent.classList.add('hidden');
+        mainContent.classList.remove('flex');
+        return;
+      }
+
+      const daftarGuruSet = new Set();
+      bsBankSoalList.forEach(item => {
+        if (item && item.guru && String(item.guru).trim()) {
+          daftarGuruSet.add(String(item.guru).trim());
+        }
+      });
+
+      const currentSelected = selectGuru.value;
+      const sortedGuru = Array.from(daftarGuruSet).sort((a, b) => a.localeCompare(b, 'id-ID'));
+      selectGuru.innerHTML = '<option value="">-- Pilih Guru --</option>' +
+        sortedGuru.map(guru => `<option value="${escapeHtml(guru)}">${escapeHtml(guru)}</option>`).join('');
+
+      if (currentSelected && sortedGuru.includes(currentSelected)) {
+        selectGuru.value = currentSelected;
+      } else {
+        selectGuru.value = '';
+      }
+
+      loader.classList.add('hidden');
+      mainContent.classList.remove('hidden');
+      mainContent.classList.add('flex');
+
+      window.renderCekBankSoal();
+    };
+
+    window.cbsPilihGuruDariRank = function(namaGuru) {
+      const selectGuru = document.getElementById('cbsPilihGuru');
+      if (!selectGuru) return;
+      selectGuru.value = namaGuru || '';
+      window.renderCekBankSoal();
+    };
+
+    window.renderCekBankSoal = function() {
+      const selectGuru = document.getElementById('cbsPilihGuru');
+      const resultContainer = document.getElementById('cbsResultContainer');
+      if (!selectGuru || !resultContainer) return;
+
+      const guruName = selectGuru.value;
+      if (!guruName) {
+        if (bsBankSoalList.length === 0) {
+          resultContainer.innerHTML = '<div class="text-center py-10 text-slate-400 text-xs font-semibold">Belum ada data soal yang tersimpan.</div>';
+          return;
+        }
+
+        const guruTotals = {};
+        bsBankSoalList.forEach(item => {
+          if (item && item.guru) {
+            const nama = String(item.guru).trim();
+            if (nama) guruTotals[nama] = (guruTotals[nama] || 0) + 1;
+          }
+        });
+
+        const sortedGuruTotals = Object.keys(guruTotals)
+          .map(nama => ({ nama, total: guruTotals[nama] }))
+          .sort((a, b) => b.total - a.total || a.nama.localeCompare(b.nama, 'id-ID'));
+
+        let rowsHTML = '';
+        sortedGuruTotals.forEach((guru, index) => {
+          let rankBadge = `<span class="font-bold text-slate-500">${index + 1}</span>`;
+          if (index === 0) rankBadge = '<span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-black text-[11px]">&#129351; 1</span>';
+          else if (index === 1) rankBadge = '<span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-black text-[11px]">&#129352; 2</span>';
+          else if (index === 2) rankBadge = '<span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-black text-[11px]">&#129353; 3</span>';
+
+          const safeNamaJs = guru.nama.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+          rowsHTML += `
+            <tr onclick="cbsPilihGuruDariRank('${safeNamaJs}')" class="hover:bg-teal-50/70 transition cursor-pointer border-b border-slate-100">
+              <td class="py-2.5 px-2 text-center">${rankBadge}</td>
+              <td class="py-2.5 px-3 text-left font-bold text-slate-700">${escapeHtml(guru.nama)}</td>
+              <td class="py-2.5 px-3 text-center">
+                <span class="inline-block min-w-[44px] py-1 px-2.5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 font-black text-xs">${guru.total}</span>
+              </td>
+            </tr>`;
+        });
+
+        resultContainer.innerHTML = `
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-teal-50 border-b border-teal-100 px-4 py-2.5 text-center">
+              <span class="text-xs font-black text-teal-800 uppercase tracking-wider">&#127942; Peringkat Input Soal (Leaderboard)</span>
+              <p class="text-[10px] text-slate-500 font-medium mt-0.5">Klik nama guru untuk melihat rincian soal PG &amp; Essay per mapel</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs border-collapse">
+                <thead class="bg-teal-700 text-white text-[10px] uppercase tracking-wider">
+                  <tr>
+                    <th class="py-2.5 px-2 text-center w-20">Rank</th>
+                    <th class="py-2.5 px-3 text-left">Nama Guru</th>
+                    <th class="py-2.5 px-3 text-center w-24">Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-100">${rowsHTML}</tbody>
+              </table>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const dataGuru = bsBankSoalList.filter(item => item && item.guru && String(item.guru).trim() === guruName);
+      if (dataGuru.length === 0) {
+        resultContainer.innerHTML = '<div class="text-center py-10 text-slate-400 text-xs font-semibold">Belum ada soal yang diinput oleh guru ini.</div>';
+        return;
+      }
+
+      const rekapMap = {};
+      let totalAllPG = 0;
+      let totalAllEssay = 0;
+
+      dataGuru.forEach(item => {
+        const mapel = item.mapel || 'Tanpa Mapel';
+        const kelas = item.kelas || 'Tanpa Kelas';
+        const type = item.type || 'pg';
+        const key = `${mapel}|${kelas}`;
+
+        if (!rekapMap[key]) {
+          rekapMap[key] = { mapel, kelas, pg: 0, essay: 0 };
+        }
+        if (type === 'pg') {
+          rekapMap[key].pg++;
+          totalAllPG++;
+        } else if (type === 'essay') {
+          rekapMap[key].essay++;
+          totalAllEssay++;
+        }
+      });
+
+      const rekapArray = Object.values(rekapMap).sort((a, b) => {
+        if (a.mapel === b.mapel) {
+          return String(a.kelas).localeCompare(String(b.kelas), undefined, { numeric: true });
+        }
+        return String(a.mapel).localeCompare(String(b.mapel), 'id-ID');
+      });
+
+      let detailRowsHTML = '';
+      rekapArray.forEach((row, index) => {
+        detailRowsHTML += `
+          <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+            <td class="py-2.5 px-2 text-center font-bold text-slate-400">${index + 1}</td>
+            <td class="py-2.5 px-3 text-left font-bold text-slate-700">${escapeHtml(row.mapel)}</td>
+            <td class="py-2.5 px-2 text-center font-semibold text-slate-600">${escapeHtml(row.kelas)}</td>
+            <td class="py-2.5 px-2 text-center"><span class="inline-block min-w-[38px] py-1 px-2 rounded bg-sky-50 text-sky-700 border border-sky-200 font-bold text-xs">${row.pg}</span></td>
+            <td class="py-2.5 px-2 text-center"><span class="inline-block min-w-[38px] py-1 px-2 rounded bg-purple-50 text-purple-700 border border-purple-200 font-bold text-xs">${row.essay}</span></td>
+          </tr>`;
+      });
+
+      resultContainer.innerHTML = `
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="bg-teal-50 border-b border-teal-100 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+            <div class="text-xs font-black text-teal-900 uppercase tracking-wide">${escapeHtml(guruName)}</div>
+            <button type="button" onclick="cbsPilihGuruDariRank('')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-teal-100 text-teal-800 border border-teal-200 text-[10px] font-extrabold uppercase tracking-wider transition cursor-pointer">
+              <i class="fa-solid fa-arrow-left mr-1"></i> Kembali ke Peringkat
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs border-collapse">
+              <thead class="bg-teal-700 text-white text-[10px] uppercase tracking-wider">
+                <tr>
+                  <th class="py-2.5 px-2 text-center w-12">No</th>
+                  <th class="py-2.5 px-3 text-left">Mapel</th>
+                  <th class="py-2.5 px-2 text-center w-28">Kelas</th>
+                  <th class="py-2.5 px-2 text-center w-20">PG</th>
+                  <th class="py-2.5 px-2 text-center w-20">Essay</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-slate-100">${detailRowsHTML}</tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-teal-50/90 border border-teal-200 rounded-xl p-3.5 mt-3 text-center shadow-sm">
+          <div class="text-[11px] font-black text-teal-800 uppercase tracking-wider mb-2">Total Keseluruhan Soal :</div>
+          <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
+            <div class="bg-white py-2.5 px-3 rounded-lg border border-sky-200 shadow-sm">
+              <div class="text-[10px] font-bold text-slate-400 uppercase">Choice (PG)</div>
+              <div class="text-base font-black text-sky-700">${totalAllPG}</div>
+            </div>
+            <div class="bg-white py-2.5 px-3 rounded-lg border border-purple-200 shadow-sm">
+              <div class="text-[10px] font-bold text-slate-400 uppercase">Essay</div>
+              <div class="text-base font-black text-purple-700">${totalAllEssay}</div>
+            </div>
+          </div>
+        </div>`;
+    };
+
+    const elCbsPilihGuru = document.getElementById('cbsPilihGuru');
+    if (elCbsPilihGuru) {
+      elCbsPilihGuru.addEventListener('change', () => window.renderCekBankSoal());
+    }
+
     onValue(dbRefBankSoal, (snapshot) => {
       bsBankSoalList = [];
       const data = snapshot.val();
       if (data) Object.keys(data).forEach(key => bsBankSoalList.push({ firebaseKey: key, ...data[key] }));
+      cbsDataLoaded = true;
       bsUpdateFilterDropdowns();
       bsPopulateSettingDropdowns();
+      window.updateCekBankSoal();
       if (!document.getElementById('bsViewContentArea').classList.contains('hidden')) {
         bsRenderFilteredQuestions();
       }
