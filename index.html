@@ -665,9 +665,125 @@
       box-shadow: 0 12px 24px -8px rgba(15, 118, 110, 0.18);
       border-color: #14b8a6;
     }
+
+    /* === GERBANG LOGIN IZY PORTAL (HIJAU + POLA & BINGKAI ISLAMI/BATIK) === */
+    #izyLoginGate.hidden, #izyOnlineChatBox.hidden {
+      display: none !important;
+    }
+    .izy-login-bg {
+      background-color: #063d39;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.22), transparent 45%),
+        radial-gradient(circle at 80% 80%, rgba(251, 191, 36, 0.14), transparent 45%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23fbbf24' stroke-opacity='0.11' stroke-width='1'%3E%3Cpath d='M40 4 L50 30 L76 40 L50 50 L40 76 L30 50 L4 40 L30 30 Z'/%3E%3Ccircle cx='40' cy='40' r='12'/%3E%3Cpath d='M0 0 L16 16 M80 0 L64 16 M0 80 L16 64 M80 80 L64 64'/%3E%3Crect x='24' y='24' width='32' height='32' transform='rotate(45 40 40)'/%3E%3C/g%3E%3C/svg%3E"),
+        linear-gradient(135deg, #042f2e 0%, #0f5f59 50%, #064e3b 100%);
+      background-size: auto, auto, 80px 80px, cover;
+    }
+    .izy-islamic-frame {
+      position: fixed;
+      inset: 14px;
+      border: 1.5px solid rgba(251, 191, 36, 0.35);
+      border-radius: 18px;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 4px rgba(251, 191, 36, 0.08);
+    }
+    .izy-corner-ornament {
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      pointer-events: none;
+      opacity: 0.75;
+    }
+    .izy-login-card-header {
+      background-color: #0c4a45;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23fbbf24' stroke-opacity='0.14' stroke-width='0.9'%3E%3Cpath d='M24 2 L30 18 L46 24 L30 30 L24 46 L18 30 L2 24 L18 18 Z'/%3E%3Ccircle cx='24' cy='24' r='6'/%3E%3C/g%3E%3C/svg%3E"),
+        linear-gradient(135deg, #042f2e 0%, #0f766e 100%);
+    }
   </style>
 </head>
 <body>
+
+  <!-- ========================================== -->
+  <!-- GERBANG LOGIN IZY PORTAL (WAJIB LOGIN)     -->
+  <!-- ========================================== -->
+  <div id="izyLoginGate" class="fixed inset-0 z-[500] izy-login-bg flex items-center justify-center p-4 overflow-y-auto">
+    <!-- Bingkai Islami / Batik Emas -->
+    <div class="izy-islamic-frame">
+      <svg class="izy-corner-ornament top-2 left-2" viewBox="0 0 64 64" fill="none"><path d="M4 60V12C4 7.6 7.6 4 12 4H60" stroke="#fbbf24" stroke-width="2.5"/><path d="M12 52V18C12 14.7 14.7 12 18 12H52" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/><path d="M18 18L26 26M12 28C19 28 28 19 28 12" stroke="#fbbf24" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="#fbbf24"/></svg>
+      <svg class="izy-corner-ornament top-2 right-2" style="transform:scaleX(-1)" viewBox="0 0 64 64" fill="none"><path d="M4 60V12C4 7.6 7.6 4 12 4H60" stroke="#fbbf24" stroke-width="2.5"/><path d="M12 52V18C12 14.7 14.7 12 18 12H52" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/><path d="M18 18L26 26M12 28C19 28 28 19 28 12" stroke="#fbbf24" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="#fbbf24"/></svg>
+      <svg class="izy-corner-ornament bottom-2 left-2" style="transform:scaleY(-1)" viewBox="0 0 64 64" fill="none"><path d="M4 60V12C4 7.6 7.6 4 12 4H60" stroke="#fbbf24" stroke-width="2.5"/><path d="M12 52V18C12 14.7 14.7 12 18 12H52" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/><path d="M18 18L26 26M12 28C19 28 28 19 28 12" stroke="#fbbf24" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="#fbbf24"/></svg>
+      <svg class="izy-corner-ornament bottom-2 right-2" style="transform:scale(-1,-1)" viewBox="0 0 64 64" fill="none"><path d="M4 60V12C4 7.6 7.6 4 12 4H60" stroke="#fbbf24" stroke-width="2.5"/><path d="M12 52V18C12 14.7 14.7 12 18 12H52" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 3"/><path d="M18 18L26 26M12 28C19 28 28 19 28 12" stroke="#fbbf24" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="#fbbf24"/></svg>
+    </div>
+
+    <!-- Kartu Login Utama -->
+    <div class="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border-2 border-amber-300/70 overflow-hidden my-auto">
+      <!-- Header Kartu Login -->
+      <div class="izy-login-card-header px-6 py-5 text-center text-white relative border-b-2 border-amber-400/70">
+        <div class="flex items-center justify-center">
+          <img src="https://i.ibb.co.com/C3bqBprM/Logo-IZY.png" alt="Logo Pondok Pesantren Ibnul Jauzy" class="h-14 w-auto object-contain drop-shadow-md">
+        </div>
+      </div>
+
+      <!-- Form Login -->
+      <form id="izyLoginForm" class="p-5 sm:p-6 space-y-3.5">
+        <div class="text-center">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-extrabold uppercase tracking-wider">
+            <i class="fa-solid fa-shield-halved text-amber-500"></i> Masuk Akun Guru &amp; Santri
+          </span>
+        </div>
+
+        <!-- Tab Filter Peran -->
+        <div class="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button type="button" id="izyRoleTab-all" onclick="izySetLoginRoleFilter('all')" class="py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-teal-800 text-white shadow-sm transition cursor-pointer">Semua</button>
+          <button type="button" id="izyRoleTab-guru" onclick="izySetLoginRoleFilter('guru')" class="py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider text-slate-600 hover:text-teal-800 transition cursor-pointer">Guru / Staf</button>
+          <button type="button" id="izyRoleTab-santri" onclick="izySetLoginRoleFilter('santri')" class="py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider text-slate-600 hover:text-teal-800 transition cursor-pointer">Santri</button>
+        </div>
+
+        <!-- Pencarian & Pilihan Nama -->
+        <div class="space-y-2">
+          <label class="block text-[10px] font-extrabold text-slate-600 uppercase tracking-wider">Nama Lengkap (Guru / Santri)</label>
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="izyLoginSearch" oninput="izyFilterLoginNames()" placeholder="Ketik untuk mencari nama Anda..." autocomplete="off" class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl bg-slate-50 focus:bg-white font-semibold text-slate-700 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600">
+          </div>
+          <select id="izyLoginSelectNama" required class="w-full p-2.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-800 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 cursor-pointer shadow-sm">
+            <option value="">Memuat daftar nama guru &amp; santri...</option>
+          </select>
+        </div>
+
+        <!-- Input Password -->
+        <div>
+          <label class="block text-[10px] font-extrabold text-slate-600 uppercase tracking-wider mb-1">Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-key absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="password" id="izyLoginPassword" required placeholder="Masukkan password Anda..." autocomplete="current-password" class="w-full pl-8 pr-10 py-2.5 text-xs border border-slate-300 rounded-xl bg-white font-bold text-slate-800 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 shadow-sm">
+            <button type="button" onclick="izyToggleLoginPass()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-teal-700 cursor-pointer" title="Lihat/Sembunyikan Password">
+              <i id="izyLoginEye" class="fa-solid fa-eye text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Pesan Error Inline -->
+        <div id="izyLoginErrorMsg" class="hidden px-3 py-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-bold text-center"></div>
+
+        <!-- Tombol Masuk -->
+        <button type="submit" id="btnIzyLoginSubmit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-700 hover:from-teal-950 hover:to-emerald-800 text-white font-black text-xs uppercase tracking-widest shadow-lg transition active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket text-amber-300"></i>
+          <span>MASUK</span>
+        </button>
+
+        <!-- Footer Info & Viewer -->
+        <div class="pt-3 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-500 font-bold">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="izy-online-count-text">Online : 0</span>
+          </span>
+          <span class="text-[9px] text-slate-400 uppercase tracking-wider">Portal Resmi IZY</span>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <div class="app-container">
     
@@ -878,7 +994,24 @@
 
       </div>
 
-      <div class="p-3 border-t border-teal-800/60 text-center">
+      <div class="p-3 border-t border-teal-800/60 text-center space-y-2">
+        <button type="button" id="btnIzyChatSidebar" onclick="izyToggleOnlineChatBox()" class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-teal-950/80 to-emerald-900/70 hover:from-teal-900 hover:to-emerald-800 border border-emerald-400/30 shadow-md transition cursor-pointer group" title="Buka Chat & Lihat Pengguna Online">
+          <div class="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 text-teal-950 shadow-sm group-hover:scale-105 transition-transform shrink-0">
+            <i class="fa-solid fa-comments text-base"></i>
+            <span class="izy-chat-unread-dot hidden absolute -top-1 -right-1 w-3 h-3 rounded-full bg-rose-500 border-2 border-teal-950 animate-ping"></span>
+          </div>
+          <div class="flex-1 flex items-center justify-end gap-1.5 min-w-0">
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-teal-950/80 border border-emerald-400/25 text-[10px] font-extrabold text-emerald-300" title="Jumlah pengguna sedang online">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              <span class="izy-online-num">0</span>
+              <span class="text-[9px] font-bold text-teal-200/80">Online</span>
+            </span>
+            <span id="izySidebarUnreadPill" class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800/70 border border-white/15 text-[10px] font-extrabold text-slate-200" title="Jumlah pesan masuk belum dibaca">
+              <i class="fa-solid fa-envelope text-[9px]"></i>
+              <span class="izy-chat-unread-num">0</span>
+            </span>
+          </div>
+        </button>
         <p class="text-[9px] text-emerald-400 font-bold tracking-widest">UPDATE : 20.11.2026</p>
       </div>
     </aside>
@@ -921,10 +1054,7 @@
             <span>Galeri</span>
           </button>
         </div>
-        <div class="flex items-center gap-3">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden sm:inline">IZY-PORTAL</span>
-          <img src="https://i.postimg.cc/Vk9NSbcw/LOGO.jpg" class="w-7 h-7 rounded-full border border-teal-200 object-cover shadow-sm">
-        </div>
+
       </header>
 
       <!-- Panel Konten Berubah-ubah di sini -->
@@ -950,6 +1080,14 @@
                   <p class="text-[9px] text-teal-100/90 font-medium truncate">
                     Ds. Perdamaian, Kec. Binjai, Kode Pos: 20761, Kab. Langkat, Prov. Sumut.
                   </p>
+                  <div id="izyHomeUserBar" class="hidden items-center gap-2 mt-0.5">
+                    <span class="inline-flex items-center gap-1 bg-amber-400/20 border border-amber-300/40 text-amber-200 text-[9px] font-extrabold px-2 py-0.5 rounded-full">
+                      <i class="fa-solid fa-user-check text-amber-300 text-[8px]"></i>
+                      <span>Selamat datang, <b id="izyHomeUserName">-</b></span>
+                      <span id="izyHomeUserRole" class="opacity-85 font-semibold"></span>
+                      <button type="button" onclick="izyLogoutPortal()" class="ml-1 text-rose-300 hover:text-white cursor-pointer" title="Keluar / Ganti Akun"><i class="fa-solid fa-right-from-bracket text-[9px]"></i></button>
+                    </span>
+                  </div>
                 </div>
               </div>
               <div class="shrink-0 flex items-center">
@@ -12978,6 +13116,702 @@ let inboxSesiAktifNamaID = "";
       if (e.key === 'ArrowLeft') { window.galeriNavLightbox(-1); return; }
     }
   });
+})();
+</script>
+
+<!-- ============================================================ -->
+<!-- FLOATING PANEL: PENGGUNA SEDANG LOGIN & CHAT (CLOUDFLARE D1) -->
+<!-- ============================================================ -->
+<div id="izyOnlineChatBox" class="hidden fixed bottom-4 left-4 md:left-[282px] z-[260] w-[360px] sm:w-[410px] max-w-[calc(100vw-1.5rem)] h-[520px] max-h-[82vh] bg-white rounded-2xl shadow-2xl border border-teal-200 overflow-hidden flex flex-col">
+  <!-- Header Utama Panel -->
+  <div class="bg-gradient-to-r from-teal-950 via-teal-800 to-emerald-700 px-4 py-3 text-white flex items-center justify-between gap-2 shrink-0">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <button type="button" id="btnIzyChatBack" onclick="izyChatKembaliKeList()" class="hidden w-7 h-7 rounded-lg bg-white/15 hover:bg-white/25 items-center justify-center transition cursor-pointer shrink-0" title="Kembali ke daftar">
+        <i class="fa-solid fa-arrow-left text-xs"></i>
+      </button>
+      <div class="min-w-0">
+        <h3 id="izyChatBoxTitle" class="text-xs font-black uppercase tracking-wider truncate">Pengguna Sedang Login</h3>
+        <p id="izyChatBoxSub" class="text-[9px] text-teal-100 font-medium truncate">Klik nama untuk mulai chat (Cloudflare D1)</p>
+      </div>
+    </div>
+    <button type="button" onclick="izyToggleOnlineChatBox(false)" class="w-7 h-7 rounded-lg bg-white/15 hover:bg-rose-500 text-white flex items-center justify-center transition cursor-pointer shrink-0" title="Tutup">
+      <i class="fa-solid fa-xmark text-sm"></i>
+    </button>
+  </div>
+
+  <!-- Info Status Koneksi D1 jika Worker belum aktif -->
+  <div id="izyChatWorkerWarn" class="hidden bg-amber-50 border-b border-amber-200 px-3 py-1.5 text-[10px] text-amber-800 font-semibold shrink-0">
+    <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1"></i>
+    <span id="izyChatWorkerWarnText">Worker Cloudflare D1 belum terhubung.</span>
+  </div>
+
+  <!-- VIEW A: DAFTAR PENGGUNA ONLINE & RIWAYAT CHAT -->
+  <div id="izyChatListView" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-slate-50/70">
+    <div class="p-2.5 bg-white border-b border-slate-200 space-y-2 shrink-0">
+      <div class="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-lg">
+        <button type="button" id="izyChatTab-online" onclick="izySetChatListTab('online')" class="py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-teal-800 text-white shadow-sm transition cursor-pointer">Online</button>
+        <button type="button" id="izyChatTab-riwayat" onclick="izySetChatListTab('riwayat')" class="py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider text-slate-600 hover:text-teal-800 transition cursor-pointer">Riwayat</button>
+        <button type="button" id="izyChatTab-semua" onclick="izySetChatListTab('semua')" class="py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider text-slate-600 hover:text-teal-800 transition cursor-pointer">Semua Akun</button>
+      </div>
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]"></i>
+        <input type="text" id="izyChatSearchUser" oninput="izyRenderOnlineList()" placeholder="Cari nama pengguna..." class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white text-xs font-semibold text-slate-700 outline-none focus:border-teal-500">
+      </div>
+    </div>
+    <div id="izyOnlineUsersContainer" class="flex-1 overflow-y-auto p-2.5 space-y-1.5"></div>
+  </div>
+
+  <!-- VIEW B: RUANG CHAT 1-ON-1 -->
+  <div id="izyChatRoomView" class="hidden flex-1 flex-col min-h-0 overflow-hidden bg-slate-50">
+    <div id="izyChatMessagesArea" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2"></div>
+    <form id="izyChatSendForm" class="p-2.5 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+      <input type="text" id="izyChatInputText" autocomplete="off" placeholder="Ketik pesan..." class="flex-1 px-3.5 py-2 rounded-full border border-slate-300 bg-slate-50 focus:bg-white text-xs font-medium text-slate-800 outline-none focus:border-teal-600">
+      <button type="submit" id="btnIzyChatSend" class="w-9 h-9 rounded-full bg-teal-700 hover:bg-teal-800 text-white flex items-center justify-center shadow transition cursor-pointer shrink-0" title="Kirim Pesan">
+        <i class="fa-solid fa-paper-plane text-xs"></i>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   SISTEM LOGIN IZY PORTAL (GURU & SANTRI) + ONLINE PRESENCE & CHAT CLOUDFLARE D1
+   ============================================================ */
+(function() {
+  // Ganti URL ini jika nama Cloudflare Worker Anda berbeda
+  const WORKER_CHAT_URL = 'https://chat-izy-portal.nurwalad88.workers.dev';
+  window.WORKER_CHAT_URL = WORKER_CHAT_URL;
+
+  let _loginUsers = [];
+  let _loginRoleFilter = 'all';
+  let _currentUser = null; // { user_key, nama, role }
+  let _onlineUsers = [];
+  let _recentPartners = [];
+  let _unreadMap = {};
+  let _totalUnread = 0;
+  let _chatListTab = 'online';
+  let _activeChatPartner = null; // { user_key, nama, role }
+  let _presenceTimer = null;
+  let _onlinePollTimer = null;
+  let _roomPollTimer = null;
+  let _lastMsgCount = -1;
+
+  function normKey(s) {
+    return String(s || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+  }
+
+  function makeUserKey(role, nama) {
+    return role + '_' + normKey(nama);
+  }
+
+  function escHtmlChat(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  function titleCaseId(str) {
+    if (!str) return '';
+    let t = String(str).trim().toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+    if (t.includes("Ja'Far")) t = t.replace("Ja'Far", "Ja'far");
+    return t;
+  }
+
+  function fmtJamChat(ts) {
+    if (!ts) return '';
+    try {
+      const d = new Date(Number(ts));
+      return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    } catch (e) { return ''; }
+  }
+
+  // === 1. UPDATE JUMLAH ONLINE & JUMLAH PESAN MASUK (SIDEBAR KIRI BAWAH & LOGIN GATE) ===
+  function updateOnlinePillsUI() {
+    const totalOnline = _onlineUsers.length;
+
+    // Di halaman login
+    document.querySelectorAll('.izy-online-count-text').forEach(el => {
+      el.textContent = 'Online : ' + totalOnline;
+    });
+
+    // Jumlah online di tombol chat kiri bawah
+    document.querySelectorAll('.izy-online-num').forEach(el => {
+      el.textContent = String(totalOnline);
+    });
+
+    // Jumlah pesan masuk belum dibaca di tombol chat kiri bawah
+    const unreadTxt = _totalUnread > 99 ? '99+' : String(_totalUnread);
+    document.querySelectorAll('.izy-chat-unread-num').forEach(el => {
+      el.textContent = unreadTxt;
+    });
+
+    const unreadPill = document.getElementById('izySidebarUnreadPill');
+    if (unreadPill) {
+      if (_totalUnread > 0) {
+        unreadPill.className = 'inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-rose-500 border border-rose-300/60 text-[10px] font-black text-white shadow-sm';
+      } else {
+        unreadPill.className = 'inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800/70 border border-white/15 text-[10px] font-extrabold text-slate-200';
+      }
+    }
+
+    document.querySelectorAll('.izy-chat-unread-dot').forEach(el => {
+      if (_totalUnread > 0) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    });
+  }
+
+  function setChatWorkerWarn(msg) {
+    const warn = document.getElementById('izyChatWorkerWarn');
+    const txt = document.getElementById('izyChatWorkerWarnText');
+    if (!warn) return;
+    if (msg) {
+      if (txt) txt.textContent = msg;
+      warn.classList.remove('hidden');
+    } else {
+      warn.classList.add('hidden');
+    }
+  }
+
+  // === 2. KOMUNIKASI CLOUDFLARE WORKER + D1 (Simple Request tanpa CORS Preflight) ===
+  async function sendPresenceHeartbeat() {
+    if (!_currentUser) return;
+    try {
+      const res = await fetch(WORKER_CHAT_URL + '/presence', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({
+          user_key: _currentUser.user_key,
+          nama: _currentUser.nama,
+          role: _currentUser.role
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data || data.status !== 'sukses') {
+        setChatWorkerWarn('Gagal lapor status online: ' + ((data && data.pesan) || ('HTTP ' + res.status)));
+      } else {
+        setChatWorkerWarn('');
+      }
+    } catch (e) {
+      setChatWorkerWarn('Worker chat-izy-portal belum terhubung. Pastikan kode worker_chat_izy.js sudah di-Deploy.');
+    }
+  }
+
+  async function fetchOnlineAndUnread() {
+    const q = _currentUser ? ('?user_key=' + encodeURIComponent(_currentUser.user_key)) : '';
+    try {
+      const res = await fetch(WORKER_CHAT_URL + '/online' + q);
+      const data = await res.json();
+      if (!res.ok || !data || data.status !== 'sukses') {
+        throw new Error((data && data.pesan) || ('HTTP ' + res.status));
+      }
+      _onlineUsers = Array.isArray(data.online) ? data.online : [];
+      _unreadMap = data.unread_map || {};
+      _totalUnread = Number(data.total_unread) || 0;
+      _recentPartners = Array.isArray(data.recent_partners) ? data.recent_partners : [];
+      setChatWorkerWarn('');
+    } catch (e) {
+      setChatWorkerWarn('Koneksi D1: ' + (e && e.message ? e.message : 'Worker belum siap'));
+      if (_currentUser && !_onlineUsers.some(u => u.user_key === _currentUser.user_key)) {
+        _onlineUsers = [{ user_key: _currentUser.user_key, nama: _currentUser.nama, role: _currentUser.role, last_seen: Date.now() }];
+      }
+    }
+    updateOnlinePillsUI();
+    const box = document.getElementById('izyOnlineChatBox');
+    if (box && !box.classList.contains('hidden') && !_activeChatPartner) {
+      window.izyRenderOnlineList();
+    }
+  }
+
+  function startPresenceLoops() {
+    if (_presenceTimer) clearInterval(_presenceTimer);
+    if (_onlinePollTimer) clearInterval(_onlinePollTimer);
+    sendPresenceHeartbeat().then(fetchOnlineAndUnread);
+    _presenceTimer = setInterval(sendPresenceHeartbeat, 25000);
+    _onlinePollTimer = setInterval(fetchOnlineAndUnread, 10000);
+  }
+
+  function stopPresenceLoops() {
+    if (_presenceTimer) { clearInterval(_presenceTimer); _presenceTimer = null; }
+    if (_onlinePollTimer) { clearInterval(_onlinePollTimer); _onlinePollTimer = null; }
+    if (_roomPollTimer) { clearInterval(_roomPollTimer); _roomPollTimer = null; }
+  }
+
+  // === 3. UI PANEL DAFTAR PENGGUNA LOGIN & CHAT ===
+  window.izyToggleOnlineChatBox = function(forceState) {
+    const box = document.getElementById('izyOnlineChatBox');
+    if (!box) return;
+    const willOpen = (typeof forceState === 'boolean') ? forceState : box.classList.contains('hidden');
+    if (willOpen) {
+      box.classList.remove('hidden');
+      fetchOnlineAndUnread();
+      if (!_activeChatPartner) window.izyRenderOnlineList();
+    } else {
+      box.classList.add('hidden');
+      if (_roomPollTimer) { clearInterval(_roomPollTimer); _roomPollTimer = null; }
+    }
+  };
+
+  window.izySetChatListTab = function(tab) {
+    _chatListTab = tab;
+    ['online', 'riwayat', 'semua'].forEach(t => {
+      const btn = document.getElementById('izyChatTab-' + t);
+      if (!btn) return;
+      if (t === tab) {
+        btn.className = 'py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-teal-800 text-white shadow-sm transition cursor-pointer';
+      } else {
+        btn.className = 'py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider text-slate-600 hover:text-teal-800 transition cursor-pointer';
+      }
+    });
+    window.izyRenderOnlineList();
+  };
+
+  window.izyRenderOnlineList = function() {
+    const container = document.getElementById('izyOnlineUsersContainer');
+    if (!container) return;
+    const kw = ((document.getElementById('izyChatSearchUser') || {}).value || '').trim().toLowerCase();
+    const onlineSet = new Set(_onlineUsers.map(u => u.user_key));
+
+    let list = [];
+    if (_chatListTab === 'online') {
+      list = _onlineUsers.slice();
+    } else if (_chatListTab === 'riwayat') {
+      list = _recentPartners.slice();
+    } else {
+      list = _loginUsers.map(u => ({ user_key: makeUserKey(u.role, u.nama), nama: u.nama, role: u.role }));
+    }
+    if (kw) {
+      list = list.filter(u => String(u.nama || '').toLowerCase().includes(kw));
+    }
+
+    if (list.length === 0) {
+      container.innerHTML = `<div class="text-center py-10 text-slate-400 text-xs font-semibold">
+        <i class="fa-solid fa-users-slash text-2xl mb-2 block text-slate-300"></i>
+        ${_chatListTab === 'online' ? 'Belum ada pengguna lain yang sedang login.' : 'Belum ada riwayat percakapan.'}
+      </div>`;
+      return;
+    }
+
+    container.innerHTML = list.map(u => {
+      const isMe = _currentUser && u.user_key === _currentUser.user_key;
+      const isOnline = onlineSet.has(u.user_key);
+      const unread = _unreadMap[u.user_key] || 0;
+      const roleLbl = u.role === 'guru' ? 'Guru / Staf' : 'Santri';
+      const safeKey = escHtmlChat(u.user_key);
+      const safeName = escHtmlChat(u.nama);
+      const safeRole = escHtmlChat(u.role || 'santri');
+
+      return `
+        <div class="bg-white rounded-xl border border-slate-200 px-3 py-2.5 flex items-center justify-between gap-2 shadow-sm hover:border-teal-400 transition">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="relative w-9 h-9 rounded-full ${u.role === 'guru' ? 'bg-teal-100 text-teal-800' : 'bg-amber-100 text-amber-800'} flex items-center justify-center text-xs font-black shrink-0">
+              <i class="fa-solid ${u.role === 'guru' ? 'fa-chalkboard-user' : 'fa-user-graduate'}"></i>
+              <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white ${isOnline ? 'bg-emerald-500' : 'bg-slate-300'}"></span>
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-extrabold text-slate-800 truncate">${safeName} ${isMe ? '<span class="text-[9px] text-teal-600 font-bold">(Anda)</span>' : ''}</div>
+              <div class="text-[10px] font-semibold ${isOnline ? 'text-emerald-600' : 'text-slate-400'}">${roleLbl} &bull; ${isOnline ? 'Sedang Login' : 'Offline'}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            ${unread > 0 ? `<span class="px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black">${unread}</span>` : ''}
+            ${isMe ? '' : `<button type="button" onclick="izyBukaChatDengan('${safeKey}','${safeName}','${safeRole}')" class="px-2.5 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-[10px] font-extrabold uppercase tracking-wider transition cursor-pointer flex items-center gap-1"><i class="fa-solid fa-comment-dots"></i> Chat</button>`}
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  window.izyBukaChatDengan = function(partnerKey, partnerName, partnerRole) {
+    if (!_currentUser) return;
+    _activeChatPartner = { user_key: partnerKey, nama: partnerName, role: partnerRole };
+    _lastMsgCount = -1;
+
+    document.getElementById('izyChatListView').classList.add('hidden');
+    const room = document.getElementById('izyChatRoomView');
+    room.classList.remove('hidden');
+    room.classList.add('flex');
+
+    const btnBack = document.getElementById('btnIzyChatBack');
+    if (btnBack) { btnBack.classList.remove('hidden'); btnBack.classList.add('flex'); }
+
+    const isOnline = _onlineUsers.some(u => u.user_key === partnerKey);
+    document.getElementById('izyChatBoxTitle').textContent = partnerName;
+    document.getElementById('izyChatBoxSub').textContent = (partnerRole === 'guru' ? 'Guru / Staf' : 'Santri') + (isOnline ? ' • Sedang Online' : ' • Offline');
+
+    document.getElementById('izyChatMessagesArea').innerHTML = '<div class="text-center py-8 text-xs text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat percakapan...</div>';
+
+    loadRoomMessages(true);
+    if (_roomPollTimer) clearInterval(_roomPollTimer);
+    _roomPollTimer = setInterval(() => loadRoomMessages(false), 3000);
+    setTimeout(() => { const inp = document.getElementById('izyChatInputText'); if (inp) inp.focus(); }, 100);
+  };
+
+  window.izyChatKembaliKeList = function() {
+    _activeChatPartner = null;
+    if (_roomPollTimer) { clearInterval(_roomPollTimer); _roomPollTimer = null; }
+
+    const room = document.getElementById('izyChatRoomView');
+    room.classList.add('hidden');
+    room.classList.remove('flex');
+    document.getElementById('izyChatListView').classList.remove('hidden');
+
+    const btnBack = document.getElementById('btnIzyChatBack');
+    if (btnBack) { btnBack.classList.add('hidden'); btnBack.classList.remove('flex'); }
+
+    document.getElementById('izyChatBoxTitle').textContent = 'Pengguna Sedang Login';
+    document.getElementById('izyChatBoxSub').textContent = 'Klik nama untuk mulai chat (Cloudflare D1)';
+    fetchOnlineAndUnread();
+  };
+
+  async function loadRoomMessages(forceScroll) {
+    if (!_currentUser || !_activeChatPartner) return;
+    const area = document.getElementById('izyChatMessagesArea');
+    if (!area) return;
+    try {
+      const url = `${WORKER_CHAT_URL}/messages?me=${encodeURIComponent(_currentUser.user_key)}&partner=${encodeURIComponent(_activeChatPartner.user_key)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const msgs = (data && Array.isArray(data.messages)) ? data.messages : [];
+
+      if (msgs.length === 0) {
+        area.innerHTML = '<div class="my-auto text-center text-xs text-slate-400 px-4">Belum ada pesan. Mulai percakapan dengan <b>' + escHtmlChat(_activeChatPartner.nama) + '</b>!</div>';
+        _lastMsgCount = 0;
+        return;
+      }
+
+      if (msgs.length !== _lastMsgCount || forceScroll) {
+        _lastMsgCount = msgs.length;
+        area.innerHTML = msgs.map(m => {
+          const isMine = m.sender_key === _currentUser.user_key;
+          return `
+            <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'}">
+              <div class="max-w-[82%] px-3 py-2 rounded-2xl text-xs leading-relaxed shadow-sm ${isMine ? 'bg-teal-700 text-white rounded-br-sm' : 'bg-white border border-slate-200 text-slate-800 rounded-bl-sm'}">
+                <div class="whitespace-pre-wrap break-words">${escHtmlChat(m.message)}</div>
+                <div class="text-[8px] mt-1 text-right ${isMine ? 'text-teal-100/80' : 'text-slate-400'}">${fmtJamChat(m.created_at)}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        area.scrollTop = area.scrollHeight;
+        if (_unreadMap[_activeChatPartner.user_key]) {
+          fetchOnlineAndUnread();
+        }
+      }
+    } catch (e) {
+      if (forceScroll) {
+        area.innerHTML = '<div class="my-auto text-center text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-4">Belum dapat terhubung ke Cloudflare Worker (<b>chat-izy-portal</b>). Pastikan Worker &amp; D1 Database sudah di-deploy.</div>';
+      }
+    }
+  }
+
+  const chatSendForm = document.getElementById('izyChatSendForm');
+  if (chatSendForm) {
+    chatSendForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!_currentUser || !_activeChatPartner) return;
+      const inp = document.getElementById('izyChatInputText');
+      const text = (inp.value || '').trim();
+      if (!text) return;
+
+      const btn = document.getElementById('btnIzyChatSend');
+      inp.disabled = true;
+      if (btn) btn.disabled = true;
+
+      try {
+        const res = await fetch(WORKER_CHAT_URL + '/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify({
+            sender_key: _currentUser.user_key,
+            sender_name: _currentUser.nama,
+            sender_role: _currentUser.role,
+            receiver_key: _activeChatPartner.user_key,
+            receiver_name: _activeChatPartner.nama,
+            receiver_role: _activeChatPartner.role,
+            message: text
+          })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        inp.value = '';
+        await loadRoomMessages(true);
+      } catch (err) {
+        Swal.fire('Gagal Mengirim', 'Tidak dapat terhubung ke Cloudflare D1 Worker (chat-izy-portal).', 'error');
+      } finally {
+        inp.disabled = false;
+        if (btn) btn.disabled = false;
+        inp.focus();
+      }
+    });
+  }
+
+  // === 4. TAMPILKAN NAMA PENGGUNA SETELAH LOGIN ===
+  function applyLoggedInUserUI(user) {
+    if (!user || !user.nama) return;
+    _currentUser = {
+      user_key: user.user_key || makeUserKey(user.role || 'santri', user.nama),
+      nama: user.nama,
+      role: user.role || 'santri'
+    };
+
+    const gate = document.getElementById('izyLoginGate');
+    if (gate) gate.classList.add('hidden');
+
+    const roleLabel = _currentUser.role === 'guru' ? 'Guru / Staf' : 'Santri';
+
+
+    const homeBar = document.getElementById('izyHomeUserBar');
+    const homeName = document.getElementById('izyHomeUserName');
+    const homeRole = document.getElementById('izyHomeUserRole');
+    if (homeName) homeName.textContent = _currentUser.nama;
+    if (homeRole) homeRole.textContent = '(' + roleLabel + ')';
+    if (homeBar) {
+      homeBar.classList.remove('hidden');
+      homeBar.classList.add('flex');
+    }
+
+    updateOnlinePillsUI();
+    startPresenceLoops();
+  }
+
+  window.izyLogoutPortal = function() {
+    Swal.fire({
+      title: 'Keluar dari IZY Portal?',
+      text: 'Anda perlu memilih nama dan memasukkan password lagi untuk masuk.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0f766e',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Ya, Keluar',
+      cancelButtonText: 'Batal'
+    }).then(res => {
+      if (!res.isConfirmed) return;
+      if (_currentUser) {
+        try {
+          fetch(WORKER_CHAT_URL + '/logout?user_key=' + encodeURIComponent(_currentUser.user_key));
+        } catch (e) {}
+      }
+      _currentUser = null;
+      _activeChatPartner = null;
+      stopPresenceLoops();
+      window.izyToggleOnlineChatBox(false);
+      try { sessionStorage.removeItem('izy_portal_user'); } catch (e) {}
+      const homeBar = document.getElementById('izyHomeUserBar');
+      if (homeBar) { homeBar.classList.add('hidden'); homeBar.classList.remove('flex'); }
+      const passEl = document.getElementById('izyLoginPassword');
+      if (passEl) passEl.value = '';
+      const errEl = document.getElementById('izyLoginErrorMsg');
+      if (errEl) errEl.classList.add('hidden');
+      const gate = document.getElementById('izyLoginGate');
+      if (gate) gate.classList.remove('hidden');
+      fetchOnlineAndUnread();
+    });
+  };
+
+  window.izyToggleLoginPass = function() {
+    const inp = document.getElementById('izyLoginPassword');
+    const eye = document.getElementById('izyLoginEye');
+    if (!inp || !eye) return;
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      eye.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+      inp.type = 'password';
+      eye.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+  };
+
+  window.izySetLoginRoleFilter = function(role) {
+    _loginRoleFilter = role;
+    ['all', 'guru', 'santri'].forEach(r => {
+      const btn = document.getElementById('izyRoleTab-' + r);
+      if (!btn) return;
+      if (r === role) {
+        btn.className = 'py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-teal-800 text-white shadow-sm transition cursor-pointer';
+      } else {
+        btn.className = 'py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider text-slate-600 hover:text-teal-800 transition cursor-pointer';
+      }
+    });
+    window.izyFilterLoginNames();
+  };
+
+  window.izyFilterLoginNames = function() {
+    const sel = document.getElementById('izyLoginSelectNama');
+    if (!sel) return;
+    const kw = ((document.getElementById('izyLoginSearch') || {}).value || '').trim().toLowerCase();
+    const curVal = sel.value;
+
+    const filtered = _loginUsers.filter(u => {
+      const matchRole = (_loginRoleFilter === 'all') || (u.role === _loginRoleFilter);
+      const matchKw = !kw || u.nama.toLowerCase().includes(kw);
+      return matchRole && matchKw;
+    });
+
+    if (filtered.length === 0) {
+      sel.innerHTML = '<option value="">Nama tidak ditemukan...</option>';
+      return;
+    }
+
+    const gurus = filtered.filter(u => u.role === 'guru');
+    const santris = filtered.filter(u => u.role === 'santri');
+
+    let htmlOpt = '<option value="">-- Pilih Nama (' + filtered.length + ' akun) --</option>';
+    if (gurus.length > 0) {
+      htmlOpt += '<optgroup label="GURU / STAF (' + gurus.length + ')">' +
+        gurus.map(u => `<option value="guru||${u.nama.replace(/"/g, '&quot;')}">${u.nama}</option>`).join('') +
+        '</optgroup>';
+    }
+    if (santris.length > 0) {
+      htmlOpt += '<optgroup label="SANTRI (' + santris.length + ')">' +
+        santris.map(u => `<option value="santri||${u.nama.replace(/"/g, '&quot;')}">${u.nama}</option>`).join('') +
+        '</optgroup>';
+    }
+    sel.innerHTML = htmlOpt;
+
+    if (curVal && Array.from(sel.options).some(o => o.value === curVal)) {
+      sel.value = curVal;
+    } else if (kw && filtered.length === 1) {
+      sel.value = filtered[0].role + '||' + filtered[0].nama;
+    }
+  };
+
+  // === 5. MUAT SELURUH NAMA & PASSWORD GURU DAN SANTRI ===
+  async function loadLoginDirectory() {
+    const sel = document.getElementById('izyLoginSelectNama');
+    const proxyUrl = window.WORKER_PROXY_URL || 'https://proxy-biodata-jurnal.nurwalad88.workers.dev/';
+    try {
+      const fetchPath = (path) => fetch(proxyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ db: 'biodata', action: 'get', path: path })
+      }).then(r => r.json()).then(r => (r && r.data) ? r.data : {});
+
+      const [passStaf, passSantri, idStaf, idSantri] = await Promise.all([
+        fetchPath('password_staf'),
+        fetchPath('password_santri'),
+        fetchPath('identitas_staf'),
+        fetchPath('identitas_santri')
+      ]);
+
+      const guruMap = new Map();
+      Object.keys(passStaf || {}).forEach(k => {
+        const v = passStaf[k];
+        if (!v) return;
+        const nama = (typeof v === 'object' && v.namaAsli) ? String(v.namaAsli).trim() : String(k).trim();
+        const pwd = (typeof v === 'object' && v.password !== undefined) ? String(v.password).trim() : (typeof v === 'string' ? v.trim() : '');
+        if (!nama) return;
+        guruMap.set(normKey(nama), { nama, role: 'guru', password: pwd });
+      });
+      Object.values(idStaf || {}).forEach(v => {
+        if (!v || !v.namaUstadz) return;
+        const nama = String(v.namaUstadz).trim();
+        const nk = normKey(nama);
+        if (!guruMap.has(nk)) {
+          guruMap.set(nk, { nama, role: 'guru', password: '' });
+        }
+      });
+
+      const santriMap = new Map();
+      Object.keys(passSantri || {}).forEach(k => {
+        const v = passSantri[k];
+        if (!v) return;
+        const rawNama = (typeof v === 'object' && v.namaAsli) ? String(v.namaAsli).trim() : String(k).trim();
+        const nama = titleCaseId(rawNama);
+        const pwd = (typeof v === 'object' && v.password !== undefined) ? String(v.password).trim() : (typeof v === 'string' ? v.trim() : '');
+        if (!nama) return;
+        santriMap.set(normKey(nama), { nama, role: 'santri', password: pwd });
+      });
+      Object.values(idSantri || {}).forEach(v => {
+        if (!v || !v.namaSantri) return;
+        const nama = titleCaseId(String(v.namaSantri).trim());
+        const nk = normKey(nama);
+        if (!santriMap.has(nk)) {
+          santriMap.set(nk, { nama, role: 'santri', password: '' });
+        }
+      });
+
+      const gurus = Array.from(guruMap.values()).sort((a, b) => a.nama.localeCompare(b.nama, 'id-ID'));
+      const santris = Array.from(santriMap.values()).sort((a, b) => a.nama.localeCompare(b.nama, 'id-ID'));
+      _loginUsers = gurus.concat(santris);
+
+      window.izyFilterLoginNames();
+    } catch (err) {
+      console.error('Gagal memuat daftar login:', err);
+      if (sel) sel.innerHTML = '<option value="">Gagal memuat data. Muat ulang halaman.</option>';
+    }
+  }
+
+  const loginForm = document.getElementById('izyLoginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const selVal = (document.getElementById('izyLoginSelectNama') || {}).value || '';
+      const passInput = ((document.getElementById('izyLoginPassword') || {}).value || '').trim();
+      const errEl = document.getElementById('izyLoginErrorMsg');
+
+      const showErr = (msg) => {
+        if (errEl) {
+          errEl.textContent = msg;
+          errEl.classList.remove('hidden');
+        }
+      };
+
+      if (errEl) errEl.classList.add('hidden');
+      if (!selVal || selVal.indexOf('||') === -1) return showErr('Silakan pilih nama Anda terlebih dahulu.');
+      if (!passInput) return showErr('Password wajib diisi.');
+
+      const parts = selVal.split('||');
+      const role = parts[0];
+      const nama = parts.slice(1).join('||');
+      const userObj = _loginUsers.find(u => u.role === role && u.nama === nama);
+
+      if (!userObj) return showErr('Data akun tidak ditemukan.');
+      if (!userObj.password) return showErr('Akun "' + nama + '" belum memiliki password di sistem. Hubungi Admin.');
+      if (passInput !== userObj.password) return showErr('Password salah! Pastikan password sesuai dengan nama Anda.');
+
+      const sessionData = {
+        user_key: makeUserKey(userObj.role, userObj.nama),
+        nama: userObj.nama,
+        role: userObj.role,
+        loginAt: Date.now()
+      };
+      try { sessionStorage.setItem('izy_portal_user', JSON.stringify(sessionData)); } catch (err) {}
+      applyLoggedInUserUI(sessionData);
+
+      if (window.Swal) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Ahlan wa Sahlan, ' + userObj.nama,
+          showConfirmButton: false,
+          timer: 2600
+        });
+      }
+    });
+  }
+
+  // Bersihkan status online saat tab ditutup
+  window.addEventListener('beforeunload', function() {
+    if (_currentUser && navigator.sendBeacon) {
+      // Gunakan fetch keepalive untuk DELETE presence
+      try {
+        fetch(WORKER_CHAT_URL + '/logout?user_key=' + encodeURIComponent(_currentUser.user_key), {
+          keepalive: true
+        });
+      } catch (e) {}
+    }
+  });
+
+  loadLoginDirectory();
+  fetchOnlineAndUnread();
+
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('izy_portal_user') || 'null');
+    if (saved && saved.nama) {
+      applyLoggedInUserUI(saved);
+    }
+  } catch (e) {}
 })();
 </script>
 </body>
