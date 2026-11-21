@@ -13187,6 +13187,7 @@ let inboxSesiAktifNamaID = "";
   let _currentUser = null; // { user_key, nama, role }
   let _onlineUsers = [];
   let _recentPartners = [];
+  let _lastSeenMap = {};
   let _unreadMap = {};
   let _totalUnread = 0;
   let _chatListTab = 'online';
@@ -13223,6 +13224,27 @@ let inboxSesiAktifNamaID = "";
       const d = new Date(Number(ts));
       return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
     } catch (e) { return ''; }
+  }
+
+  function formatLastSeenIndo(ts) {
+    const n = Math.abs(Number(ts) || 0);
+    if (!n) return '';
+    try {
+      const d = new Date(n);
+      if (isNaN(d.getTime())) return '';
+      const bln = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+      const tgl = String(d.getDate()).padStart(2, '0') + ' ' + bln[d.getMonth()] + ' ' + d.getFullYear();
+      const jam = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      return tgl + ', ' + jam;
+    } catch (e) { return ''; }
+  }
+
+  function buildPartnerSubText(partnerKey, partnerRole, isOnline) {
+    const roleTxt = partnerRole === 'guru' ? 'Guru / Staf' : 'Santri';
+    if (isOnline) return roleTxt + ' • Sedang Online';
+    const ts = _lastSeenMap[partnerKey] || (_recentPartners.find(p => p.user_key === partnerKey) || {}).last_chat || 0;
+    const lastTxt = formatLastSeenIndo(ts);
+    return roleTxt + (lastTxt ? (' • Offline (' + lastTxt + ')') : ' • Offline');
   }
 
   // === 1. UPDATE JUMLAH ONLINE & JUMLAH PESAN MASUK (SIDEBAR KIRI BAWAH & LOGIN GATE) ===
@@ -13305,6 +13327,7 @@ let inboxSesiAktifNamaID = "";
         throw new Error((data && data.pesan) || ('HTTP ' + res.status));
       }
       _onlineUsers = Array.isArray(data.online) ? data.online : [];
+      _lastSeenMap = data.last_seen_map || {};
       _unreadMap = data.unread_map || {};
       _totalUnread = Number(data.total_unread) || 0;
       _recentPartners = Array.isArray(data.recent_partners) ? data.recent_partners : [];
@@ -13317,8 +13340,14 @@ let inboxSesiAktifNamaID = "";
     }
     updateOnlinePillsUI();
     const box = document.getElementById('izyOnlineChatBox');
-    if (box && !box.classList.contains('hidden') && !_activeChatPartner) {
-      window.izyRenderOnlineList();
+    if (box && !box.classList.contains('hidden')) {
+      if (!_activeChatPartner) {
+        window.izyRenderOnlineList();
+      } else {
+        const pOnline = _onlineUsers.some(u => u.user_key === _activeChatPartner.user_key);
+        const subEl = document.getElementById('izyChatBoxSub');
+        if (subEl) subEl.textContent = buildPartnerSubText(_activeChatPartner.user_key, _activeChatPartner.role, pOnline);
+      }
     }
   }
 
@@ -13399,6 +13428,8 @@ let inboxSesiAktifNamaID = "";
       const safeKey = escHtmlChat(u.user_key);
       const safeName = escHtmlChat(u.nama);
       const safeRole = escHtmlChat(u.role || 'santri');
+      const lastTs = _lastSeenMap[u.user_key] || u.last_seen || u.last_chat || 0;
+      const lastTxt = formatLastSeenIndo(lastTs);
 
       return `
         <div class="bg-white rounded-xl border border-slate-200 px-3 py-2.5 flex items-center justify-between gap-2 shadow-sm hover:border-teal-400 transition">
@@ -13410,6 +13441,7 @@ let inboxSesiAktifNamaID = "";
             <div class="min-w-0">
               <div class="text-xs font-extrabold text-slate-800 truncate">${safeName} ${isMe ? '<span class="text-[9px] text-teal-600 font-bold">(Anda)</span>' : ''}</div>
               <div class="text-[10px] font-semibold ${isOnline ? 'text-emerald-600' : 'text-slate-400'}">${roleLbl} &bull; ${isOnline ? 'Sedang Login' : 'Offline'}</div>
+              ${(!isOnline && lastTxt) ? `<div class="text-[9px] font-semibold text-slate-400 mt-0.5 flex items-center gap-1"><i class="fa-regular fa-clock text-[8px]"></i> Terakhir offline: ${lastTxt}</div>` : ''}
             </div>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
@@ -13436,7 +13468,7 @@ let inboxSesiAktifNamaID = "";
 
     const isOnline = _onlineUsers.some(u => u.user_key === partnerKey);
     document.getElementById('izyChatBoxTitle').textContent = partnerName;
-    document.getElementById('izyChatBoxSub').textContent = (partnerRole === 'guru' ? 'Guru / Staf' : 'Santri') + (isOnline ? ' • Sedang Online' : ' • Offline');
+    document.getElementById('izyChatBoxSub').textContent = buildPartnerSubText(partnerKey, partnerRole, isOnline);
 
     document.getElementById('izyChatMessagesArea').innerHTML = '<div class="text-center py-8 text-xs text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat percakapan...</div>';
 
