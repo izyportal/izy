@@ -24,6 +24,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <script>
@@ -877,6 +878,9 @@
             <button id="tabBtnAdab" onclick="pindahMenu('adab')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
               <i class="fa-solid fa-scale-balanced w-4 text-center"></i> Catatan Adab Santri
             </button>
+            <button id="tabBtnInputAmalYaumi" onclick="pindahMenu('inputAmalYaumi')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
+              <i class="fa-solid fa-clipboard-list w-4 text-center"></i> Input Amal Yaumi
+            </button>
           </div>
         </div>
 
@@ -907,6 +911,9 @@
             </button>
             <button id="tabBtnRekapNilai" onclick="pindahMenu('rekapNilai')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
               <i class="fa-solid fa-file-signature w-4 text-center"></i> Rekap Nilai Mapel
+            </button>
+            <button id="tabBtnNilaiRataAkademik" onclick="pindahMenu('nilaiRataAkademik')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
+              <i class="fa-solid fa-chart-line w-4 text-center"></i> Nilai Rata" Akademik
             </button>
             <button id="tabBtnRekapAbsenKbm" onclick="pindahMenu('rekapAbsenKbm')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
               <i class="fa-solid fa-calendar-check w-4 text-center"></i> Rekap Absen KBM
@@ -973,6 +980,9 @@
             </button>
             <button id="tabBtnKlasemenAdab" onclick="pindahMenu('klasemenAdab')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
               <i class="fa-solid fa-trophy w-4 text-center"></i> Klasemen Adab
+            </button>
+            <button id="tabBtnRekapAmalYaumi" onclick="pindahMenu('rekapAmalYaumi')" class="nav-btn w-full text-left p-2 rounded-lg text-xs font-semibold text-teal-200 flex items-center gap-2">
+              <i class="fa-solid fa-chart-pie w-4 text-center"></i> Rekap Amal Yaumi
             </button>
           </div>
         </div>
@@ -1900,8 +1910,8 @@
           <!-- 2. PANEL: INPUT JURNAL KBM                 -->
           <!-- ========================================== -->
           <section id="panelInputKbm" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
-            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden min-h-[calc(100vh-4.5rem)] flex flex-col">
-              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2.5 flex justify-between items-center text-white">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden h-[calc(100vh-4.5rem)] flex flex-col">
+              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2 flex justify-between items-center text-white shrink-0">
                 <div>
                   <h2 class="text-xs font-black tracking-widest uppercase">Form Jurnal Mengajar</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Catatan agenda kegiatan belajar mengajar guru</p>
@@ -1911,8 +1921,8 @@
                 </button>
               </div>
 
-              <form id="kbmForm" class="p-4 md:p-5 gap-3 flex-1 flex flex-col">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 shrink-0">
+              <form id="kbmForm" class="p-3.5 md:p-4 gap-2 flex-1 flex flex-col min-h-0">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 shrink-0">
                   <div class="md:col-span-2">
                     <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1">Nama Guru</label>
                     <select id="kbmGuru" required class="w-full p-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 bg-white outline-none font-bold shadow-sm">
@@ -1985,9 +1995,9 @@
 
                 </div>
 
-                <div class="flex-1 flex flex-col min-h-[180px]">
+                <div class="flex-1 flex flex-col min-h-[70px]">
                   <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1 shrink-0">Uraian / Ringkasan Pembelajaran</label>
-                  <textarea id="kbmRingkasan" placeholder="Catatan singkat jalannya materi KBM..." required class="w-full flex-1 min-h-[160px] p-2.5 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 outline-none font-medium resize-none shadow-sm"></textarea>
+                  <textarea id="kbmRingkasan" placeholder="Catatan singkat jalannya materi KBM..." required class="w-full flex-1 min-h-[55px] p-2.5 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 outline-none font-medium resize-none shadow-sm"></textarea>
                 </div>
 
                 <div id="kbmTimerDisplay" class="text-center text-[10px] font-bold text-slate-500 shrink-0">Memuat waktu...</div>
@@ -2243,18 +2253,18 @@
           <!-- 6. PANEL: INPUT CATATAN ADAB SANTRI        -->
           <!-- ========================================== -->
           <section id="panelAdab" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
-            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden min-h-[calc(100vh-4.5rem)] flex flex-col">
-              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2.5 flex justify-between items-center text-white">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden h-[calc(100vh-4.5rem)] flex flex-col">
+              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2.5 flex justify-between items-center text-white shrink-0">
                 <div>
                   <h2 class="text-xs font-black tracking-widest uppercase">Form Catatan Adab Santri</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Pencatatan pelanggaran dan adab santri</p>
                 </div>
-                <button type="button" onclick="toggleMenu('menuRekap'); pindahMenu('rekapAdab')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1">
+                <button type="button" onclick="toggleMenu('menuRekapPengasuh'); pindahMenu('rekapAdab')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1">
                   <i class="fa-solid fa-list-check"></i> Rekap Adab
                 </button>
               </div>
-              <form id="adabForm" class="p-4 md:p-5 space-y-3 flex-1 flex flex-col justify-between">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <form id="adabForm" class="p-4 md:p-5 gap-3 flex-1 flex flex-col min-h-0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 shrink-0">
                   <div>
                     <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1">Nama Santri</label>
                     <select id="adabNamaSantri" required class="w-full p-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 bg-white outline-none font-bold shadow-sm">
@@ -2297,12 +2307,12 @@
                       <option value="">Memuat Nama Pelapor...</option>
                     </select>
                   </div>
-                  <div class="md:col-span-2">
-                    <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1">Ringkasan Kejadian</label>
-                    <textarea id="adabCatatan" rows="3" placeholder="Keterangan singkat kejadian..." required class="w-full p-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 outline-none font-medium resize-none shadow-sm"></textarea>
-                  </div>
                 </div>
-                <button type="submit" id="btnSimpanAdab" class="w-full py-2.5 bg-teal-800 hover:bg-teal-900 text-white font-bold rounded-lg shadow-md transition active:scale-95 text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 mt-2">
+                <div class="flex-1 flex flex-col min-h-[120px]">
+                  <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1 shrink-0">Ringkasan Kejadian</label>
+                  <textarea id="adabCatatan" placeholder="Keterangan singkat kejadian..." required class="w-full flex-1 p-2.5 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 outline-none font-medium resize-none shadow-sm"></textarea>
+                </div>
+                <button type="submit" id="btnSimpanAdab" class="w-full py-2.5 bg-teal-800 hover:bg-teal-900 text-white font-bold rounded-lg shadow-md transition active:scale-95 text-[10px] uppercase tracking-wider flex items-center justify-center gap-1.5 shrink-0">
                   <i class="fa-solid fa-floppy-disk text-xs"></i> Simpan Catatan Adab
                 </button>
               </form>
@@ -4443,6 +4453,783 @@
             </div>
           </section>
 
+
+          <!-- ========================================== -->
+          <!-- PANEL: NILAI RATA-RATA AKADEMIK            -->
+          <!-- ========================================== -->
+          <section id="panelNilaiRataAkademik" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden min-h-[calc(100vh-4.5rem)] flex flex-col">
+              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2.5 flex flex-wrap justify-between items-center gap-2 text-white">
+                <div>
+                  <h2 class="text-xs font-black tracking-widest uppercase">Nilai Rata-Rata Akademik Santri</h2>
+                  <p class="text-[9px] text-teal-100 font-medium">Rekapitulasi nilai rata-rata PH, PTS, PAS, dan Nilai Akhir Akademik seluruh santri</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="muatNilaiRataAkademik(true)" class="bg-white/15 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-rotate"></i> Muat Ulang
+                  </button>
+                  <button type="button" onclick="exportNilaiRataAkademikExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer shadow-sm">
+                    <i class="fa-solid fa-file-excel"></i> Export Excel
+                  </button>
+                </div>
+              </div>
+
+              <div class="p-4 flex-1 flex flex-col gap-3">
+                <!-- Filter Bar -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1">Filter Kelas</label>
+                    <select id="nra_filterKelas" onchange="renderNilaiRataAkademik()" class="w-full p-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 bg-white outline-none font-bold">
+                      <option value="ALL">Semua Kelas (7 - 12)</option>
+                      <option value="7">Kelas 7</option>
+                      <option value="8">Kelas 8</option>
+                      <option value="9">Kelas 9</option>
+                      <option value="10">Kelas 10</option>
+                      <option value="11">Kelas 11</option>
+                      <option value="12">Kelas 12</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1">Filter Jenis Kelamin</label>
+                    <select id="nra_filterGender" onchange="renderNilaiRataAkademik()" class="w-full p-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 bg-white outline-none font-bold">
+                      <option value="ALL">Semua (Putra &amp; Putri)</option>
+                      <option value="L">Putra (L)</option>
+                      <option value="P">Putri (P)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase mb-1">Cari Nama Santri</label>
+                    <input type="text" id="nra_search" oninput="renderNilaiRataAkademik()" placeholder="Ketik nama santri..." class="w-full p-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 bg-white outline-none font-medium" />
+                  </div>
+                </div>
+
+                <!-- Summary KPI Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+                  <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <div class="text-[9px] font-bold text-slate-500 uppercase">Total Santri</div>
+                    <div id="nra_kpiTotal" class="text-lg font-black text-teal-800 mt-0.5">0</div>
+                  </div>
+                  <div class="bg-sky-50 border border-sky-200 rounded-xl p-3">
+                    <div class="text-[9px] font-bold text-sky-700 uppercase">Rata-Rata PH</div>
+                    <div id="nra_kpiPH" class="text-lg font-black text-sky-800 mt-0.5">0.0</div>
+                  </div>
+                  <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
+                    <div class="text-[9px] font-bold text-amber-700 uppercase">Rata-Rata PTS / PAS</div>
+                    <div id="nra_kpiPTSPAS" class="text-lg font-black text-amber-800 mt-0.5">0.0 / 0.0</div>
+                  </div>
+                  <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
+                    <div class="text-[9px] font-bold text-emerald-700 uppercase">Rata-Rata Akademik</div>
+                    <div id="nra_kpiAkhir" class="text-lg font-black text-emerald-800 mt-0.5">0.0</div>
+                  </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="nra_loading" class="text-center py-10 text-teal-700 font-bold text-xs hidden">
+                  <i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i><br>Menghitung Nilai Rata-Rata Akademik...
+                </div>
+
+                <!-- Data Table -->
+                <div id="nra_tableWrap" class="flex-1 overflow-x-auto border border-slate-200 rounded-xl">
+                  <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr class="bg-teal-900 text-white text-[10px] uppercase tracking-wider">
+                        <th class="py-2.5 px-2.5 text-center w-10">No</th>
+                        <th class="py-2.5 px-3">Nama Santri</th>
+                        <th class="py-2.5 px-2.5 text-center">Kelas</th>
+                        <th class="py-2.5 px-2.5 text-center">Mapel</th>
+                        <th class="py-2.5 px-2.5 text-center">Rata PH</th>
+                        <th class="py-2.5 px-2.5 text-center">Rata PTS</th>
+                        <th class="py-2.5 px-2.5 text-center">Rata PAS</th>
+                        <th class="py-2.5 px-3 text-center">Rata Akhir</th>
+                        <th class="py-2.5 px-2.5 text-center">Predikat</th>
+                      </tr>
+                    </thead>
+                    <tbody id="nra_tbody" class="divide-y divide-slate-100">
+                      <tr><td colspan="9" class="text-center py-8 text-slate-400">Memuat data...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================== -->
+          <!-- PANEL: INPUT AMAL YAUMI (INPUT PENGASUH)   -->
+          <!-- ========================================== -->
+          <section id="panelInputAmalYaumi" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden min-h-[calc(100vh-4.5rem)] flex flex-col">
+              <div class="bg-gradient-to-r from-teal-900 to-teal-700 px-5 py-2.5 flex flex-wrap justify-between items-center gap-2 text-white shrink-0">
+                <div>
+                  <h2 class="text-xs font-black tracking-widest uppercase">Input Amal Yaumi Santri</h2>
+                  <p class="text-[9px] text-teal-100 font-medium">Blangko Liburan : 20 Des 2026 s/d 2 Jan 2027 &bull; Pkl. 20:00 - 00:00 WIB</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="ay_statusBadge" class="bg-amber-500/20 border border-amber-300/40 text-amber-100 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider flex items-center gap-1">
+                    <i class="fa-solid fa-lock text-amber-300"></i> Terkunci Sesuai Jadwal
+                  </span>
+                  <button type="button" onclick="toggleMenu('menuRekapPengasuh'); pindahMenu('rekapAmalYaumi')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-chart-column"></i> Rekap Amal Yaumi
+                  </button>
+                </div>
+              </div>
+
+              <div class="p-4 md:p-5 flex-1 flex flex-col bg-slate-50/50">
+                <!-- BAGIAN 1: FORM LOGIN SANTRI AMAL YAUMI (FULL WIDTH) -->
+                <div id="ay_loginSection" class="w-full flex-1 flex flex-col justify-center">
+                  <div class="w-full bg-white rounded-2xl shadow-sm border border-slate-200 p-5 md:p-7">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 mb-5 border-b border-slate-100">
+                      <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-700 to-emerald-600 text-white flex items-center justify-center shadow-sm shrink-0">
+                          <i class="fa-solid fa-moon text-xl"></i>
+                        </div>
+                        <div>
+                          <h3 class="text-base font-black text-teal-900 uppercase tracking-wide">Login Input Amal Yaumi Santri</h3>
+                          <p class="text-xs text-slate-500">Pilih nama santri dan masukkan password untuk mengisi ceklist amalan harian.</p>
+                        </div>
+                      </div>
+                      <div class="bg-amber-50 text-amber-800 font-bold text-[11px] px-3.5 py-1.5 rounded-xl border border-amber-200 self-start md:self-auto">
+                        <i class="fa-regular fa-calendar-check mr-1"></i> Blangko Liburan : 20 Des 2026 s/d 2 Jan 2027
+                      </div>
+                    </div>
+
+                    <form id="ay_loginForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                      <div>
+                        <label for="ay_santriName" class="block text-[10px] font-bold text-slate-600 uppercase mb-1.5">Pilih Nama Santri</label>
+                        <select id="ay_santriName" required class="w-full p-2.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-600 bg-white outline-none font-bold">
+                          <option value="" disabled selected>-- Memuat Data Santri... --</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label for="ay_loginPassword" class="block text-[10px] font-bold text-slate-600 uppercase mb-1.5">Password Santri</label>
+                        <input type="password" id="ay_loginPassword" placeholder="Masukkan password..." required class="w-full p-2.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-600 bg-white outline-none font-medium" />
+                      </div>
+                      <div>
+                        <button type="submit" id="ay_loginBtn" disabled class="w-full py-2.5 bg-teal-700 hover:bg-teal-800 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow transition text-xs uppercase tracking-wider cursor-pointer">
+                          Menyiapkan Form...
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- BAGIAN 2: HALAMAN UTAMA CEKLIST AMAL YAUMI (FULL WIDTH) -->
+                <div id="ay_mainAppSection" class="w-full" style="display: none;">
+                  <div class="w-full bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-5">
+                    <!-- Top Bar Info Santri & Progress -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 pb-4 mb-4 border-b border-slate-200 items-center">
+                      <div class="md:col-span-2 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-teal-800 text-white flex items-center justify-center shrink-0">
+                          <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span id="ay_activeSantriBadge" class="text-sm font-black text-teal-900"></span>
+                            <button type="button" onclick="ayBackToLogin()" class="text-[10px] font-bold text-rose-600 hover:text-rose-800 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200 cursor-pointer">
+                              <i class="fa-solid fa-right-left mr-1"></i>Ganti Santri
+                            </button>
+                          </div>
+                          <div class="text-[10px] text-amber-700 font-bold mt-0.5">Blangko Liburan : 20 Des 2026 s/d 2 Jan 2027</div>
+                        </div>
+                      </div>
+                      <div>
+                        <label for="ay_tanggal" class="block text-[9px] font-bold text-slate-500 uppercase mb-1">Tanggal Pengisian</label>
+                        <input type="date" id="ay_tanggal" disabled required class="w-full p-2 text-xs border border-slate-200 rounded-lg bg-slate-100 text-slate-700 font-bold cursor-not-allowed outline-none" />
+                      </div>
+                      <div class="bg-teal-50 border border-teal-200 rounded-xl px-3.5 py-2 flex items-center justify-between">
+                        <div>
+                          <div class="text-[9px] font-bold text-teal-700 uppercase">Progress Ceklist</div>
+                          <div id="ay_progressText" class="text-sm font-black text-teal-900">0 / 27 Terisi</div>
+                        </div>
+                        <i class="fa-solid fa-list-check text-teal-600 text-lg"></i>
+                      </div>
+                    </div>
+
+                    <form id="ay_amalanForm" class="space-y-4">
+                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5" id="ay_checklistContainer">
+                      <!-- BARIS KHUSUS HALANGAN (KHUSUS SANTRI PUTRI) -->
+                      <div class="col-span-1 md:col-span-2 lg:col-span-3 p-3.5 rounded-xl border border-rose-200 bg-rose-50/80 flex-col sm:flex-row sm:items-center sm:justify-between gap-2" id="ay_rowHalangan" style="display: none;">
+                        <div>
+                          <span class="text-[9px] font-black uppercase tracking-wider text-rose-600 bg-rose-100 px-2 py-0.5 rounded-full">Khusus Santri Putri</span>
+                          <div class="text-xs font-bold text-rose-900 mt-1">Hari ini Halangan?</div>
+                        </div>
+                        <div class="flex items-center gap-5 shrink-0">
+                          <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-emerald-700 select-none bg-white px-3 py-1.5 rounded-lg border border-rose-200"><input type="radio" name="ay_halangan" value="1" id="ay_halanganIya" class="w-4 h-4 accent-teal-700 cursor-pointer"> IYA</label>
+                          <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-rose-700 select-none bg-white px-3 py-1.5 rounded-lg border border-rose-200"><input type="radio" name="ay_halangan" value="0" class="w-4 h-4 accent-teal-700 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">1</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Qiyamullail</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Sunnah</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_qiyamullail" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_qiyamullail" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">2</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Dua Roka'at Qobliyah Shubuh</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Sunnah</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_dua_rokaat_qobliyah_shubuh" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_dua_rokaat_qobliyah_shubuh" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">3</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Shubuh Sendirian</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_shubuh_sendirian" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_shubuh_sendirian" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">4</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Shubuh Berjama'ah</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_shubuh_berjamaah" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_shubuh_berjamaah" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">5</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Dzikir Pagi</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Dzikir & Qur'an</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_dzikir_pagi" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_dzikir_pagi" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">6</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Dhuha</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Sunnah</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_dhuha" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_dhuha" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">7</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Dua Roka'at Qobliyah Dzuhur</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Sunnah</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_dua_rokaat_qobliyah_dzuhur" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_dua_rokaat_qobliyah_dzuhur" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">8</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Dzuhur Sendirian</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_dzuhur_sendirian" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_dzuhur_sendirian" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">9</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Dzuhur Berjama'ah</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_dzuhur_berjamaah" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_dzuhur_berjamaah" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">10</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Dua Roka'at Ba'diyah Dzuhur</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Sunnah</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_dua_rokaat_badiyah_dzuhur" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_dua_rokaat_badiyah_dzuhur" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">11</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Ashar Sendirian</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_ashar_sendirian" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_ashar_sendirian" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">12</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Ashar Berjama'ah</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_ashar_berjamaah" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_ashar_berjamaah" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">13</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Dzikir Sore</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Dzikir & Qur'an</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_dzikir_sore" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_dzikir_sore" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">14</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Olahraga Sore</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Aktivitas & Adab</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_olah_raga_sore" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_olah_raga_sore" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">15</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Maghrib Sendirian</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_maghrib_sendirian" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_maghrib_sendirian" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">16</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Maghrib Berjama'ah</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_maghrib_berjamaah" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_maghrib_berjamaah" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">17</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Dua Roka'at Ba'diyah Maghrib</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Sunnah</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_dua_rokaat_badiyah_maghrib" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_dua_rokaat_badiyah_maghrib" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">18</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Isya` Sendirian</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_isya_sendirian" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_isya_sendirian" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">19</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Shalat Isya` Berjama'ah</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Wajib</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_shalat_isya_berjamaah" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_shalat_isya_berjamaah" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">20</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Dua Roka'at Ba'diyah Isya`</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Shalat Sunnah</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_dua_rokaat_badiyah_isya" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_dua_rokaat_badiyah_isya" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">21</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Olah Raga Pagi</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Aktivitas & Adab</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_olah_raga_pagi" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_olah_raga_pagi" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">22</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Membantu Orang Tua</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Aktivitas & Adab</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_membantu_orang_tua" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_membantu_orang_tua" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">23</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Membaca Buku</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Aktivitas & Adab</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_membaca_buku" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_membaca_buku" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">24</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Main Hp.</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Aktivitas & Adab</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_main_hp" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_main_hp" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">25</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Silaturahmi</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Aktivitas & Adab</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_silaturahmi" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_silaturahmi" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">26</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Tilawah Al-Qur`an</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Dzikir & Qur'an</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_tilawah_al_quran" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_tilawah_al_quran" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+                      <div class="p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:shadow-sm transition flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-start gap-2">
+                            <span class="w-5 h-5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">27</span>
+                            <div>
+                              <div class="text-xs font-bold text-slate-800 leading-snug">Muroja'ah Hafalan</div>
+                              <div class="text-[9px] font-semibold text-slate-400">Dzikir & Qur'an</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-xs font-bold text-emerald-700 select-none transition"><input type="radio" name="ay_murojaah_hafalan" value="1" required class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer"> IYA</label>
+                          <label class="flex items-center justify-center gap-1.5 cursor-pointer py-1.5 rounded-lg border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold text-rose-700 select-none transition"><input type="radio" name="ay_murojaah_hafalan" value="0" class="w-3.5 h-3.5 accent-rose-600 cursor-pointer"> TIDAK</label>
+                        </div>
+                      </div>
+
+                      </div>
+
+                      <div class="pt-2 flex flex-col gap-2">
+                        <button type="submit" id="ay_saveBtn" class="w-full py-3 bg-gradient-to-r from-teal-800 to-emerald-700 hover:from-teal-900 hover:to-emerald-800 disabled:from-slate-400 disabled:to-slate-400 disabled:cursor-not-allowed text-white font-black rounded-xl shadow-md transition text-xs uppercase tracking-widest cursor-pointer flex items-center justify-center gap-2">
+                          <i class="fa-solid fa-floppy-disk"></i> Simpan Amalan Hari Ini
+                        </button>
+                        <div id="ay_loadingText" class="text-center text-xs text-teal-700 font-bold hidden">
+                          <i class="fa-solid fa-spinner fa-spin mr-1"></i> Menyimpan data amalan ke Firebase...
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ========================================== -->
+          <!-- PANEL: REKAP AMAL YAUMI (REKAP PENGASUH)   -->
+          <!-- ========================================== -->
+          <section id="panelRekapAmalYaumi" class="w-full hidden animate-[fadeIn_0.3s_ease-in-out]">
+            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden min-h-[calc(100vh-4.5rem)] flex flex-col">
+              <!-- Executive Header -->
+              <div class="bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-700 px-5 py-3 flex flex-wrap justify-between items-center gap-2 text-white shrink-0">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h2 class="text-xs font-black tracking-widest uppercase">Dashboard Monitoring &amp; Rekap Amal Yaumi</h2>
+                    <span class="text-[9px] font-bold bg-white/15 border border-white/25 px-2 py-0.5 rounded-full">Kontrol Pimpinan &amp; Kepala Sekolah</span>
+                  </div>
+                  <p id="ray_periodeSubtitle" class="text-[10px] text-teal-100 font-medium mt-0.5">Rekapitulasi persentase pelaksanaan ibadah &amp; aktivitas harian santri</p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <select id="ray_periodeFilter" onchange="renderRekapAmalDashboard()" class="bg-white/15 hover:bg-white/20 text-white border border-white/30 rounded-lg px-2.5 py-1 text-[10px] font-bold outline-none cursor-pointer">
+                    <option value="ALL" class="text-slate-800">Semua Data Masuk (Live)</option>
+                    <option value="DES2026" class="text-slate-800">Liburan 20 Des 2026 - 2 Jan 2027</option>
+                  </select>
+                  <button type="button" onclick="exportRekapAmalExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-2.5 py-1 rounded-lg text-[10px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer shadow-sm">
+                    <i class="fa-solid fa-file-excel"></i> Export
+                  </button>
+                  <button type="button" onclick="muatRekapAmalYaumi(true)" class="bg-white/15 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded-lg text-[10px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-rotate"></i> Muat Ulang
+                  </button>
+                </div>
+              </div>
+
+              <div class="p-4 md:p-5 flex-1 flex flex-col gap-4 bg-slate-50/60">
+                <!-- Loading Indicator -->
+                <div id="ray_chartLoading" class="text-center py-6 text-xs text-teal-700 font-bold bg-white rounded-xl border border-slate-200">
+                  <i class="fa-solid fa-spinner fa-spin text-lg mb-1"></i><br>Memuat data monitoring Amal Yaumi santri...
+                </div>
+
+                <!-- ROW 1: 4 Executive KPI Cards -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div class="bg-white rounded-xl border border-slate-200 p-3.5 shadow-sm flex items-center justify-between">
+                    <div>
+                      <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Santri</div>
+                      <div id="ray_kpiTotalSantri" class="text-2xl font-black text-slate-800 mt-0.5">0</div>
+                      <div class="text-[10px] text-slate-500 font-medium">Terdaftar di database</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center"><i class="fa-solid fa-users text-base"></i></div>
+                  </div>
+                  <div class="bg-white rounded-xl border border-emerald-200 p-3.5 shadow-sm flex items-center justify-between">
+                    <div>
+                      <div class="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Partisipasi Mengisi</div>
+                      <div id="ray_kpiPartisipasi" class="text-2xl font-black text-emerald-700 mt-0.5">0%</div>
+                      <div id="ray_kpiPartisipasiSub" class="text-[10px] text-slate-500 font-medium">0 sudah / 0 belum</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-user-check text-base"></i></div>
+                  </div>
+                  <div class="bg-white rounded-xl border border-sky-200 p-3.5 shadow-sm flex items-center justify-between">
+                    <div>
+                      <div class="text-[9px] font-bold text-sky-600 uppercase tracking-wider">Rata-Rata Pelaksanaan</div>
+                      <div id="ray_kpiAvgAmalan" class="text-2xl font-black text-sky-700 mt-0.5">0%</div>
+                      <div id="ray_kpiTotalLaporan" class="text-[10px] text-slate-500 font-medium">0 laporan harian</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center"><i class="fa-solid fa-chart-column text-base"></i></div>
+                  </div>
+                  <div class="bg-white rounded-xl border border-amber-200 p-3.5 shadow-sm flex items-center justify-between">
+                    <div class="min-w-0 pr-2">
+                      <div class="text-[9px] font-bold text-amber-600 uppercase tracking-wider">Amalan Tertinggi</div>
+                      <div id="ray_kpiTopAmalan" class="text-xs font-black text-slate-800 mt-1 truncate">-</div>
+                      <div id="ray_kpiLowAmalan" class="text-[10px] text-rose-600 font-semibold truncate mt-0.5">Terendah: -</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-award text-base"></i></div>
+                  </div>
+                </div>
+
+                <!-- ROW 2: Grafik Batang Utama (8 Cols) + Ringkasan Partisipasi & Highlight (4 Cols) -->
+                <div class="grid grid-cols-1 xl:grid-cols-12 gap-4">
+                  <!-- Main Bar Chart: Persentase Santri Per Amalan -->
+                  <div class="xl:col-span-8 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 md:p-5 flex flex-col">
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100">
+                      <div>
+                        <h3 class="text-xs font-black text-teal-900 uppercase tracking-wider flex items-center gap-1.5">
+                          <i class="fa-solid fa-chart-bar text-teal-600"></i> Grafik Persentase Santri Melaksanakan Amal Yaumi
+                        </h3>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Persentase pelaksanaan tiap amalan dari seluruh laporan yang masuk (Hijau &ge;75%, Kuning 50-74%, Merah &lt;50%)</p>
+                      </div>
+                      <div class="flex items-center gap-1 flex-wrap" id="ray_catFilterGroup">
+                        <button type="button" onclick="setRayCategory('ALL')" data-cat="ALL" class="ray-cat-btn px-2.5 py-1 rounded-lg text-[10px] font-bold bg-teal-700 text-white cursor-pointer transition">Semua (27)</button>
+                        <button type="button" onclick="setRayCategory('WAJIB')" data-cat="WAJIB" class="ray-cat-btn px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer transition">Shalat Wajib</button>
+                        <button type="button" onclick="setRayCategory('SUNNAH')" data-cat="SUNNAH" class="ray-cat-btn px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer transition">Sunnah &amp; Dzikir</button>
+                        <button type="button" onclick="setRayCategory('ADAB')" data-cat="ADAB" class="ray-cat-btn px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer transition">Adab &amp; Aktivitas</button>
+                      </div>
+                    </div>
+                    <div id="ray_barChartWrap" class="w-full relative" style="height: 680px;">
+                      <canvas id="ray_amalanBarChart"></canvas>
+                    </div>
+                  </div>
+
+                  <!-- Right Column: Doughnut Partisipasi + Top/Bottom Highlight -->
+                  <div class="xl:col-span-4 flex flex-col gap-4">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                      <h3 class="text-xs font-black text-teal-900 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-pie text-teal-600"></i> Proporsi Partisipasi Santri
+                      </h3>
+                      <p class="text-[10px] text-slate-500 mb-3">Perbandingan santri yang sudah &amp; belum mengisi jurnal</p>
+                      <div class="max-w-[230px] mx-auto relative">
+                        <canvas id="ray_participationChart"></canvas>
+                      </div>
+                      <div id="ray_partLegend" class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-100 text-center"></div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex-1 flex flex-col justify-between gap-3">
+                      <div>
+                        <h3 class="text-xs font-black text-emerald-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <i class="fa-solid fa-arrow-trend-up text-emerald-600"></i> 5 Amalan Capaian Tertinggi
+                        </h3>
+                        <div id="ray_top5List" class="space-y-2 text-xs"></div>
+                      </div>
+                      <div class="pt-3 border-t border-slate-100">
+                        <h3 class="text-xs font-black text-rose-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> 5 Amalan Perlu Pembinaan
+                        </h3>
+                        <div id="ray_low5List" class="space-y-2 text-xs"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ROW 3: Detail Monitoring Per Santri (Full Width) -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 md:p-5">
+                  <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
+                    <div>
+                      <h3 class="text-xs font-black text-teal-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-id-card-clip text-teal-600"></i> Rincian Kedisiplinan Per Santri
+                      </h3>
+                      <p class="text-[10px] text-slate-500 mt-0.5">Pilih nama santri untuk melihat rekap hari pengisian dan persentase masing-masing amalan</p>
+                    </div>
+                    <div class="w-full md:w-80">
+                      <select id="ray_santriSelect" class="w-full p-2.5 text-xs rounded-xl border-2 border-slate-200 focus:border-teal-700 outline-none font-bold bg-white transition">
+                        <option value="" disabled selected>-- Memuat Nama Santri... --</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div id="ray_resultsContainer">
+                    <div class="text-center py-6 text-slate-400 text-xs font-medium">
+                      <i class="fa-solid fa-hand-pointer text-lg mb-1.5 block text-slate-300"></i>
+                      Pilih nama santri di kanan atas untuk melihat uraian kedisiplinan per amalan.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
         </div>
       </main>
 
@@ -4747,7 +5534,7 @@
       const panels = [
         'panelBeranda', 'panelInputSoal', 'panelDaftarSoal', 'panelCekBankSoal', 'panelSettingSoal',
         'panelSetoran', 'panelInputKbm', 'panelNilaiKbm', 'panelAbsenKbm', 'panelAbsenKst', 'panelAdab',
-        'panelRekapKbm', 'panelRekapTahfizh', 'panelRekapNilai', 'panelRekapAbsenKbm', 'panelRekapAdab', 'panelRekapKinerja', 'panelCekInputNilai', 'panelCekJurnal', 'panelRekapPrestasi', 'panelProfilData', 'panelRosterMapel', 'panelRankingKelas', 'panelKlasemenAdab', 'panelRekapTasmi', 'panelInputTasmi', 'panelCapaianTahfizh', 'panelBelumSetoran', 'panelDownload', 'panelInbox', 'panelUjian', 'panelKontrolUjian', 'panelKaldik', 'panelDaftar', 'panelGaleri'
+        'panelRekapKbm', 'panelRekapTahfizh', 'panelRekapNilai', 'panelRekapAbsenKbm', 'panelRekapAdab', 'panelRekapKinerja', 'panelCekInputNilai', 'panelCekJurnal', 'panelRekapPrestasi', 'panelProfilData', 'panelRosterMapel', 'panelRankingKelas', 'panelKlasemenAdab', 'panelRekapTasmi', 'panelInputTasmi', 'panelCapaianTahfizh', 'panelBelumSetoran', 'panelDownload', 'panelInbox', 'panelUjian', 'panelKontrolUjian', 'panelKaldik', 'panelDaftar', 'panelGaleri', 'panelNilaiRataAkademik', 'panelInputAmalYaumi', 'panelRekapAmalYaumi'
       ];
       panels.forEach(p => {
         const el = document.getElementById(p);
@@ -4757,7 +5544,7 @@
       const tabs = [
         'tabBtnBeranda', 'tabBtnInputSoal', 'tabBtnDaftarSoal', 'tabBtnCekBankSoal', 'tabBtnSettingSoal',
         'tabBtnSetoran', 'tabBtnInputKbm', 'tabBtnNilaiKbm', 'tabBtnAbsenKbm', 'tabBtnAbsenKst', 'tabBtnAdab',
-        'tabBtnRekapKbm', 'tabBtnRekapTahfizh', 'tabBtnRekapNilai', 'tabBtnRekapAbsenKbm', 'tabBtnRekapAdab', 'tabBtnRekapKinerja', 'tabBtnCekInputNilai', 'tabBtnCekJurnal', 'tabBtnRekapPrestasi', 'tabBtnProfilData', 'tabBtnRosterMapel', 'tabBtnRankingKelas', 'tabBtnKlasemenAdab', 'tabBtnRekapTasmi', 'tabBtnInputTasmi', 'tabBtnCapaianTahfizh', 'tabBtnBelumSetoran', 'tabBtnDownload', 'tabBtnInbox', 'tabBtnUjian', 'tabBtnKontrolUjian', 'tabBtnKaldik', 'tabBtnDaftar', 'tabBtnGaleri'
+        'tabBtnRekapKbm', 'tabBtnRekapTahfizh', 'tabBtnRekapNilai', 'tabBtnRekapAbsenKbm', 'tabBtnRekapAdab', 'tabBtnRekapKinerja', 'tabBtnCekInputNilai', 'tabBtnCekJurnal', 'tabBtnRekapPrestasi', 'tabBtnProfilData', 'tabBtnRosterMapel', 'tabBtnRankingKelas', 'tabBtnKlasemenAdab', 'tabBtnRekapTasmi', 'tabBtnInputTasmi', 'tabBtnCapaianTahfizh', 'tabBtnBelumSetoran', 'tabBtnDownload', 'tabBtnInbox', 'tabBtnUjian', 'tabBtnKontrolUjian', 'tabBtnKaldik', 'tabBtnDaftar', 'tabBtnGaleri', 'tabBtnNilaiRataAkademik', 'tabBtnInputAmalYaumi', 'tabBtnRekapAmalYaumi'
       ];
       tabs.forEach(t => {
         const el = document.getElementById(t);
@@ -4934,6 +5721,18 @@
           btnGal.classList.add('bg-cyan-700', 'text-white', 'border-cyan-700');
         }
         if (typeof window.muatGaleriPesantren === 'function') window.muatGaleriPesantren();
+      } else if (menu === 'nilaiRataAkademik') {
+        document.getElementById('panelNilaiRataAkademik').classList.remove('hidden');
+        document.getElementById('tabBtnNilaiRataAkademik').classList.add('active');
+        if (typeof window.muatNilaiRataAkademik === 'function') window.muatNilaiRataAkademik();
+      } else if (menu === 'inputAmalYaumi') {
+        document.getElementById('panelInputAmalYaumi').classList.remove('hidden');
+        document.getElementById('tabBtnInputAmalYaumi').classList.add('active');
+        if (typeof window.muatInputAmalYaumi === 'function') window.muatInputAmalYaumi();
+      } else if (menu === 'rekapAmalYaumi') {
+        document.getElementById('panelRekapAmalYaumi').classList.remove('hidden');
+        document.getElementById('tabBtnRekapAmalYaumi').classList.add('active');
+        if (typeof window.muatRekapAmalYaumi === 'function') window.muatRekapAmalYaumi();
       }
       
       mainScroll.scrollTop = 0;
@@ -11469,6 +12268,1027 @@ let inboxSesiAktifNamaID = "";
     fetchDataBS();
   };
 
+    // ============================================================
+    // MODUL: NILAI RATA-RATA AKADEMIK (REKAP SEKOLAH)
+    // ============================================================
+    let nraLoaded = false;
+    let nraAllRows = [];
+
+    function nraTitleCase(str) {
+      return String(str || '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function nraPredikat(val) {
+      if (val >= 90) return { label: 'Sangat Baik (A)', cls: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
+      if (val >= 80) return { label: 'Baik (B)', cls: 'bg-sky-100 text-sky-800 border-sky-200' };
+      if (val >= 65) return { label: 'Cukup (C)', cls: 'bg-amber-100 text-amber-800 border-amber-200' };
+      return { label: 'Kurang (D)', cls: 'bg-rose-100 text-rose-800 border-rose-200' };
+    }
+
+    window.muatNilaiRataAkademik = async function(forceReload = false) {
+      if (nraLoaded && !forceReload) {
+        window.renderNilaiRataAkademik();
+        return;
+      }
+      const loadingEl = document.getElementById('nra_loading');
+      const wrapEl = document.getElementById('nra_tableWrap');
+      if (loadingEl) loadingEl.classList.remove('hidden');
+      if (wrapEl) wrapEl.classList.add('hidden');
+
+      try {
+        const [snapBio, snapMapel, snapAka] = await Promise.all([
+          apiGet("biodata", "/"),
+          get(ref(dbKBM, "master_mapel")),
+          get(ref(dbKBM, "akademik"))
+        ]);
+
+        const dataBio = snapBio.val() || {};
+        const masterData = {};
+
+        function scanBioNra(obj) {
+          if (typeof obj === 'object' && obj !== null) {
+            if (Object.prototype.hasOwnProperty.call(obj, 'namaSantri') && obj.namaSantri) {
+              const namaRaw = String(obj.namaSantri).trim();
+              const namaKey = namaRaw.toUpperCase();
+              let kelasRaw = obj.sekarangKelas ? String(obj.sekarangKelas).trim() : "";
+              if (namaKey === "H. NAULI ARA") kelasRaw = "11";
+              const klsNum = kelasRaw.replace(/\D/g, '');
+              const genderRaw = String(obj.kelamin || '').trim().toLowerCase();
+              const jk = (genderRaw.startsWith('p') || genderRaw === 'putri') ? 'P' : 'L';
+              if (klsNum) {
+                const gKey = `${klsNum}${jk}`;
+                if (!masterData[gKey]) masterData[gKey] = { klsNum, jk, santri: {}, mapels: new Set() };
+                if (!masterData[gKey].santri[namaKey]) {
+                  masterData[gKey].santri[namaKey] = { namaTampil: nraTitleCase(namaRaw), klsNum, jk, ph: {}, pts: {}, pas: {} };
+                }
+              }
+            } else {
+              for (const k in obj) scanBioNra(obj[k]);
+            }
+          }
+        }
+        scanBioNra(dataBio);
+
+        if (snapMapel.exists()) {
+          Object.values(snapMapel.val()).forEach(m => {
+            const kls = String(m.kelas || '').replace(/\D/g, '');
+            const jk = String(m.gender || 'L').toUpperCase();
+            const namaMpl = String(m.mapel || 'Lainnya').trim();
+            if (jk === "SEMUA") {
+              if (masterData[`${kls}L`]) masterData[`${kls}L`].mapels.add(namaMpl);
+              if (masterData[`${kls}P`]) masterData[`${kls}P`].mapels.add(namaMpl);
+            } else if (masterData[`${kls}${jk}`]) {
+              masterData[`${kls}${jk}`].mapels.add(namaMpl);
+            }
+          });
+        }
+        Object.keys(masterData).forEach(gk => {
+          masterData[gk].mapels = Array.from(masterData[gk].mapels).sort();
+        });
+
+        const rawAka = snapAka.exists() ? snapAka.val() : {};
+        ["PH", "PTS", "PAS"].forEach(type => {
+          if (!rawAka[type]) return;
+          Object.values(rawAka[type]).forEach(v => {
+            if (!v) return;
+            const klsNum = String(v.kelas || '').replace(/\D/g, '');
+            const jk = String(v.gender || 'L').toUpperCase().startsWith('P') ? 'P' : 'L';
+            if (!klsNum) return;
+            const gKey = `${klsNum}${jk}`;
+            if (!masterData[gKey]) masterData[gKey] = { klsNum, jk, santri: {}, mapels: [] };
+            const namaKey = String(v.nama || 'NONAME').trim().toUpperCase();
+            const mapel = String(v.mapel || '').trim();
+            const skor = parseFloat(v.skor) || 0;
+            if (!mapel) return;
+            if (!masterData[gKey].mapels.includes(mapel)) {
+              masterData[gKey].mapels.push(mapel);
+              masterData[gKey].mapels.sort();
+            }
+            if (!masterData[gKey].santri[namaKey]) {
+              masterData[gKey].santri[namaKey] = { namaTampil: nraTitleCase(v.nama), klsNum, jk, ph: {}, pts: {}, pas: {} };
+            }
+            if (type === "PH") {
+              if (!masterData[gKey].santri[namaKey].ph[mapel]) masterData[gKey].santri[namaKey].ph[mapel] = [];
+              masterData[gKey].santri[namaKey].ph[mapel].push(skor);
+            } else {
+              masterData[gKey].santri[namaKey][type.toLowerCase()][mapel] = skor;
+            }
+          });
+        });
+
+        const namaDihilangkan = ["muhammad ulil albab", "fatir al-fachri", "nama santri lainnya"];
+        const rows = [];
+        Object.keys(masterData).forEach(gKey => {
+          const mapelList = masterData[gKey].mapels;
+          const santriData = masterData[gKey].santri;
+          const mapelMaxPH = {};
+          mapelList.forEach(m => {
+            let mx = 0;
+            Object.keys(santriData).forEach(nm => {
+              const c = (santriData[nm].ph[m] || []).length;
+              if (c > mx) mx = c;
+            });
+            mapelMaxPH[m] = mx || 1;
+          });
+
+          Object.keys(santriData).forEach(namaKey => {
+            const s = santriData[namaKey];
+            if (namaDihilangkan.includes(s.namaTampil.toLowerCase())) return;
+            let sumPH = 0, sumPTS = 0, sumPAS = 0, sumAkhir = 0;
+            const rincianMapel = [];
+            mapelList.forEach(m => {
+              const avgPH = (s.ph[m] || []).reduce((a, b) => a + b, 0) / (mapelMaxPH[m] || 1);
+              const pts = s.pts[m] || 0;
+              const pas = s.pas[m] || 0;
+              const akhir = parseFloat(((avgPH + pts + pas) / 3).toFixed(1));
+              sumPH += avgPH;
+              sumPTS += pts;
+              sumPAS += pas;
+              sumAkhir += akhir;
+              rincianMapel.push({ mapel: m, ph: avgPH, pts, pas, akhir });
+            });
+            const jmlMapel = mapelList.length || 1;
+            rows.push({
+              nama: s.namaTampil,
+              kelas: s.klsNum,
+              gender: s.jk,
+              kelasLabel: `${s.klsNum} ${s.jk === 'P' ? 'Putri' : 'Putra'}`,
+              jmlMapel: mapelList.length,
+              avgPH: sumPH / jmlMapel,
+              avgPTS: sumPTS / jmlMapel,
+              avgPAS: sumPAS / jmlMapel,
+              avgAkhir: sumAkhir / jmlMapel,
+              rincian: rincianMapel
+            });
+          });
+        });
+
+        rows.sort((a, b) => b.avgAkhir !== a.avgAkhir ? b.avgAkhir - a.avgAkhir : a.nama.localeCompare(b.nama));
+        nraAllRows = rows;
+        nraLoaded = true;
+        window.renderNilaiRataAkademik();
+      } catch (err) {
+        console.error("Gagal memuat Nilai Rata-Rata Akademik:", err);
+        const tbody = document.getElementById('nra_tbody');
+        if (tbody) tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-rose-600 font-bold">Gagal memuat data: ${err.message}</td></tr>`;
+      } finally {
+        if (loadingEl) loadingEl.classList.add('hidden');
+        if (wrapEl) wrapEl.classList.remove('hidden');
+      }
+    };
+
+    window.renderNilaiRataAkademik = function() {
+      const fKelas = document.getElementById('nra_filterKelas')?.value || 'ALL';
+      const fGender = document.getElementById('nra_filterGender')?.value || 'ALL';
+      const q = (document.getElementById('nra_search')?.value || '').trim().toLowerCase();
+
+      const filtered = nraAllRows.filter(r => {
+        if (fKelas !== 'ALL' && String(r.kelas) !== fKelas) return false;
+        if (fGender !== 'ALL' && r.gender !== fGender) return false;
+        if (q && !r.nama.toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      const n = filtered.length;
+      const meanPH = n ? (filtered.reduce((a, r) => a + r.avgPH, 0) / n) : 0;
+      const meanPTS = n ? (filtered.reduce((a, r) => a + r.avgPTS, 0) / n) : 0;
+      const meanPAS = n ? (filtered.reduce((a, r) => a + r.avgPAS, 0) / n) : 0;
+      const meanAkhir = n ? (filtered.reduce((a, r) => a + r.avgAkhir, 0) / n) : 0;
+
+      const elTot = document.getElementById('nra_kpiTotal');
+      const elPH = document.getElementById('nra_kpiPH');
+      const elPP = document.getElementById('nra_kpiPTSPAS');
+      const elAkh = document.getElementById('nra_kpiAkhir');
+      if (elTot) elTot.textContent = n;
+      if (elPH) elPH.textContent = meanPH.toFixed(1);
+      if (elPP) elPP.textContent = `${meanPTS.toFixed(1)} / ${meanPAS.toFixed(1)}`;
+      if (elAkh) elAkh.textContent = meanAkhir.toFixed(1);
+
+      const tbody = document.getElementById('nra_tbody');
+      if (!tbody) return;
+      if (!n) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">Tidak ada data santri sesuai filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((r, idx) => {
+        const pred = nraPredikat(r.avgAkhir);
+        const detId = `nra_det_${idx}`;
+        const rincianRows = r.rincian.map(m => `
+          <div class="grid grid-cols-5 gap-2 py-1 border-b border-dashed border-slate-200 text-[10px]">
+            <span class="col-span-2 font-bold text-slate-700">${m.mapel}</span>
+            <span class="text-center text-slate-600">PH: <b>${m.ph.toFixed(1)}</b></span>
+            <span class="text-center text-slate-600">PTS: <b>${m.pts}</b> | PAS: <b>${m.pas}</b></span>
+            <span class="text-right font-black ${m.akhir >= 75 ? 'text-emerald-700' : 'text-rose-600'}">${m.akhir.toFixed(1)}</span>
+          </div>
+        `).join('');
+
+        return `
+          <tr onclick="document.getElementById('${detId}').classList.toggle('hidden')" class="hover:bg-teal-50/50 cursor-pointer transition">
+            <td class="py-2 px-2.5 text-center text-slate-400 font-mono">${idx + 1}</td>
+            <td class="py-2 px-3">
+              <div class="font-bold text-slate-800">${r.nama}</div>
+              <div class="text-[9px] text-slate-400">Klik untuk rincian per mapel</div>
+            </td>
+            <td class="py-2 px-2.5 text-center font-semibold text-slate-600">${r.kelasLabel}</td>
+            <td class="py-2 px-2.5 text-center text-slate-500">${r.jmlMapel}</td>
+            <td class="py-2 px-2.5 text-center font-semibold text-sky-700">${r.avgPH.toFixed(1)}</td>
+            <td class="py-2 px-2.5 text-center font-semibold text-amber-700">${r.avgPTS.toFixed(1)}</td>
+            <td class="py-2 px-2.5 text-center font-semibold text-indigo-700">${r.avgPAS.toFixed(1)}</td>
+            <td class="py-2 px-3 text-center font-black text-teal-800 text-sm">${r.avgAkhir.toFixed(1)}</td>
+            <td class="py-2 px-2.5 text-center">
+              <span class="inline-block px-2 py-0.5 rounded-full border text-[9px] font-bold ${pred.cls}">${pred.label}</span>
+            </td>
+          </tr>
+          <tr id="${detId}" class="hidden bg-slate-50/80">
+            <td colspan="9" class="px-5 py-3">
+              <div class="text-[10px] font-black text-teal-800 uppercase mb-1.5">Rincian Nilai Mapel — ${r.nama} (${r.kelasLabel})</div>
+              <div class="max-h-56 overflow-y-auto pr-1">${rincianRows || '<div class="text-[10px] text-slate-400">Belum ada rincian mapel.</div>'}</div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    };
+
+    window.exportNilaiRataAkademikExcel = function() {
+      if (typeof XLSX === 'undefined' || !nraAllRows.length) {
+        Swal.fire('Info', 'Data belum siap untuk diekspor.', 'info');
+        return;
+      }
+      const fKelas = document.getElementById('nra_filterKelas')?.value || 'ALL';
+      const fGender = document.getElementById('nra_filterGender')?.value || 'ALL';
+      const q = (document.getElementById('nra_search')?.value || '').trim().toLowerCase();
+      const filtered = nraAllRows.filter(r => {
+        if (fKelas !== 'ALL' && String(r.kelas) !== fKelas) return false;
+        if (fGender !== 'ALL' && r.gender !== fGender) return false;
+        if (q && !r.nama.toLowerCase().includes(q)) return false;
+        return true;
+      });
+      const dataExport = filtered.map((r, i) => ({
+        'No': i + 1,
+        'Nama Santri': r.nama,
+        'Kelas': r.kelasLabel,
+        'Jumlah Mapel': r.jmlMapel,
+        'Rata-Rata PH': Number(r.avgPH.toFixed(1)),
+        'Rata-Rata PTS': Number(r.avgPTS.toFixed(1)),
+        'Rata-Rata PAS': Number(r.avgPAS.toFixed(1)),
+        'Nilai Rata-Rata Akhir': Number(r.avgAkhir.toFixed(1)),
+        'Predikat': nraPredikat(r.avgAkhir).label
+      }));
+      const ws = XLSX.utils.json_to_sheet(dataExport);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Nilai Rata Akademik');
+      XLSX.writeFile(wb, `Nilai_Rata_Akademik_IZY.xlsx`);
+    };
+
+    // ============================================================
+    // MODUL: INPUT AMAL YAUMI (MENU INPUT PENGASUH - FULL & AKTIF)
+    // ============================================================
+    let ayInitialized = false;
+    let ayUserData = {};
+    let aySantriGender = {};
+    let ayCurrentSantriName = "";
+    let ayIsPerempuan = false;
+    let ayIntervalId = null;
+
+    // Kunci jadwal aktif: 20 Des 2026 s/d 2 Jan 2027, Pkl 20:00 - 00:00
+    const AY_UNLOCK_FOR_TESTING = false;
+
+    function ayBersihkanTeks(teks) {
+      if (!teks) return "";
+      return String(teks).toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function ayUpdateDate() {
+      const el = document.getElementById('ay_tanggal');
+      if (!el) return;
+      const now = new Date();
+      el.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    function ayUpdateProgress() {
+      const form = document.getElementById('ay_amalanForm');
+      const prog = document.getElementById('ay_progressText');
+      if (!form || !prog) return;
+      const checkedNames = new Set();
+      form.querySelectorAll('input[type="radio"]:checked').forEach(inp => {
+        if (inp.name !== 'ay_halangan') checkedNames.add(inp.name);
+      });
+      prog.textContent = `${checkedNames.size} / 27 Terisi`;
+    }
+
+    function ayCekWaktuKunci() {
+      const saveBtn = document.getElementById('ay_saveBtn');
+      const statusBadge = document.getElementById('ay_statusBadge');
+      const setBadge = (open, text) => {
+        if (!statusBadge) return;
+        statusBadge.className = open
+          ? 'bg-emerald-500/20 border border-emerald-300/40 text-emerald-100 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider flex items-center gap-1'
+          : 'bg-amber-500/20 border border-amber-300/40 text-amber-100 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider flex items-center gap-1';
+        statusBadge.innerHTML = open
+          ? `<i class="fa-solid fa-circle-check text-emerald-300"></i> ${text}`
+          : `<i class="fa-solid fa-lock text-amber-300"></i> ${text}`;
+      };
+      if (!saveBtn) return false;
+      if (AY_UNLOCK_FOR_TESTING) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Amalan Hari Ini';
+        setBadge(true, 'Input Aktif');
+        return true;
+      }
+      const now = new Date();
+      const startDate = new Date(2026, 11, 20, 0, 0, 0);
+      const endDate = new Date(2027, 0, 2, 23, 59, 59);
+      if (now < startDate || now > endDate) {
+        saveBtn.disabled = true;
+        saveBtn.innerText = "Diluar Masa Liburan (20 Des - 2 Jan)";
+        setBadge(false, 'Diluar Masa Liburan');
+        return false;
+      }
+      if (now.getHours() >= 20) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Amalan Hari Ini';
+        setBadge(true, 'Input Dibuka (20:00 - 00:00)');
+        return true;
+      } else {
+        saveBtn.disabled = true;
+        saveBtn.innerText = "Waktu Penginputan Dimulai Pkl. 20:00 - 00:00 Saja";
+        setBadge(false, 'Dibuka Pkl. 20:00 - 00:00');
+        return false;
+      }
+    }
+
+    window.ayBackToLogin = function() {
+      ayCurrentSantriName = "";
+      ayIsPerempuan = false;
+      const fAmal = document.getElementById('ay_amalanForm');
+      const fLogin = document.getElementById('ay_loginForm');
+      if (fAmal) fAmal.reset();
+      if (fLogin) fLogin.reset();
+      ayUpdateProgress();
+      const mainSec = document.getElementById('ay_mainAppSection');
+      const loginSec = document.getElementById('ay_loginSection');
+      if (mainSec) mainSec.style.display = "none";
+      if (loginSec) loginSec.style.display = "flex";
+    };
+
+    window.muatInputAmalYaumi = async function() {
+      ayUpdateDate();
+      ayCekWaktuKunci();
+      if (ayInitialized) return;
+      ayInitialized = true;
+
+      if (!ayIntervalId) {
+        ayIntervalId = setInterval(() => {
+          ayUpdateDate();
+          ayCekWaktuKunci();
+        }, 60000);
+      }
+
+      const santriSelect = document.getElementById('ay_santriName');
+      const loginBtn = document.getElementById('ay_loginBtn');
+      const rowHalangan = document.getElementById('ay_rowHalangan');
+      const radioHalanganIya = document.getElementById('ay_halanganIya');
+
+      try {
+        let [snapId, snapPass] = await Promise.all([
+          apiGet("biodata", "identitas_santri"),
+          apiGet("biodata", "password_santri")
+        ]);
+
+        let dataId = snapId.exists() ? snapId.val() : null;
+        let dataPass = snapPass.exists() ? snapPass.val() : null;
+
+        if (!dataPass) {
+          try {
+            const res = await fetch("https://biodata-santri-default-rtdb.asia-southeast1.firebasedatabase.app/password_santri.json");
+            if (res.ok) dataPass = await res.json();
+          } catch (e) {}
+        }
+
+        if (dataId) {
+          for (const key in dataId) {
+            const santri = dataId[key];
+            if (santri && santri.namaSantri && santri.kelamin) {
+              aySantriGender[ayBersihkanTeks(santri.namaSantri)] = String(santri.kelamin).toLowerCase().trim();
+            }
+          }
+        }
+
+        if (dataPass && santriSelect) {
+          santriSelect.innerHTML = '<option value="" disabled selected>-- Pilih Nama Santri --</option>';
+          const entries = Object.values(dataPass)
+            .filter(s => s && s.namaAsli && s.password)
+            .sort((a, b) => String(a.namaAsli).localeCompare(String(b.namaAsli)));
+          entries.forEach(santri => {
+            ayUserData[santri.namaAsli] = santri.password;
+            const opt = document.createElement('option');
+            opt.value = santri.namaAsli;
+            opt.textContent = santri.namaAsli;
+            santriSelect.appendChild(opt);
+          });
+          if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.innerText = "Masuk & Isi Amal Yaumi";
+          }
+        } else if (santriSelect) {
+          santriSelect.innerHTML = '<option value="" disabled selected>-- Tidak ada data santri --</option>';
+        }
+      } catch (err) {
+        console.error("Gagal memuat biodata Amal Yaumi:", err);
+        if (santriSelect) santriSelect.innerHTML = '<option value="" disabled selected>-- Gagal memuat data --</option>';
+        Swal.fire('Gagal', 'Gagal mengambil data biodata: ' + err.message, 'error');
+      }
+
+      const loginForm = document.getElementById('ay_loginForm');
+      if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const nama = document.getElementById('ay_santriName').value;
+          const pwd = document.getElementById('ay_loginPassword').value;
+
+          if (ayUserData[nama] && String(ayUserData[nama]) === String(pwd)) {
+            ayCurrentSantriName = nama;
+            const genderHasil = aySantriGender[ayBersihkanTeks(nama)] || "";
+            ayIsPerempuan = genderHasil.includes("perempuan") || genderHasil.includes("wanita") || genderHasil === "p";
+
+            if (rowHalangan && radioHalanganIya) {
+              if (ayIsPerempuan) {
+                rowHalangan.style.display = 'flex';
+                radioHalanganIya.required = true;
+              } else {
+                rowHalangan.style.display = 'none';
+                radioHalanganIya.required = false;
+              }
+            }
+            const badge = document.getElementById('ay_activeSantriBadge');
+            if (badge) badge.textContent = nama;
+            document.getElementById('ay_loginSection').style.display = "none";
+            document.getElementById('ay_mainAppSection').style.display = "block";
+            ayUpdateProgress();
+            ayCekWaktuKunci();
+          } else {
+            Swal.fire('Password Salah', 'Password tidak sesuai! Silakan periksa kembali.', 'error');
+          }
+        });
+      }
+
+      const aySholatMapping = {
+        "ay_shalat_shubuh_sendirian": "ay_shalat_shubuh_berjamaah",
+        "ay_shalat_shubuh_berjamaah": "ay_shalat_shubuh_sendirian",
+        "ay_shalat_dzuhur_sendirian": "ay_shalat_dzuhur_berjamaah",
+        "ay_shalat_dzuhur_berjamaah": "ay_shalat_dzuhur_sendirian",
+        "ay_shalat_ashar_sendirian": "ay_shalat_ashar_berjamaah",
+        "ay_shalat_ashar_berjamaah": "ay_shalat_ashar_sendirian",
+        "ay_shalat_maghrib_sendirian": "ay_shalat_maghrib_berjamaah",
+        "ay_shalat_maghrib_berjamaah": "ay_shalat_maghrib_sendirian",
+        "ay_shalat_isya_sendirian": "ay_shalat_isya_berjamaah",
+        "ay_shalat_isya_berjamaah": "ay_shalat_isya_sendirian"
+      };
+
+      const ayListIbadahHalangan = [
+        "qiyamullail", "dua_rokaat_qobliyah_shubuh", "shalat_shubuh_sendirian",
+        "shalat_shubuh_berjamaah", "shalat_dhuha", "dua_rokaat_qobliyah_dzuhur",
+        "shalat_dzuhur_sendirian", "shalat_dzuhur_berjamaah", "dua_rokaat_badiyah_dzuhur",
+        "shalat_ashar_sendirian", "shalat_ashar_berjamaah", "shalat_maghrib_sendirian",
+        "shalat_maghrib_berjamaah", "dua_rokaat_badiyah_maghrib", "shalat_isya_sendirian",
+        "shalat_isya_berjamaah", "dua_rokaat_badiyah_isya", "tilawah_al_quran"
+      ];
+
+      const checklistEl = document.getElementById('ay_checklistContainer');
+      if (checklistEl) {
+        checklistEl.addEventListener('change', (e) => {
+          if (e.target.name === 'ay_halangan' && e.target.value === '1') {
+            ayListIbadahHalangan.forEach(ibadah => {
+              const radioTidak = checklistEl.querySelector(`input[name="ay_${ibadah}"][value="0"]`);
+              if (radioTidak) radioTidak.checked = true;
+            });
+          }
+          if (e.target.type === 'radio' && e.target.value === '1') {
+            const partnerName = aySholatMapping[e.target.name];
+            if (partnerName) {
+              const partnerTidak = checklistEl.querySelector(`input[name="${partnerName}"][value="0"]`);
+              if (partnerTidak) partnerTidak.checked = true;
+            }
+          }
+          ayUpdateProgress();
+        });
+      }
+
+      const amalanForm = document.getElementById('ay_amalanForm');
+      if (amalanForm) {
+        amalanForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          if (!ayCekWaktuKunci()) {
+            Swal.fire('Waktu Ditutup', 'Diluar masa liburan atau waktu penginputan yang ditentukan.', 'warning');
+            return;
+          }
+          const now = new Date();
+          const tanggalValue = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+          const saveBtn = document.getElementById('ay_saveBtn');
+          const loadingText = document.getElementById('ay_loadingText');
+
+          if (saveBtn) saveBtn.style.display = 'none';
+          if (loadingText) loadingText.classList.remove('hidden');
+
+          const radioGroups = [
+            "halangan", "qiyamullail", "dua_rokaat_qobliyah_shubuh", "shalat_shubuh_sendirian",
+            "shalat_shubuh_berjamaah", "dzikir_pagi", "shalat_dhuha", "dua_rokaat_qobliyah_dzuhur",
+            "shalat_dzuhur_sendirian", "shalat_dzuhur_berjamaah", "dua_rokaat_badiyah_dzuhur",
+            "shalat_ashar_sendirian", "shalat_ashar_berjamaah", "dzikir_sore", "olah_raga_sore",
+            "shalat_maghrib_sendirian", "shalat_maghrib_berjamaah", "dua_rokaat_badiyah_maghrib",
+            "shalat_isya_sendirian", "shalat_isya_berjamaah", "dua_rokaat_badiyah_isya",
+            "olah_raga_pagi", "membantu_orang_tua", "membaca_buku", "main_hp", "silaturahmi",
+            "tilawah_al_quran", "murojaah_hafalan"
+          ];
+          const dataAmalan = {};
+          radioGroups.forEach(groupName => {
+            const selected = amalanForm.querySelector(`input[name="ay_${groupName}"]:checked`);
+            dataAmalan[groupName] = selected ? parseInt(selected.value, 10) : 0;
+          });
+          if (!ayIsPerempuan) delete dataAmalan["halangan"];
+
+          const safeCleanName = ayCurrentSantriName.replace(/[\.\#\$\[\]]/g, "-");
+          try {
+            await set(ref(dbChat, 'amalan_santri/' + safeCleanName + '/' + tanggalValue), dataAmalan);
+            rayLoaded = false; // Refresh rekap otomatis saat dibuka kembali
+            if (saveBtn) saveBtn.style.display = 'flex';
+            if (loadingText) loadingText.classList.add('hidden');
+            await Swal.fire({
+              icon: 'success',
+              title: 'Syukron',
+              text: 'Data Amal Yaumi Anda Sudah Kami Simpan.',
+              timer: 3000,
+              showConfirmButton: true,
+              confirmButtonColor: '#008080'
+            });
+            window.ayBackToLogin();
+          } catch (error) {
+            if (saveBtn) saveBtn.style.display = 'flex';
+            if (loadingText) loadingText.classList.add('hidden');
+            Swal.fire('Gagal', 'Gagal mengirim data. Error: ' + error.message, 'error');
+          }
+        });
+      }
+    };
+
+    // ============================================================
+    // MODUL: REKAP AMAL YAUMI (EXECUTIVE DASHBOARD PIMPINAN)
+    // ============================================================
+    let rayLoaded = false;
+    let rayAllRawData = {};
+    let rayAllSantriNames = [];
+    let rayPieChartInstance = null;
+    let rayBarChartInstance = null;
+    let rayActiveCategory = 'ALL';
+    let rayListenerAttached = false;
+    let rayLastBarStats = [];
+
+    const rayAmalanMeta = [
+      { key: "qiyamullail", label: "Qiyamullail", cat: "SUNNAH" },
+      { key: "dua_rokaat_qobliyah_shubuh", label: "Qobliyah Shubuh", cat: "SUNNAH" },
+      { key: "shalat_shubuh_sendirian", label: "Shubuh Sendirian", cat: "WAJIB" },
+      { key: "shalat_shubuh_berjamaah", label: "Shubuh Berjama'ah", cat: "WAJIB" },
+      { key: "dzikir_pagi", label: "Dzikir Pagi", cat: "SUNNAH" },
+      { key: "shalat_dhuha", label: "Shalat Dhuha", cat: "SUNNAH" },
+      { key: "dua_rokaat_qobliyah_dzuhur", label: "Qobliyah Dzuhur", cat: "SUNNAH" },
+      { key: "shalat_dzuhur_sendirian", label: "Dzuhur Sendirian", cat: "WAJIB" },
+      { key: "shalat_dzuhur_berjamaah", label: "Dzuhur Berjama'ah", cat: "WAJIB" },
+      { key: "dua_rokaat_badiyah_dzuhur", label: "Ba'diyah Dzuhur", cat: "SUNNAH" },
+      { key: "shalat_ashar_sendirian", label: "Ashar Sendirian", cat: "WAJIB" },
+      { key: "shalat_ashar_berjamaah", label: "Ashar Berjama'ah", cat: "WAJIB" },
+      { key: "dzikir_sore", label: "Dzikir Sore", cat: "SUNNAH" },
+      { key: "olah_raga_sore", label: "Olahraga Sore", cat: "ADAB" },
+      { key: "shalat_maghrib_sendirian", label: "Maghrib Sendirian", cat: "WAJIB" },
+      { key: "shalat_maghrib_berjamaah", label: "Maghrib Berjama'ah", cat: "WAJIB" },
+      { key: "dua_rokaat_badiyah_maghrib", label: "Ba'diyah Maghrib", cat: "SUNNAH" },
+      { key: "shalat_isya_sendirian", label: "Isya' Sendirian", cat: "WAJIB" },
+      { key: "shalat_isya_berjamaah", label: "Isya' Berjama'ah", cat: "WAJIB" },
+      { key: "dua_rokaat_badiyah_isya", label: "Ba'diyah Isya'", cat: "SUNNAH" },
+      { key: "olah_raga_pagi", label: "Olahraga Pagi", cat: "ADAB" },
+      { key: "membantu_orang_tua", label: "Membantu Orang Tua", cat: "ADAB" },
+      { key: "membaca_buku", label: "Membaca Buku", cat: "ADAB" },
+      { key: "main_hp", label: "Main HP", cat: "ADAB" },
+      { key: "silaturahmi", label: "Silaturahmi", cat: "ADAB" },
+      { key: "tilawah_al_quran", label: "Tilawah Al-Qur'an", cat: "SUNNAH" },
+      { key: "murojaah_hafalan", label: "Murojaah Hafalan", cat: "SUNNAH" }
+    ];
+
+    function rayGetPeriodeConfig() {
+      const mode = document.getElementById('ray_periodeFilter')?.value || 'ALL';
+      if (mode === 'DES2026') {
+        return { label: 'Periode Liburan: 20 Des 2026 - 2 Jan 2027 (14 Hari)', start: new Date('2026-12-20'), end: new Date('2027-01-02'), totalHari: 14 };
+      }
+      return { label: 'Semua Data Masuk (Live / Uji Coba)', start: null, end: null, totalHari: 0 };
+    }
+
+    function rayDateInPeriode(tglStr, cfg) {
+      if (!cfg.start || !cfg.end) return true;
+      const d = new Date(tglStr);
+      return !isNaN(d.getTime()) && d >= cfg.start && d <= cfg.end;
+    }
+
+    window.setRayCategory = function(cat) {
+      rayActiveCategory = cat;
+      document.querySelectorAll('.ray-cat-btn').forEach(btn => {
+        const isActive = btn.dataset.cat === cat;
+        btn.className = isActive
+          ? 'ray-cat-btn px-2.5 py-1 rounded-lg text-[10px] font-bold bg-teal-700 text-white cursor-pointer transition'
+          : 'ray-cat-btn px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer transition';
+      });
+      window.renderRekapAmalBarChart();
+    };
+
+    window.renderRekapAmalBarChart = function() {
+      const filteredStats = rayActiveCategory === 'ALL'
+        ? rayLastBarStats
+        : rayLastBarStats.filter(item => item.cat === rayActiveCategory);
+
+      const wrap = document.getElementById('ray_barChartWrap');
+      if (wrap) {
+        const calcH = Math.max(280, filteredStats.length * 26 + 40);
+        wrap.style.height = `${calcH}px`;
+      }
+
+      const canvas = document.getElementById('ray_amalanBarChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      if (rayBarChartInstance) rayBarChartInstance.destroy();
+
+      const labels = filteredStats.map(s => s.label);
+      const values = filteredStats.map(s => s.pct);
+      const bgColors = values.map(v => v >= 75 ? '#10b981' : (v >= 50 ? '#f59e0b' : '#ef4444'));
+
+      rayBarChartInstance = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        plugins: window.ChartDataLabels ? [window.ChartDataLabels] : [],
+        data: {
+          labels,
+          datasets: [{
+            label: 'Persentase Pelaksanaan (%)',
+            data: values,
+            backgroundColor: bgColors,
+            borderRadius: 6,
+            barThickness: 16
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { right: 44 } },
+          scales: {
+            x: {
+              min: 0,
+              max: 100,
+              grid: { color: '#f1f5f9' },
+              ticks: {
+                font: { size: 10, weight: '600' },
+                color: '#64748b',
+                callback: v => v + '%'
+              }
+            },
+            y: {
+              grid: { display: false },
+              ticks: {
+                font: { size: 11, weight: '600' },
+                color: '#334155'
+              }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const st = filteredStats[ctx.dataIndex];
+                  return ` ${st.pct}% (${st.done} dari ${st.total} laporan)`;
+                }
+              }
+            },
+            datalabels: {
+              anchor: 'end',
+              align: 'end',
+              offset: 4,
+              color: '#1e293b',
+              font: { weight: 'bold', size: 10 },
+              formatter: (val) => `${val}%`
+            }
+          }
+        }
+      });
+    };
+
+    function rayNormalizeName(str) {
+      return String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function rayFindAmalanRecord(displayName) {
+      if (!rayAllRawData || !displayName) return null;
+      const safeName = displayName.replace(/[\.\#\$\[\]]/g, "-");
+      if (rayAllRawData[safeName]) return rayAllRawData[safeName];
+      if (rayAllRawData[displayName]) return rayAllRawData[displayName];
+      const targetNorm = rayNormalizeName(displayName);
+      for (const k in rayAllRawData) {
+        if (rayNormalizeName(k) === targetNorm) return rayAllRawData[k];
+      }
+      return null;
+    }
+
+    window.renderRekapAmalDashboard = function() {
+      const cfg = rayGetPeriodeConfig();
+      const subEl = document.getElementById('ray_periodeSubtitle');
+      if (subEl) subEl.textContent = cfg.label;
+
+      const totalSantri = rayAllSantriNames.length;
+      let sudahMengisi = 0;
+      let totalLaporan = 0;
+      const amalanDoneCount = {};
+      rayAmalanMeta.forEach(m => { amalanDoneCount[m.key] = 0; });
+
+      rayAllSantriNames.forEach(rawName => {
+        const santriRec = rayFindAmalanRecord(rawName);
+        if (!santriRec || typeof santriRec !== 'object') return;
+        let hasValid = false;
+        Object.keys(santriRec).forEach(tgl => {
+          if (!rayDateInPeriode(tgl, cfg)) return;
+          const entry = santriRec[tgl];
+          if (!entry || typeof entry !== 'object') return;
+          hasValid = true;
+          totalLaporan++;
+          rayAmalanMeta.forEach(m => {
+            if (entry[m.key] === 1) amalanDoneCount[m.key]++;
+          });
+        });
+        if (hasValid) sudahMengisi++;
+      });
+
+      const belumMengisi = Math.max(0, totalSantri - sudahMengisi);
+      const pctPartisipasi = totalSantri ? Math.round((sudahMengisi / totalSantri) * 100) : 0;
+
+      rayLastBarStats = rayAmalanMeta.map(m => {
+        const done = amalanDoneCount[m.key] || 0;
+        const pct = totalLaporan ? Math.round((done / totalLaporan) * 100) : 0;
+        return { key: m.key, label: m.label, cat: m.cat, done, total: totalLaporan, pct };
+      });
+
+      const avgAmalan = rayLastBarStats.length
+        ? (rayLastBarStats.reduce((a, b) => a + b.pct, 0) / rayLastBarStats.length)
+        : 0;
+
+      const sortedDesc = [...rayLastBarStats].sort((a, b) => b.pct - a.pct);
+      const sortedAsc = [...rayLastBarStats].sort((a, b) => a.pct - b.pct);
+
+      const elTot = document.getElementById('ray_kpiTotalSantri');
+      const elPart = document.getElementById('ray_kpiPartisipasi');
+      const elPartSub = document.getElementById('ray_kpiPartisipasiSub');
+      const elAvg = document.getElementById('ray_kpiAvgAmalan');
+      const elLap = document.getElementById('ray_kpiTotalLaporan');
+      const elTop = document.getElementById('ray_kpiTopAmalan');
+      const elLow = document.getElementById('ray_kpiLowAmalan');
+
+      if (elTot) elTot.textContent = totalSantri;
+      if (elPart) elPart.textContent = `${pctPartisipasi}%`;
+      if (elPartSub) elPartSub.textContent = `${sudahMengisi} sudah / ${belumMengisi} belum`;
+      if (elAvg) elAvg.textContent = `${avgAmalan.toFixed(1)}%`;
+      if (elLap) elLap.textContent = `${totalLaporan} laporan harian masuk`;
+      if (elTop) elTop.textContent = totalLaporan ? `${sortedDesc[0].label} (${sortedDesc[0].pct}%)` : 'Belum ada data';
+      if (elLow) elLow.textContent = totalLaporan ? `Terendah: ${sortedAsc[0].label} (${sortedAsc[0].pct}%)` : 'Terendah: -';
+
+      const top5El = document.getElementById('ray_top5List');
+      const low5El = document.getElementById('ray_low5List');
+      if (top5El) {
+        top5El.innerHTML = sortedDesc.slice(0, 5).map(item => `
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-semibold text-slate-700 truncate">${item.label}</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-black text-[10px] shrink-0">${item.pct}%</span>
+          </div>
+        `).join('');
+      }
+      if (low5El) {
+        low5El.innerHTML = sortedAsc.slice(0, 5).map(item => `
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-semibold text-slate-700 truncate">${item.label}</span>
+            <span class="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-black text-[10px] shrink-0">${item.pct}%</span>
+          </div>
+        `).join('');
+      }
+
+      window.renderRekapAmalBarChart();
+
+      const pieCanvas = document.getElementById('ray_participationChart');
+      if (pieCanvas && typeof Chart !== 'undefined') {
+        if (rayPieChartInstance) rayPieChartInstance.destroy();
+        rayPieChartInstance = new Chart(pieCanvas.getContext('2d'), {
+          type: 'doughnut',
+          plugins: window.ChartDataLabels ? [window.ChartDataLabels] : [],
+          data: {
+            labels: ['Sudah Mengisi', 'Belum Mengisi'],
+            datasets: [{
+              data: [sudahMengisi, belumMengisi],
+              backgroundColor: ['#10b981', '#e11d48'],
+              borderWidth: 2,
+              borderColor: '#ffffff',
+              hoverOffset: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            cutout: '58%',
+            plugins: {
+              legend: { display: false },
+              datalabels: {
+                color: '#ffffff',
+                textAlign: 'center',
+                font: { weight: 'bold', size: 11 },
+                formatter: (val) => val > 0 ? val : null
+              }
+            }
+          }
+        });
+      }
+
+      const legEl = document.getElementById('ray_partLegend');
+      if (legEl) {
+        legEl.innerHTML = `
+          <div class="bg-emerald-50 rounded-lg p-2 border border-emerald-100">
+            <div class="text-sm font-black text-emerald-700">${sudahMengisi}</div>
+            <div class="text-[9px] font-bold text-emerald-800 uppercase">Sudah Mengisi</div>
+          </div>
+          <div class="bg-rose-50 rounded-lg p-2 border border-rose-100">
+            <div class="text-sm font-black text-rose-700">${belumMengisi}</div>
+            <div class="text-[9px] font-bold text-rose-800 uppercase">Belum Mengisi</div>
+          </div>
+        `;
+      }
+
+      const sel = document.getElementById('ray_santriSelect');
+      if (sel && sel.value) window.renderRekapSantriDetail(sel.value);
+    };
+
+    window.renderRekapSantriDetail = function(selectedName) {
+      const container = document.getElementById('ray_resultsContainer');
+      if (!container || !selectedName) return;
+      const cfg = rayGetPeriodeConfig();
+      const data = rayFindAmalanRecord(selectedName);
+
+      const counts = {};
+      let totalHariMengisi = 0;
+
+      if (data && typeof data === 'object') {
+        Object.keys(data).forEach(tgl => {
+          if (rayDateInPeriode(tgl, cfg)) {
+            totalHariMengisi++;
+            Object.keys(data[tgl] || {}).forEach(k => {
+              if (data[tgl][k] === 1) counts[k] = (counts[k] || 0) + 1;
+            });
+          }
+        });
+      }
+
+      const basisHari = cfg.totalHari > 0 ? cfg.totalHari : (totalHariMengisi || 1);
+      const hariTidakMengisi = cfg.totalHari > 0 ? Math.max(0, cfg.totalHari - totalHariMengisi) : 0;
+      const persentaseMengisi = cfg.totalHari > 0
+        ? Math.round((totalHariMengisi / cfg.totalHari) * 100)
+        : (totalHariMengisi > 0 ? 100 : 0);
+
+      let htmlRes = `
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
+            <div class="text-xl font-black text-slate-700">${cfg.totalHari > 0 ? cfg.totalHari : totalHariMengisi}</div>
+            <div class="text-[10px] font-bold text-slate-500 uppercase">${cfg.totalHari > 0 ? 'Total Hari Periode' : 'Total Hari Tercatat'}</div>
+          </div>
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
+            <div class="text-xl font-black text-emerald-700">${totalHariMengisi} <span class="text-xs">(${persentaseMengisi}%)</span></div>
+            <div class="text-[10px] font-bold text-emerald-700 uppercase">Hari Mengisi</div>
+          </div>
+          <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-center">
+            <div class="text-xl font-black text-rose-700">${hariTidakMengisi}</div>
+            <div class="text-[10px] font-bold text-rose-700 uppercase">Tidak Mengisi</div>
+          </div>
+        </div>
+      `;
+
+      if (totalHariMengisi === 0) {
+        htmlRes += `<div class="text-center text-rose-700 font-bold text-xs py-6 bg-rose-50/50 rounded-xl border border-rose-100">Data amalan kosong untuk periode ini (Santri belum mengisi jurnal).</div>`;
+        container.innerHTML = htmlRes;
+        return;
+      }
+
+      htmlRes += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">`;
+      rayAmalanMeta.forEach(m => {
+        const done = counts[m.key] || 0;
+        const percent = Math.round((done / basisHari) * 100);
+        const color = percent >= 75 ? '#10b981' : (percent >= 50 ? '#f59e0b' : '#ef4444');
+        const badgeCls = percent >= 75 ? 'text-emerald-700 bg-emerald-50' : (percent >= 50 ? 'text-amber-700 bg-amber-50' : 'text-rose-700 bg-rose-50');
+        htmlRes += `
+          <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50">
+            <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1.5 gap-2">
+              <span class="truncate">${m.label}</span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-black shrink-0 ${badgeCls}">${percent}% (${done}/${basisHari})</span>
+            </div>
+            <div class="bg-slate-200/80 rounded-full h-2 overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-700" style="width:${percent}%; background-color:${color};"></div>
+            </div>
+          </div>
+        `;
+      });
+      htmlRes += `</div>`;
+      container.innerHTML = htmlRes;
+    };
+
+    window.exportRekapAmalExcel = function() {
+      if (typeof XLSX === 'undefined' || !rayLastBarStats.length) {
+        Swal.fire('Info', 'Data belum siap untuk diekspor.', 'info');
+        return;
+      }
+      const rows = rayLastBarStats.map((s, i) => ({
+        'No': i + 1,
+        'Amal Yaumi': s.label,
+        'Kategori': s.cat,
+        'Dilaksanakan (Laporan)': s.done,
+        'Total Laporan': s.total,
+        'Persentase (%)': s.pct
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Rekap Amal Yaumi');
+      XLSX.writeFile(wb, 'Rekap_Amal_Yaumi_IZY.xlsx');
+    };
+
+    window.muatRekapAmalYaumi = async function(forceReload = false) {
+      if (!rayListenerAttached) {
+        rayListenerAttached = true;
+        const sel = document.getElementById('ray_santriSelect');
+        if (sel) {
+          sel.addEventListener('change', (e) => window.renderRekapSantriDetail(e.target.value));
+        }
+      }
+
+      if (rayLoaded && !forceReload) {
+        window.renderRekapAmalDashboard();
+        return;
+      }
+
+      const loadingEl = document.getElementById('ray_chartLoading');
+      if (loadingEl) {
+        loadingEl.style.display = 'block';
+        loadingEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-lg mb-1"></i><br>Menyinkronkan data biodata &amp; Amal Yaumi santri...';
+      }
+
+      try {
+        const [snapBio, snapAmal] = await Promise.all([
+          apiGet("biodata", "identitas_santri"),
+          get(ref(dbChat, 'amalan_santri'))
+        ]);
+
+        rayAllRawData = snapAmal.exists() ? (snapAmal.val() || {}) : {};
+
+        // Ambil daftar santri otomatis dari biodata (identitas_santri)
+        const normToDisplay = new Map();
+        const dataBio = snapBio.exists() ? (snapBio.val() || {}) : {};
+        Object.values(dataBio).forEach(s => {
+          if (s && s.namaSantri) {
+            const nama = String(s.namaSantri).trim();
+            const norm = rayNormalizeName(nama);
+            if (norm && !normToDisplay.has(norm)) {
+              normToDisplay.set(norm, nraTitleCase(nama));
+            }
+          }
+        });
+
+        // Tambahkan nama dari amalan_santri jika belum ada di biodata
+        Object.keys(rayAllRawData).forEach(rawKey => {
+          const nama = String(rawKey || '').trim();
+          const norm = rayNormalizeName(nama);
+          if (norm && !normToDisplay.has(norm)) {
+            normToDisplay.set(norm, nama);
+          }
+        });
+
+        rayAllSantriNames = Array.from(normToDisplay.values()).sort((a, b) => a.localeCompare(b));
+
+        // Isi ulang dropdown santri secara otomatis
+        const sel = document.getElementById('ray_santriSelect');
+        if (sel) {
+          const prevVal = sel.value;
+          sel.innerHTML = '<option value="" disabled selected>-- Pilih Nama Santri (' + rayAllSantriNames.length + ' Santri) --</option>';
+          rayAllSantriNames.forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            sel.appendChild(opt);
+          });
+          if (prevVal && rayAllSantriNames.includes(prevVal)) sel.value = prevVal;
+        }
+
+        if (loadingEl) loadingEl.style.display = 'none';
+        rayLoaded = true;
+        window.renderRekapAmalDashboard();
+      } catch (err) {
+        console.error("Gagal memuat Rekap Amal Yaumi:", err);
+        if (loadingEl) loadingEl.innerHTML = `<span class="text-rose-600">Gagal memuat data: ${err.message}</span>`;
+      }
+    };
 </script>
 
   <!-- PROTEKSI AKSES -->
@@ -12941,12 +14761,7 @@ let inboxSesiAktifNamaID = "";
               <h3 class="text-xs font-black text-slate-800 uppercase tracking-wide leading-snug line-clamp-2 group-hover:text-teal-800 transition">${escHtmlGal(alb.judul || 'Tanpa Judul')}</h3>
               ${alb.deskripsi ? `<p class="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">${escHtmlGal(alb.deskripsi)}</p>` : ''}
             </div>
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
-              <span class="text-[10px] font-extrabold text-teal-700 group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
-                Buka Album <i class="fa-solid fa-arrow-right text-[9px]"></i>
-              </span>
-              ${adminBtns}
-            </div>
+            ${adminBtns ? `<div class="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">${adminBtns}</div>` : ''}
           </div>
         </div>
       `;
