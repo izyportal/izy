@@ -1086,7 +1086,8 @@
           <section id="panelBeranda" class="w-full h-[calc(100vh-4.3rem)] flex flex-col justify-between gap-2.5 overflow-hidden animate-[fadeIn_0.35s_ease-out]">
             
             <!-- 1. Header Banner Ringkas -->
-            <div class="bg-gradient-to-r from-teal-950 via-teal-800 to-emerald-700 rounded-xl px-4 py-2.5 text-white shadow flex items-center justify-between gap-3 border border-teal-700/50 shrink-0">
+            <div class="bg-gradient-to-r from-teal-950 via-teal-800 to-emerald-700 rounded-xl px-4 py-2.5 text-white shadow flex flex-wrap md:flex-nowrap items-center justify-between gap-3 border border-teal-700/50 shrink-0">
+              <!-- Kiri: Identitas Pesantren -->
               <div class="flex items-center gap-3 min-w-0">
                 <img src="https://i.postimg.cc/Vk9NSbcw/LOGO.jpg" alt="Logo Pesantren" class="w-10 h-10 rounded-full object-cover shadow border-2 border-emerald-300 shrink-0">
                 <div class="min-w-0">
@@ -1099,27 +1100,43 @@
                   <p class="text-[9px] text-teal-100/90 font-medium truncate">
                     Ds. Perdamaian, Kec. Binjai, Kode Pos: 20761, Kab. Langkat, Prov. Sumut.
                   </p>
-                  <div id="izyHomeUserBar" class="hidden items-center gap-2 mt-0.5">
-                    <span class="inline-flex items-center gap-1 bg-amber-400/20 border border-amber-300/40 text-amber-200 text-[9px] font-extrabold px-2 py-0.5 rounded-full">
-                      <i class="fa-solid fa-user-check text-amber-300 text-[8px]"></i>
-                      <span>Selamat datang, <b id="izyHomeUserName">-</b></span>
-                      <span id="izyHomeUserRole" class="opacity-85 font-semibold"></span>
-                      <button type="button" onclick="izyLogoutPortal()" class="ml-1 text-rose-300 hover:text-white cursor-pointer" title="Keluar / Ganti Akun"><i class="fa-solid fa-right-from-bracket text-[9px]"></i></button>
-                    </span>
-                  </div>
                 </div>
               </div>
-              <div class="shrink-0 flex items-center">
+
+              <!-- Garis Batas Putih 1 -->
+              <div id="izyHomeDivider1" class="hidden md:block w-px self-stretch bg-white/50 my-0.5 shrink-0"></div>
+
+              <!-- Tengah: Nama Pengguna + Tombol Logout & Ubah Password Akun -->
+              <div id="izyHomeUserBar" class="hidden flex-col items-center justify-center text-center flex-1 min-w-0 px-2">
+                <div class="inline-flex items-center gap-1.5 text-[10px] md:text-[11px] font-extrabold text-amber-200 max-w-full">
+                  <i class="fa-solid fa-user-check text-amber-300 text-[10px] shrink-0"></i>
+                  <span class="truncate"><b id="izyHomeUserName">-</b> <span id="izyHomeUserRole" class="opacity-85 font-semibold text-teal-100"></span></span>
+                </div>
+                <div class="flex items-center justify-center gap-1.5 mt-1">
+                  <button type="button" onclick="izyBukaUbahPassword()" class="inline-flex items-center gap-1 bg-white/15 hover:bg-white hover:text-teal-900 border border-white/30 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-md transition cursor-pointer">
+                    <i class="fa-solid fa-key text-[8px]"></i> Ubah Password Akun
+                  </button>
+                  <button type="button" onclick="izyLogoutPortal()" class="inline-flex items-center gap-1 bg-rose-500/85 hover:bg-rose-600 border border-rose-300/40 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-md transition cursor-pointer">
+                    <i class="fa-solid fa-right-from-bracket text-[8px]"></i> Logout
+                  </button>
+                </div>
+              </div>
+
+              <!-- Garis Batas Putih 2 -->
+              <div id="izyHomeDivider2" class="hidden md:block w-px self-stretch bg-white/50 my-0.5 shrink-0"></div>
+
+              <!-- Kanan: Logo IZY -->
+              <div class="shrink-0 flex items-center pl-1">
                 <img src="https://i.ibb.co.com/C3bqBprM/Logo-IZY.png" alt="Logo IZY" class="h-7 md:h-9 w-auto object-contain drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]">
                 <span id="statPopulasiTotal" class="hidden">...</span>
               </div>
             </div>
 
-            <!-- 2. Baris 5 Kartu Statistik Utama (KPI) -->
-            <div class="grid grid-cols-5 gap-2.5 shrink-0">
-              <div class="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-700 shrink-0">
-                  <i class="fa-solid fa-users text-sm"></i>
+            <!-- 2. Baris 6 Kartu Statistik Utama (KPI - Klik untuk melihat daftar nama) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 shrink-0">
+              <div onclick="bukaModalDaftarBeranda('totalSantri')" title="Klik untuk melihat daftar seluruh santri" class="bg-white px-2.5 py-2 rounded-xl border border-slate-200 hover:border-teal-500 hover:shadow-md cursor-pointer transition shadow-sm flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-700 shrink-0">
+                  <i class="fa-solid fa-users text-xs"></i>
                 </div>
                 <div class="min-w-0">
                   <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider truncate">Total Santri</div>
@@ -1128,9 +1145,9 @@
                 </div>
               </div>
 
-              <div class="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                  <i class="fa-solid fa-mars text-sm"></i>
+              <div onclick="bukaModalDaftarBeranda('santriPutra')" title="Klik untuk melihat daftar santri putra" class="bg-white px-2.5 py-2 rounded-xl border border-slate-200 hover:border-emerald-500 hover:shadow-md cursor-pointer transition shadow-sm flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                  <i class="fa-solid fa-mars text-xs"></i>
                 </div>
                 <div class="min-w-0">
                   <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider truncate">Santri Putra</div>
@@ -1139,9 +1156,9 @@
                 </div>
               </div>
 
-              <div class="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
-                  <i class="fa-solid fa-venus text-sm"></i>
+              <div onclick="bukaModalDaftarBeranda('santriPutri')" title="Klik untuk melihat daftar santri putri" class="bg-white px-2.5 py-2 rounded-xl border border-slate-200 hover:border-amber-500 hover:shadow-md cursor-pointer transition shadow-sm flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                  <i class="fa-solid fa-venus text-xs"></i>
                 </div>
                 <div class="min-w-0">
                   <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider truncate">Santri Putri</div>
@@ -1150,9 +1167,20 @@
                 </div>
               </div>
 
-              <div class="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600 shrink-0">
-                  <i class="fa-solid fa-chalkboard-user text-sm"></i>
+              <div onclick="bukaModalDaftarBeranda('anakYatim')" title="Klik untuk melihat daftar anak yatim" class="bg-white px-2.5 py-2 rounded-xl border border-slate-200 hover:border-rose-500 hover:shadow-md cursor-pointer transition shadow-sm flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shrink-0">
+                  <i class="fa-solid fa-hands-holding-child text-xs"></i>
+                </div>
+                <div class="min-w-0">
+                  <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider truncate">Anak Yatim</div>
+                  <div id="statAnakYatim" class="text-base font-black text-rose-600 leading-tight">0</div>
+                  <div id="rincianGenderYatim" class="text-[8px] font-bold text-slate-500 truncate"><span class="text-emerald-700">L: 0</span> • <span class="text-amber-600">P: 0</span></div>
+                </div>
+              </div>
+
+              <div onclick="bukaModalDaftarBeranda('pendidik')" title="Klik untuk melihat daftar pendidik (guru)" class="bg-white px-2.5 py-2 rounded-xl border border-slate-200 hover:border-sky-500 hover:shadow-md cursor-pointer transition shadow-sm flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600 shrink-0">
+                  <i class="fa-solid fa-chalkboard-user text-xs"></i>
                 </div>
                 <div class="min-w-0">
                   <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider truncate">Pendidik (Guru)</div>
@@ -1161,9 +1189,9 @@
                 </div>
               </div>
 
-              <div class="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-lg bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0">
-                  <i class="fa-solid fa-hand-holding-heart text-sm"></i>
+              <div onclick="bukaModalDaftarBeranda('pengasuh')" title="Klik untuk melihat daftar pengasuh" class="bg-white px-2.5 py-2 rounded-xl border border-slate-200 hover:border-purple-500 hover:shadow-md cursor-pointer transition shadow-sm flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0">
+                  <i class="fa-solid fa-hand-holding-heart text-xs"></i>
                 </div>
                 <div class="min-w-0">
                   <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider truncate">Pengasuh</div>
@@ -5237,6 +5265,42 @@
   </div>
 
   <!-- ========================================== -->
+  <!-- MODAL DAFTAR NAMA STATISTIK BERANDA        -->
+  <!-- ========================================== -->
+  <div id="modalDaftarBeranda" onclick="if(event.target===this) tutupModalDaftarBeranda()" class="hidden fixed inset-0 z-[9990] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden animate-[fadeIn_0.2s_ease-out]">
+      <div class="bg-gradient-to-r from-teal-900 to-emerald-700 px-5 py-3 flex items-center justify-between gap-3 text-white shrink-0">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <h3 id="mdb_title" class="text-xs md:text-sm font-black uppercase tracking-wider truncate">Daftar Nama</h3>
+            <span id="mdb_count" class="bg-white/20 border border-white/30 text-white text-[10px] font-black px-2 py-0.5 rounded-full shrink-0">0</span>
+          </div>
+          <p class="text-[9px] text-teal-100 font-medium mt-0.5">Klik tombol Salin untuk menyalin daftar nama ke clipboard</p>
+        </div>
+        <button type="button" onclick="tutupModalDaftarBeranda()" class="w-7 h-7 rounded-lg bg-white/15 hover:bg-white/30 text-white flex items-center justify-center cursor-pointer transition shrink-0" title="Tutup">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center gap-2 shrink-0">
+        <div class="relative flex-1 min-w-[160px]">
+          <i class="fa-solid fa-magnifying-glass text-slate-400 text-[11px] absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="mdb_search" oninput="filterModalDaftarBeranda()" placeholder="Cari nama..." class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg bg-white focus:ring-1 focus:ring-teal-600 outline-none font-medium" />
+        </div>
+        <button type="button" id="mdb_btnCopyNum" onclick="copyModalDaftarBeranda(true)" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition shadow-sm">
+          <i class="fa-regular fa-copy"></i> Salin Daftar
+        </button>
+        <button type="button" id="mdb_btnCopyPlain" onclick="copyModalDaftarBeranda(false)" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer transition">
+          <i class="fa-solid fa-align-left"></i> Tanpa Nomor
+        </button>
+      </div>
+
+      <div id="mdb_listContainer" class="p-3 overflow-y-auto flex-1 divide-y divide-slate-100 text-xs select-text">
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
   <!-- MODAL VERIFIKASI KEAMANAN GLOBAL           -->
   <!-- ========================================== -->
   <div id="modalPassword" class="hidden fixed inset-0 bg-slate-900/60 flex items-center justify-center z-[100] text-sm backdrop-blur-sm p-4 animate-[fadeIn_0.2s]">
@@ -5927,10 +5991,102 @@
     let chartInstanceGender = null;
     let chartInstanceStaf = null;
 
+    function isSantriYatim(val) {
+      const s = String(val || '').trim().toLowerCase();
+      if (!s || s === '-' || s.includes('tidak') || s.includes('bukan') || s === 'non' || s === 'normal' || s === 'lengkap') return false;
+      return s.includes('yatim');
+    }
+
+    window._berandaDataLists = {};
+    window._berandaModalActiveItems = [];
+    window._berandaModalTitle = '';
+
+    window.bukaModalDaftarBeranda = function(key) {
+      const entry = window._berandaDataLists[key];
+      if (!entry) return;
+      window._berandaModalTitle = entry.title;
+      window._berandaModalActiveItems = entry.items || [];
+      const titleEl = document.getElementById('mdb_title');
+      const countEl = document.getElementById('mdb_count');
+      const searchEl = document.getElementById('mdb_search');
+      if (titleEl) titleEl.textContent = entry.title;
+      if (countEl) countEl.textContent = `${window._berandaModalActiveItems.length} Orang`;
+      if (searchEl) searchEl.value = '';
+      window.filterModalDaftarBeranda();
+      const modal = document.getElementById('modalDaftarBeranda');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.tutupModalDaftarBeranda = function() {
+      const modal = document.getElementById('modalDaftarBeranda');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.filterModalDaftarBeranda = function() {
+      const q = (document.getElementById('mdb_search')?.value || '').trim().toLowerCase();
+      const items = window._berandaModalActiveItems.filter(it => !q || it.nama.toLowerCase().includes(q) || (it.info || '').toLowerCase().includes(q));
+      const countEl = document.getElementById('mdb_count');
+      if (countEl) countEl.textContent = `${items.length} Orang`;
+      const container = document.getElementById('mdb_listContainer');
+      if (!container) return;
+      if (!items.length) {
+        container.innerHTML = `<div class="text-center py-8 text-slate-400 font-medium">Tidak ada data nama ditemukan.</div>`;
+        return;
+      }
+      container.innerHTML = items.map((it, i) => `
+        <div class="py-2 px-2 hover:bg-teal-50/50 rounded-lg flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="w-6 text-right font-mono text-[10px] font-bold text-slate-400 shrink-0">${i + 1}.</span>
+            <span class="font-bold text-slate-800 truncate">${it.nama}</span>
+          </div>
+          ${it.info ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0">${it.info}</span>` : ''}
+        </div>
+      `).join('');
+    };
+
+    window.copyModalDaftarBeranda = async function(withNumber) {
+      const q = (document.getElementById('mdb_search')?.value || '').trim().toLowerCase();
+      const items = window._berandaModalActiveItems.filter(it => !q || it.nama.toLowerCase().includes(q) || (it.info || '').toLowerCase().includes(q));
+      if (!items.length) return;
+      const text = items.map((it, i) => withNumber ? `${i + 1}. ${it.nama}` : it.nama).join('\n');
+      let copied = false;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        }
+      } catch (e) {}
+      if (!copied) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); copied = true; } catch (e) {}
+        document.body.removeChild(ta);
+      }
+      const btn = document.getElementById(withNumber ? 'mdb_btnCopyNum' : 'mdb_btnCopyPlain');
+      if (btn && copied) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin!';
+        setTimeout(() => { btn.innerHTML = orig; }, 1600);
+      }
+    };
+
     function renderDashboardStatistik(santriList, totalPendidik, totalPengasuh, totalUstadzUnik) {
       const jenjangKelas = ['7', '8', '9', '10', '11', '12'];
       const dataPutraPerKelas = { '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0 };
       const dataPutriPerKelas = { '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0 };
+
+      const listAllSantri = [];
+      const listPutra = [];
+      const listPutri = [];
+      const listYatim = [];
+      const listYatimL = [];
+      const listYatimP = [];
+      const listKelas = {};
+      jenjangKelas.forEach(k => { listKelas[k] = { all: [], L: [], P: [] }; });
 
       let totalPutra = 0;
       let totalPutri = 0;
@@ -5939,15 +6095,25 @@
         const g = String(s.gender || '').trim().toLowerCase();
         const isPutra = (g === 'l' || g.startsWith('laki') || g.includes('putra') || g.includes('ikhwan'));
         const isPutri = (g === 'p' || g.startsWith('perempuan') || g.includes('putri') || g.includes('akhwat'));
+        const jkLbl = isPutra ? 'L' : (isPutri ? 'P' : '-');
+        const klsStr = s.kelas && s.kelas !== '-' ? `Kelas ${s.kelas}` : '';
+        const itemObj = { nama: s.nama, info: [klsStr, jkLbl].filter(Boolean).join(' • ') };
 
-        if (isPutra) totalPutra++;
-        else if (isPutri) totalPutri++;
+        if (isPutra) { totalPutra++; listPutra.push(itemObj); listAllSantri.push(itemObj); }
+        else if (isPutri) { totalPutri++; listPutri.push(itemObj); listAllSantri.push(itemObj); }
+
+        if (isSantriYatim(s.statusYatim)) {
+          const yItem = { nama: s.nama, info: [klsStr, jkLbl, s.statusYatim].filter(Boolean).join(' • ') };
+          listYatim.push(yItem);
+          if (isPutra) listYatimL.push(yItem);
+          else if (isPutri) listYatimP.push(yItem);
+        }
 
         const matchKls = String(s.kelas || '').match(/\b(7|8|9|10|11|12)\b/);
         if (matchKls) {
           const k = matchKls[1];
-          if (isPutra) dataPutraPerKelas[k]++;
-          else if (isPutri) dataPutriPerKelas[k]++;
+          if (isPutra) { dataPutraPerKelas[k]++; listKelas[k].all.push(itemObj); listKelas[k].L.push(itemObj); }
+          else if (isPutri) { dataPutriPerKelas[k]++; listKelas[k].all.push(itemObj); listKelas[k].P.push(itemObj); }
         }
       });
 
@@ -5960,10 +6126,35 @@
       document.getElementById('statSantriPutri').innerText = totalPutri;
       document.getElementById('persenSantriPutra').innerText = `${persenL}% dari total`;
       document.getElementById('persenSantriPutri').innerText = `${persenP}% dari total`;
+
+      const elYatim = document.getElementById('statAnakYatim');
+      const elYatimGen = document.getElementById('rincianGenderYatim');
+      if (elYatim) elYatim.innerText = listYatim.length;
+      if (elYatimGen) elYatimGen.innerHTML = `<span onclick="event.stopPropagation(); bukaModalDaftarBeranda('anakYatimPutra')" class="text-emerald-700 hover:underline cursor-pointer">L: ${listYatimL.length}</span> • <span onclick="event.stopPropagation(); bukaModalDaftarBeranda('anakYatimPutri')" class="text-amber-600 hover:underline cursor-pointer">P: ${listYatimP.length}</span>`;
+
       document.getElementById('statTotalGuru').innerText = totalPendidik;
       document.getElementById('statTotalPengasuh').innerText = totalPengasuh;
       document.getElementById('badgeTotalUstadzUnik').innerText = `${totalUstadzUnik} Ustadz/ah`;
       document.getElementById('statPopulasiTotal').innerText = totalSantri + totalUstadzUnik;
+
+      // Simpan semua daftar nama untuk modal klik Beranda
+      const pendidikAll = (window._berandaListPendidik || []).map(u => ({ nama: u.nama, info: u.gender === 'L' ? 'Putra (L)' : (u.gender === 'P' ? 'Putri (P)' : '') }));
+      const pengasuhAll = (window._berandaListPengasuh || []).map(u => ({ nama: u.nama, info: u.gender === 'L' ? 'Putra (L)' : (u.gender === 'P' ? 'Putri (P)' : '') }));
+
+      window._berandaDataLists = {
+        totalSantri: { title: 'Daftar Total Santri', items: listAllSantri },
+        santriPutra: { title: 'Daftar Santri Putra', items: listPutra },
+        santriPutri: { title: 'Daftar Santri Putri', items: listPutri },
+        anakYatim: { title: 'Daftar Santri Anak Yatim', items: listYatim },
+        anakYatimPutra: { title: 'Daftar Anak Yatim Putra', items: listYatimL },
+        anakYatimPutri: { title: 'Daftar Anak Yatim Putri', items: listYatimP },
+        pendidik: { title: 'Daftar Pendidik (Guru)', items: pendidikAll },
+        pendidikPutra: { title: 'Daftar Pendidik Putra (Ustadz)', items: pendidikAll.filter(u => u.info.includes('(L)')) },
+        pendidikPutri: { title: 'Daftar Pendidik Putri (Ustadzah)', items: pendidikAll.filter(u => u.info.includes('(P)')) },
+        pengasuh: { title: 'Daftar Pengasuh', items: pengasuhAll },
+        pengasuhPutra: { title: 'Daftar Pengasuh Putra', items: pengasuhAll.filter(u => u.info.includes('(L)')) },
+        pengasuhPutri: { title: 'Daftar Pengasuh Putri', items: pengasuhAll.filter(u => u.info.includes('(P)')) }
+      };
 
       const gridKelasEl = document.getElementById('gridRincianKelas');
       gridKelasEl.innerHTML = '';
@@ -5971,15 +6162,19 @@
         const jmlL = dataPutraPerKelas[kls];
         const jmlP = dataPutriPerKelas[kls];
         const totKls = jmlL + jmlP;
+        window._berandaDataLists[`kelas_${kls}`] = { title: `Daftar Santri Kelas ${kls}`, items: listKelas[kls].all };
+        window._berandaDataLists[`kelas_${kls}_L`] = { title: `Daftar Santri Kelas ${kls} Putra`, items: listKelas[kls].L };
+        window._berandaDataLists[`kelas_${kls}_P`] = { title: `Daftar Santri Kelas ${kls} Putri`, items: listKelas[kls].P };
+
         gridKelasEl.innerHTML += `
-          <div class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:border-teal-500 transition">
+          <div onclick="bukaModalDaftarBeranda('kelas_${kls}')" title="Klik untuk melihat daftar santri Kelas ${kls}" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:border-teal-500 hover:bg-teal-50/40 hover:shadow-sm cursor-pointer transition">
             <div class="flex items-center justify-between border-b border-slate-200 pb-1 mb-1">
               <span class="text-[9px] font-black text-teal-950 uppercase">KELAS ${kls}</span>
               <span class="bg-teal-800 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">${totKls}</span>
             </div>
             <div class="flex justify-between items-center text-[9px]">
-              <span class="font-bold text-emerald-700"><i class="fa-solid fa-mars mr-0.5"></i>L: ${jmlL}</span>
-              <span class="font-bold text-amber-600"><i class="fa-solid fa-venus mr-0.5"></i>P: ${jmlP}</span>
+              <span onclick="event.stopPropagation(); bukaModalDaftarBeranda('kelas_${kls}_L')" class="font-bold text-emerald-700 hover:underline cursor-pointer"><i class="fa-solid fa-mars mr-0.5"></i>L: ${jmlL}</span>
+              <span onclick="event.stopPropagation(); bukaModalDaftarBeranda('kelas_${kls}_P')" class="font-bold text-amber-600 hover:underline cursor-pointer"><i class="fa-solid fa-venus mr-0.5"></i>P: ${jmlP}</span>
             </div>
           </div>
         `;
@@ -10272,9 +10467,10 @@
             if (sFormat === "Firiyal") sFormat = "Firial"; 
             if (s.toLowerCase() === "h. nauli ara" || sFormat === "H. Nauli Ara") c = "11";
 
+            let y = String(obj.statusYatim || "").trim();
             kelasSantri[sFormat] = c; 
             kelaminSantri[sFormat] = g;
-            daftarSantriAll.push({ nama: sFormat, kelas: c, gender: g });
+            daftarSantriAll.push({ nama: sFormat, kelas: c, gender: g, statusYatim: y });
             
             if (obj.fotoProfil && String(obj.fotoProfil).trim() !== "-" && String(obj.fotoProfil).trim() !== "") {
               window.inboxDataFotoProfil[sFormat] = String(obj.fotoProfil).trim();
@@ -10367,8 +10563,10 @@
 
       const elRincianGuru = document.getElementById('rincianGenderGuru');
       const elRincianPengasuh = document.getElementById('rincianGenderPengasuh');
-      if (elRincianGuru) elRincianGuru.innerHTML = `<span class="text-sky-700">L: ${pendidikL}</span> • <span class="text-pink-600">P: ${pendidikP}</span>`;
-      if (elRincianPengasuh) elRincianPengasuh.innerHTML = `<span class="text-purple-700">L: ${pengasuhL}</span> • <span class="text-pink-600">P: ${pengasuhP}</span>`;
+      if (elRincianGuru) elRincianGuru.innerHTML = `<span onclick="event.stopPropagation(); bukaModalDaftarBeranda('pendidikPutra')" class="text-sky-700 hover:underline cursor-pointer">L: ${pendidikL}</span> • <span onclick="event.stopPropagation(); bukaModalDaftarBeranda('pendidikPutri')" class="text-pink-600 hover:underline cursor-pointer">P: ${pendidikP}</span>`;
+      if (elRincianPengasuh) elRincianPengasuh.innerHTML = `<span onclick="event.stopPropagation(); bukaModalDaftarBeranda('pengasuhPutra')" class="text-purple-700 hover:underline cursor-pointer">L: ${pengasuhL}</span> • <span onclick="event.stopPropagation(); bukaModalDaftarBeranda('pengasuhPutri')" class="text-pink-600 hover:underline cursor-pointer">P: ${pengasuhP}</span>`;
+      window._berandaListPendidik = listPendidik.sort((a, b) => a.nama.localeCompare(b.nama, 'id-ID'));
+      window._berandaListPengasuh = listPengasuh.sort((a, b) => a.nama.localeCompare(b.nama, 'id-ID'));
 
       const daftarHalaqohUnik = [...new Set([...listHalaqohUstadz, ...daftarNamaUstadz])].sort((a, b) => a.localeCompare(b, 'id-ID'));
       let mUniq = [...new Set(ml)].sort((a, b) => a.localeCompare(b, 'id-ID'));
@@ -15717,6 +15915,131 @@ let inboxSesiAktifNamaID = "";
       if (gate) gate.classList.remove('hidden');
       fetchOnlineAndUnread();
     });
+  };
+
+  window.izyBukaUbahPassword = async function() {
+    if (!_currentUser || !_currentUser.nama) {
+      Swal.fire('Info', 'Silakan login terlebih dahulu.', 'info');
+      return;
+    }
+
+    const { value: formValues } = await Swal.fire({
+      title: 'Ubah Password Akun',
+      html: `
+        <div class="text-left space-y-2.5 mt-1">
+          <div class="text-xs font-bold text-teal-800 bg-teal-50 border border-teal-200 rounded-lg px-3 py-2">
+            Akun: ${_currentUser.nama} (${_currentUser.role === 'guru' ? 'Guru / Staf' : 'Santri'})
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Password Lama</label>
+            <input id="izySwalOldPass" type="password" class="swal2-input !m-0 !w-full !h-9 !text-xs" placeholder="Masukkan password lama...">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Password Baru</label>
+            <input id="izySwalNewPass" type="password" class="swal2-input !m-0 !w-full !h-9 !text-xs" placeholder="Masukkan password baru...">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Konfirmasi Password Baru</label>
+            <input id="izySwalConfPass" type="password" class="swal2-input !m-0 !w-full !h-9 !text-xs" placeholder="Ulangi password baru...">
+          </div>
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Simpan Password',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#0f766e',
+      cancelButtonColor: '#64748b',
+      preConfirm: () => {
+        const oldPass = (document.getElementById('izySwalOldPass').value || '').trim();
+        const newPass = (document.getElementById('izySwalNewPass').value || '').trim();
+        const confPass = (document.getElementById('izySwalConfPass').value || '').trim();
+        if (!oldPass || !newPass || !confPass) {
+          Swal.showValidationMessage('Semua kolom password wajib diisi.');
+          return false;
+        }
+        if (newPass.length < 4) {
+          Swal.showValidationMessage('Password baru minimal 4 karakter.');
+          return false;
+        }
+        if (newPass !== confPass) {
+          Swal.showValidationMessage('Konfirmasi password baru tidak cocok.');
+          return false;
+        }
+        return { oldPass, newPass };
+      }
+    });
+
+    if (!formValues) return;
+
+    Swal.fire({ title: 'Menyimpan password...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    try {
+      const node = _currentUser.role === 'guru' ? 'password_staf' : 'password_santri';
+      const proxyUrl = window.WORKER_PROXY_URL || 'https://proxy-biodata-jurnal.nurwalad88.workers.dev/';
+      const fbBase = 'https://biodata-santri-default-rtdb.asia-southeast1.firebasedatabase.app';
+
+      const resGet = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ db: 'biodata', action: 'get', path: node })
+      }).then(r => r.json());
+
+      const nodeData = (resGet && resGet.data) ? resGet.data : {};
+      const targetNorm = normKey(_currentUser.nama);
+      let foundKey = null;
+      let foundVal = null;
+
+      Object.keys(nodeData).forEach(k => {
+        const v = nodeData[k];
+        if (!v) return;
+        const namaItem = (typeof v === 'object' && v.namaAsli) ? String(v.namaAsli).trim() : String(k).trim();
+        if (normKey(namaItem) === targetNorm) {
+          foundKey = k;
+          foundVal = v;
+        }
+      });
+
+      const currentSavedPass = foundVal
+        ? ((typeof foundVal === 'object' && foundVal.password !== undefined) ? String(foundVal.password).trim() : (typeof foundVal === 'string' ? foundVal.trim() : ''))
+        : '';
+
+      if (currentSavedPass && formValues.oldPass !== currentSavedPass) {
+        Swal.fire('Password Lama Salah', 'Password lama yang Anda masukkan tidak sesuai.', 'error');
+        return;
+      }
+
+      const targetKey = foundKey || _currentUser.nama.replace(/[\.\#\$\[\]\/]/g, '_');
+      const nowStr = new Date().toLocaleString('id-ID');
+      const payload = (foundVal && typeof foundVal === 'object')
+        ? { ...foundVal, password: formValues.newPass, updateTerakhir: nowStr }
+        : { namaAsli: _currentUser.nama, password: formValues.newPass, updateTerakhir: nowStr };
+
+      // Simpan langsung ke Firebase Realtime Database biodata-santri
+      const putRes = await fetch(`${fbBase}/${node}/${encodeURIComponent(targetKey)}.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!putRes.ok) throw new Error('HTTP ' + putRes.status);
+
+      // Sinkronkan juga ke daftar akun di memori sesi ini
+      if (typeof _loginUsers !== 'undefined' && Array.isArray(_loginUsers)) {
+        const acc = _loginUsers.find(a => a.role === _currentUser.role && normKey(a.nama) === targetNorm);
+        if (acc) acc.password = formValues.newPass;
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Password Diperbarui',
+        text: 'Password akun Anda berhasil diubah. Gunakan password baru pada login berikutnya.',
+        confirmButtonColor: '#0f766e'
+      });
+    } catch (err) {
+      console.error('Gagal ubah password:', err);
+      Swal.fire('Gagal', 'Tidak dapat menyimpan password baru: ' + err.message, 'error');
+    }
   };
 
   window.izyToggleLoginPass = function() {
