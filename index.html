@@ -15586,7 +15586,7 @@ let inboxSesiAktifNamaID = "";
 </script>
 
 <!-- ============================================================ -->
-<!-- FLOATING PANEL: PENGGUNA SEDANG LOGIN & CHAT (CLOUDFLARE D1) -->
+<!-- FLOATING PANEL: PENGGUNA SEDANG LOGIN & CHAT (FIREBASE REALTIME DB) -->
 <!-- ============================================================ -->
 <div id="izyOnlineChatBox" class="hidden fixed bottom-4 left-4 md:left-[282px] z-[260] w-[360px] sm:w-[410px] max-w-[calc(100vw-1.5rem)] h-[520px] max-h-[82vh] bg-white rounded-2xl shadow-2xl border border-teal-200 overflow-hidden flex flex-col">
   <!-- Header Utama Panel -->
@@ -15597,7 +15597,7 @@ let inboxSesiAktifNamaID = "";
       </button>
       <div class="min-w-0">
         <h3 id="izyChatBoxTitle" class="text-xs font-black uppercase tracking-wider truncate">Pengguna Sedang Login</h3>
-        <p id="izyChatBoxSub" class="text-[9px] text-teal-100 font-medium truncate">Klik nama untuk mulai chat (Cloudflare D1)</p>
+        <p id="izyChatBoxSub" class="text-[9px] text-teal-100 font-medium truncate">Klik nama untuk mulai chat (Firebase Realtime)</p>
       </div>
     </div>
     <button type="button" onclick="izyToggleOnlineChatBox(false)" class="w-7 h-7 rounded-lg bg-white/15 hover:bg-rose-500 text-white flex items-center justify-center transition cursor-pointer shrink-0" title="Tutup">
@@ -15605,10 +15605,10 @@ let inboxSesiAktifNamaID = "";
     </button>
   </div>
 
-  <!-- Info Status Koneksi D1 jika Worker belum aktif -->
+  <!-- Info Status Koneksi Firebase Chat -->
   <div id="izyChatWorkerWarn" class="hidden bg-amber-50 border-b border-amber-200 px-3 py-1.5 text-[10px] text-amber-800 font-semibold shrink-0">
     <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1"></i>
-    <span id="izyChatWorkerWarnText">Worker Cloudflare D1 belum terhubung.</span>
+    <span id="izyChatWorkerWarnText">Firebase Chat belum terhubung.</span>
   </div>
 
   <!-- VIEW A: DAFTAR PENGGUNA ONLINE & RIWAYAT CHAT -->
@@ -15641,16 +15641,43 @@ let inboxSesiAktifNamaID = "";
 
 <script>
 /* ============================================================
-   SISTEM LOGIN IZY PORTAL (GURU & SANTRI) + ONLINE PRESENCE & CHAT CLOUDFLARE D1
+   SISTEM LOGIN IZY PORTAL (GURU & SANTRI) + ONLINE PRESENCE & CHAT FIREBASE REALTIME DB
    ============================================================ */
 (function() {
-  // Ganti URL ini jika nama Cloudflare Worker Anda berbeda
-  const WORKER_CHAT_URL = 'https://chat-izy-portal.nurwalad88.workers.dev';
-  window.WORKER_CHAT_URL = WORKER_CHAT_URL;
+  // Konfigurasi Firebase Realtime Database: Chat Guru dan Santri (chat-izy)
+  const CHAT_IZY_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDhLZofCgcx-4k9gDQSLBZ-sEHUYzQANLw",
+    authDomain: "chat-izy.firebaseapp.com",
+    databaseURL: "https://chat-izy-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "chat-izy",
+    storageBucket: "chat-izy.firebasestorage.app",
+    messagingSenderId: "921616226645",
+    appId: "1:921616226645:web:9071f2f4ecc5a6311ef7dc"
+  };
+
+  let _dbChatIzy = null;
+  function getChatDb() {
+    if (_dbChatIzy) return _dbChatIzy;
+    if (typeof firebase === 'undefined' || !firebase.initializeApp) {
+      setChatWorkerWarn('SDK Firebase belum termuat. Periksa koneksi internet Anda.');
+      return null;
+    }
+    try {
+      const existing = (firebase.apps || []).find(a => a.name === 'appChatIzy');
+      const app = existing || firebase.initializeApp(CHAT_IZY_FIREBASE_CONFIG, 'appChatIzy');
+      _dbChatIzy = app.database();
+      return _dbChatIzy;
+    } catch (e) {
+      console.error('Gagal inisialisasi Firebase Chat:', e);
+      setChatWorkerWarn('Gagal terhubung ke Firebase Chat: ' + (e && e.message ? e.message : 'Error'));
+      return null;
+    }
+  }
 
   let _loginUsers = [];
   let _loginRoleFilter = 'all';
   let _currentUser = null; // { user_key, nama, role }
+  let _presenceRawMap = {};
   let _onlineUsers = [];
   let _recentPartners = [];
   let _lastSeenMap = {};
@@ -15659,13 +15686,18 @@ let inboxSesiAktifNamaID = "";
   let _chatListTab = 'online';
   let _activeChatPartner = null; // { user_key, nama, role }
   let _presenceTimer = null;
-  let _onlinePollTimer = null;
-  let _roomPollTimer = null;
+  let _staleCheckTimer = null;
+  let _presenceListenerAttached = false;
+  let _connRef = null;
+  let _connCb = null;
+  let _userChatsRef = null;
+  let _userChatsCb = null;
+  let _activeRoomRef = null;
+  let _activeRoomCb = null;
   let _lastMsgCount = -1;
   let _roomServerMsgs = {};
   let _roomPendingMsgs = {};
   let _lastRoomRenderSig = '';
-  let _roomFetchSeq = 0;
 
   function normKey(s) {
     return String(s || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
@@ -15764,75 +15796,231 @@ let inboxSesiAktifNamaID = "";
     }
   }
 
-  // === 2. KOMUNIKASI CLOUDFLARE WORKER + D1 (Simple Request tanpa CORS Preflight) ===
-  async function sendPresenceHeartbeat() {
-    if (!_currentUser) return;
-    try {
-      const res = await fetch(WORKER_CHAT_URL + '/presence', {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify({
-          user_key: _currentUser.user_key,
-          nama: _currentUser.nama,
-          role: _currentUser.role
-        })
-      });
-      const data = await res.json();
-      if (!res.ok || !data || data.status !== 'sukses') {
-        setChatWorkerWarn('Gagal lapor status online: ' + ((data && data.pesan) || ('HTTP ' + res.status)));
-      } else {
-        setChatWorkerWarn('');
+  // === 2. KOMUNIKASI FIREBASE REALTIME DATABASE (chat-izy) ===
+  function makeRoomId(keyA, keyB) {
+    return [String(keyA || ''), String(keyB || '')].sort().join('__');
+  }
+
+  function recomputePresenceState() {
+    const now = Date.now();
+    const ONLINE_TTL_MS = 180000; // 3 menit batas aktif
+    const list = [];
+    const seenMap = {};
+    Object.keys(_presenceRawMap || {}).forEach(k => {
+      const v = _presenceRawMap[k];
+      if (!v || typeof v !== 'object') return;
+      const lastSeen = Number(v.last_seen) || 0;
+      seenMap[k] = lastSeen;
+      const isFresh = !lastSeen || (now - lastSeen) < ONLINE_TTL_MS;
+      const isMe = _currentUser && k === _currentUser.user_key;
+      if ((v.online === true && isFresh) || isMe) {
+        list.push({
+          user_key: v.user_key || k,
+          nama: v.nama || k,
+          role: v.role || 'santri',
+          last_seen: lastSeen || now
+        });
       }
-    } catch (e) {
-      setChatWorkerWarn('Worker chat-izy-portal belum terhubung. Pastikan kode worker_chat_izy.js sudah di-Deploy.');
+    });
+    if (_currentUser && !list.some(u => u.user_key === _currentUser.user_key)) {
+      list.push({
+        user_key: _currentUser.user_key,
+        nama: _currentUser.nama,
+        role: _currentUser.role,
+        last_seen: now
+      });
+    }
+    list.sort((a, b) => {
+      if (a.role !== b.role) return a.role === 'guru' ? -1 : 1;
+      return String(a.nama || '').localeCompare(String(b.nama || ''), 'id-ID');
+    });
+    _onlineUsers = list;
+    _lastSeenMap = seenMap;
+    updateOnlinePillsUI();
+    refreshChatBoxVisibleUI();
+  }
+
+  function refreshChatBoxVisibleUI() {
+    const box = document.getElementById('izyOnlineChatBox');
+    if (!box || box.classList.contains('hidden')) return;
+    if (!_activeChatPartner) {
+      window.izyRenderOnlineList();
+    } else {
+      const pOnline = _onlineUsers.some(u => u.user_key === _activeChatPartner.user_key);
+      const subEl = document.getElementById('izyChatBoxSub');
+      if (subEl) subEl.textContent = buildPartnerSubText(_activeChatPartner.user_key, _activeChatPartner.role, pOnline);
     }
   }
 
-  async function fetchOnlineAndUnread() {
-    const q = _currentUser ? ('?user_key=' + encodeURIComponent(_currentUser.user_key)) : '';
-    try {
-      const res = await fetch(WORKER_CHAT_URL + '/online' + q);
-      const data = await res.json();
-      if (!res.ok || !data || data.status !== 'sukses') {
-        throw new Error((data && data.pesan) || ('HTTP ' + res.status));
-      }
-      _onlineUsers = Array.isArray(data.online) ? data.online : [];
-      _lastSeenMap = data.last_seen_map || {};
-      _unreadMap = data.unread_map || {};
-      _totalUnread = Number(data.total_unread) || 0;
-      _recentPartners = Array.isArray(data.recent_partners) ? data.recent_partners : [];
+  function attachPresenceListener() {
+    if (_presenceListenerAttached) return;
+    const db = getChatDb();
+    if (!db) return;
+    _presenceListenerAttached = true;
+    db.ref('presence').on('value', (snap) => {
+      _presenceRawMap = snap.val() || {};
       setChatWorkerWarn('');
-    } catch (e) {
-      setChatWorkerWarn('Koneksi D1: ' + (e && e.message ? e.message : 'Worker belum siap'));
-      if (_currentUser && !_onlineUsers.some(u => u.user_key === _currentUser.user_key)) {
-        _onlineUsers = [{ user_key: _currentUser.user_key, nama: _currentUser.nama, role: _currentUser.role, last_seen: Date.now() }];
-      }
+      recomputePresenceState();
+    }, (err) => {
+      console.error('Firebase presence error:', err);
+      setChatWorkerWarn('Firebase Chat belum dapat dibaca. Pastikan Rules Realtime Database chat-izy mengizinkan akses.');
+    });
+    if (!_staleCheckTimer) {
+      _staleCheckTimer = setInterval(recomputePresenceState, 30000);
     }
-    updateOnlinePillsUI();
-    const box = document.getElementById('izyOnlineChatBox');
-    if (box && !box.classList.contains('hidden')) {
-      if (!_activeChatPartner) {
-        window.izyRenderOnlineList();
-      } else {
-        const pOnline = _onlineUsers.some(u => u.user_key === _activeChatPartner.user_key);
-        const subEl = document.getElementById('izyChatBoxSub');
-        if (subEl) subEl.textContent = buildPartnerSubText(_activeChatPartner.user_key, _activeChatPartner.role, pOnline);
+  }
+
+  function clearUnreadIfNeeded(partnerKey) {
+    if (!_currentUser || !partnerKey) return;
+    if (!(_unreadMap[partnerKey] > 0)) return;
+    const db = getChatDb();
+    if (!db) return;
+    db.ref('user_chats/' + _currentUser.user_key + '/' + partnerKey + '/unread').set(0).catch(() => {});
+  }
+
+  function attachUserChatsListener(userKey) {
+    detachUserChatsListener();
+    const db = getChatDb();
+    if (!db || !userKey) return;
+    _userChatsRef = db.ref('user_chats/' + userKey);
+    _userChatsCb = (snap) => {
+      const raw = snap.val() || {};
+      const unreadMap = {};
+      let totalUnread = 0;
+      const partners = [];
+      Object.keys(raw).forEach(pKey => {
+        const item = raw[pKey];
+        if (!item || typeof item !== 'object') return;
+        const unread = Math.max(0, Number(item.unread) || 0);
+        if (unread > 0) {
+          unreadMap[pKey] = unread;
+          totalUnread += unread;
+        }
+        if (item.nama || item.last_chat) {
+          partners.push({
+            user_key: item.user_key || pKey,
+            nama: item.nama || pKey,
+            role: item.role || 'santri',
+            last_message: item.last_message || '',
+            last_chat: Number(item.last_chat) || 0,
+            unread: unread
+          });
+        }
+      });
+      partners.sort((a, b) => (b.last_chat || 0) - (a.last_chat || 0));
+      _unreadMap = unreadMap;
+      _totalUnread = totalUnread;
+      _recentPartners = partners;
+
+      // Jika sedang membuka ruang chat partner yang baru mengirim pesan, langsung tandai terbaca
+      const box = document.getElementById('izyOnlineChatBox');
+      if (box && !box.classList.contains('hidden') && _activeChatPartner && _unreadMap[_activeChatPartner.user_key] > 0) {
+        clearUnreadIfNeeded(_activeChatPartner.user_key);
       }
+
+      updateOnlinePillsUI();
+      refreshChatBoxVisibleUI();
+    };
+    _userChatsRef.on('value', _userChatsCb, (err) => {
+      console.error('Firebase user_chats error:', err);
+    });
+  }
+
+  function detachUserChatsListener() {
+    if (_userChatsRef && _userChatsCb) {
+      try { _userChatsRef.off('value', _userChatsCb); } catch (e) {}
     }
+    _userChatsRef = null;
+    _userChatsCb = null;
+  }
+
+  function detachRoomListener() {
+    if (_activeRoomRef && _activeRoomCb) {
+      try { _activeRoomRef.off('value', _activeRoomCb); } catch (e) {}
+    }
+    _activeRoomRef = null;
+    _activeRoomCb = null;
+  }
+
+  function writePresenceOnline() {
+    if (!_currentUser) return;
+    const db = getChatDb();
+    if (!db) return;
+    const uRef = db.ref('presence/' + _currentUser.user_key);
+    uRef.set({
+      user_key: _currentUser.user_key,
+      nama: _currentUser.nama,
+      role: _currentUser.role,
+      online: true,
+      last_seen: firebase.database.ServerValue.TIMESTAMP
+    }).then(() => {
+      setChatWorkerWarn('');
+    }).catch((err) => {
+      setChatWorkerWarn('Gagal lapor status online ke Firebase: ' + (err && err.message ? err.message : 'Akses ditolak'));
+    });
+  }
+
+  function markPresenceOffline(userKey) {
+    if (!userKey) return;
+    const db = getChatDb();
+    if (!db) return;
+    try {
+      const uRef = db.ref('presence/' + userKey);
+      uRef.onDisconnect().cancel().catch(() => {});
+      uRef.update({
+        online: false,
+        last_seen: firebase.database.ServerValue.TIMESTAMP
+      }).catch(() => {});
+    } catch (e) {}
   }
 
   function startPresenceLoops() {
-    if (_presenceTimer) clearInterval(_presenceTimer);
-    if (_onlinePollTimer) clearInterval(_onlinePollTimer);
-    sendPresenceHeartbeat().then(fetchOnlineAndUnread);
-    _presenceTimer = setInterval(sendPresenceHeartbeat, 25000);
-    _onlinePollTimer = setInterval(fetchOnlineAndUnread, 10000);
+    stopPresenceLoops();
+    attachPresenceListener();
+    if (!_currentUser) return;
+    const db = getChatDb();
+    if (!db) return;
+
+    const myKey = _currentUser.user_key;
+    const uRef = db.ref('presence/' + myKey);
+    _connRef = db.ref('.info/connected');
+    _connCb = (snap) => {
+      if (snap.val() === true && _currentUser && _currentUser.user_key === myKey) {
+        uRef.onDisconnect().update({
+          online: false,
+          last_seen: firebase.database.ServerValue.TIMESTAMP
+        }).then(() => {
+          writePresenceOnline();
+        }).catch(() => {
+          writePresenceOnline();
+        });
+      }
+    };
+    _connRef.on('value', _connCb);
+    writePresenceOnline();
+
+    _presenceTimer = setInterval(() => {
+      if (!_currentUser) return;
+      const d = getChatDb();
+      if (!d) return;
+      d.ref('presence/' + _currentUser.user_key).update({
+        online: true,
+        last_seen: firebase.database.ServerValue.TIMESTAMP
+      }).catch(() => {});
+    }, 45000);
+
+    attachUserChatsListener(myKey);
   }
 
   function stopPresenceLoops() {
     if (_presenceTimer) { clearInterval(_presenceTimer); _presenceTimer = null; }
-    if (_onlinePollTimer) { clearInterval(_onlinePollTimer); _onlinePollTimer = null; }
-    if (_roomPollTimer) { clearInterval(_roomPollTimer); _roomPollTimer = null; }
+    if (_connRef && _connCb) {
+      try { _connRef.off('value', _connCb); } catch (e) {}
+    }
+    _connRef = null;
+    _connCb = null;
+    detachUserChatsListener();
+    detachRoomListener();
   }
 
   // === 3. UI PANEL DAFTAR PENGGUNA LOGIN & CHAT ===
@@ -15842,11 +16030,16 @@ let inboxSesiAktifNamaID = "";
     const willOpen = (typeof forceState === 'boolean') ? forceState : box.classList.contains('hidden');
     if (willOpen) {
       box.classList.remove('hidden');
-      fetchOnlineAndUnread();
-      if (!_activeChatPartner) window.izyRenderOnlineList();
+      attachPresenceListener();
+      recomputePresenceState();
+      if (_activeChatPartner) {
+        attachRoomListener(_activeChatPartner.user_key, true);
+      } else {
+        window.izyRenderOnlineList();
+      }
     } else {
       box.classList.add('hidden');
-      if (_roomPollTimer) { clearInterval(_roomPollTimer); _roomPollTimer = null; }
+      detachRoomListener();
     }
   };
 
@@ -15932,7 +16125,8 @@ let inboxSesiAktifNamaID = "";
     const pendingMsgs = _roomPendingMsgs[partnerKey] || [];
     const allMsgs = serverMsgs.concat(pendingMsgs);
 
-    const sig = partnerKey + '|' + serverMsgs.length + '|' + (serverMsgs.length ? (serverMsgs[serverMsgs.length - 1].created_at + ':' + serverMsgs[serverMsgs.length - 1].message) : '') + '|' + pendingMsgs.map(p => p._tempId + ':' + p._status).join(',');
+    const lastSrv = serverMsgs.length ? serverMsgs[serverMsgs.length - 1] : null;
+    const sig = partnerKey + '|' + serverMsgs.length + '|' + (lastSrv ? ((lastSrv.id || '') + ':' + lastSrv.created_at + ':' + lastSrv.message) : '') + '|' + pendingMsgs.map(p => p._tempId + ':' + p._status).join(',');
     if (!forceScroll && sig === _lastRoomRenderSig) return;
     _lastRoomRenderSig = sig;
     _lastMsgCount = allMsgs.length;
@@ -15967,28 +16161,62 @@ let inboxSesiAktifNamaID = "";
 
   async function dispatchPendingChatMsg(partner, tempMsg) {
     if (!_currentUser) return;
+    const db = getChatDb();
+    if (!db) {
+      tempMsg._status = 'failed';
+      renderRoomMessagesUI(partner.user_key, true);
+      return;
+    }
     try {
-      const res = await fetch(WORKER_CHAT_URL + '/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
-        body: JSON.stringify({
-          sender_key: _currentUser.user_key,
-          sender_name: _currentUser.nama,
-          sender_role: _currentUser.role,
-          receiver_key: partner.user_key,
-          receiver_name: partner.nama,
-          receiver_role: partner.role,
-          message: tempMsg.message
-        })
-      });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const roomId = makeRoomId(_currentUser.user_key, partner.user_key);
+      const msgKey = tempMsg._msgId || db.ref('rooms/' + roomId + '/messages').push().key;
+      tempMsg._msgId = msgKey;
+      const nowTs = tempMsg.created_at || Date.now();
+
+      const updates = {};
+      updates['rooms/' + roomId + '/messages/' + msgKey] = {
+        id: msgKey,
+        sender_key: _currentUser.user_key,
+        sender_name: _currentUser.nama,
+        sender_role: _currentUser.role,
+        receiver_key: partner.user_key,
+        receiver_name: partner.nama,
+        receiver_role: partner.role,
+        message: tempMsg.message,
+        created_at: nowTs
+      };
+      updates['user_chats/' + _currentUser.user_key + '/' + partner.user_key] = {
+        user_key: partner.user_key,
+        nama: partner.nama,
+        role: partner.role,
+        last_message: tempMsg.message,
+        last_chat: nowTs,
+        unread: 0
+      };
+      updates['user_chats/' + partner.user_key + '/' + _currentUser.user_key] = {
+        user_key: _currentUser.user_key,
+        nama: _currentUser.nama,
+        role: _currentUser.role,
+        last_message: tempMsg.message,
+        last_chat: nowTs,
+        unread: firebase.database.ServerValue.increment(1)
+      };
+
+      await db.ref().update(updates);
       tempMsg._status = 'sent';
       tempMsg._sentConfirmed = true;
       tempMsg._confirmedAt = Date.now();
+      setChatWorkerWarn('');
+      // Bersihkan dari pending jika sudah masuk ke serverMsgs
+      if (_roomPendingMsgs[partner.user_key]) {
+        const srvIds = new Set((_roomServerMsgs[partner.user_key] || []).map(m => m.id));
+        _roomPendingMsgs[partner.user_key] = _roomPendingMsgs[partner.user_key].filter(p => !(p._sentConfirmed && srvIds.has(p._msgId)));
+      }
       renderRoomMessagesUI(partner.user_key, false);
-      loadRoomMessages(false);
     } catch (err) {
+      console.error('Gagal kirim pesan Firebase:', err);
       tempMsg._status = 'failed';
+      setChatWorkerWarn('Gagal mengirim pesan ke Firebase. Periksa koneksi atau Rules database chat-izy.');
       renderRoomMessagesUI(partner.user_key, true);
     }
   }
@@ -16002,6 +16230,59 @@ let inboxSesiAktifNamaID = "";
     renderRoomMessagesUI(partnerKey, true);
     dispatchPendingChatMsg({ user_key: _activeChatPartner.user_key, nama: _activeChatPartner.nama, role: _activeChatPartner.role }, target);
   };
+
+  function attachRoomListener(partnerKey, initialForceScroll) {
+    detachRoomListener();
+    if (!_currentUser || !partnerKey) return;
+    const db = getChatDb();
+    const area = document.getElementById('izyChatMessagesArea');
+    if (!db) {
+      if (area) {
+        area.innerHTML = '<div class="my-auto text-center text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-4">Belum dapat terhubung ke Firebase Realtime Database (<b>chat-izy</b>).</div>';
+      }
+      return;
+    }
+
+    const roomId = makeRoomId(_currentUser.user_key, partnerKey);
+    let isFirst = !!initialForceScroll;
+    _activeRoomRef = db.ref('rooms/' + roomId + '/messages').orderByChild('created_at').limitToLast(100);
+    _activeRoomCb = (snap) => {
+      if (!_activeChatPartner || _activeChatPartner.user_key !== partnerKey) return;
+      const msgs = [];
+      snap.forEach(child => {
+        const val = child.val();
+        if (val && typeof val === 'object') {
+          msgs.push({
+            id: val.id || child.key,
+            sender_key: val.sender_key || '',
+            sender_name: val.sender_name || '',
+            sender_role: val.sender_role || 'santri',
+            receiver_key: val.receiver_key || '',
+            message: val.message || '',
+            created_at: Number(val.created_at) || 0
+          });
+        }
+      });
+      msgs.sort((a, b) => (a.created_at || 0) - (b.created_at || 0));
+      _roomServerMsgs[partnerKey] = msgs;
+
+      if (_roomPendingMsgs[partnerKey] && _roomPendingMsgs[partnerKey].length > 0) {
+        const srvIds = new Set(msgs.map(m => m.id));
+        _roomPendingMsgs[partnerKey] = _roomPendingMsgs[partnerKey].filter(p => !(p._msgId && srvIds.has(p._msgId)));
+      }
+
+      renderRoomMessagesUI(partnerKey, isFirst);
+      isFirst = false;
+      clearUnreadIfNeeded(partnerKey);
+    };
+
+    _activeRoomRef.on('value', _activeRoomCb, (err) => {
+      console.error('Gagal memuat pesan Firebase:', err);
+      if (area && !(_roomServerMsgs[partnerKey] && _roomServerMsgs[partnerKey].length) && !(_roomPendingMsgs[partnerKey] && _roomPendingMsgs[partnerKey].length)) {
+        area.innerHTML = '<div class="my-auto text-center text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-4">Belum dapat membaca pesan dari Firebase (<b>chat-izy</b>). Pastikan Rules Realtime Database sudah aktif.</div>';
+      }
+    });
+  }
 
   window.izyBukaChatDengan = function(partnerKey, partnerName, partnerRole) {
     if (!_currentUser || !partnerKey) return;
@@ -16027,16 +16308,15 @@ let inboxSesiAktifNamaID = "";
       document.getElementById('izyChatMessagesArea').innerHTML = '<div class="text-center py-8 text-xs text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat percakapan...</div>';
     }
 
-    loadRoomMessages(true);
-    if (_roomPollTimer) clearInterval(_roomPollTimer);
-    _roomPollTimer = setInterval(() => loadRoomMessages(false), 3000);
+    clearUnreadIfNeeded(partnerKey);
+    attachRoomListener(partnerKey, true);
     setTimeout(() => { const inp = document.getElementById('izyChatInputText'); if (inp) inp.focus(); }, 60);
   };
 
   window.izyChatKembaliKeList = function() {
     _activeChatPartner = null;
     _lastRoomRenderSig = '';
-    if (_roomPollTimer) { clearInterval(_roomPollTimer); _roomPollTimer = null; }
+    detachRoomListener();
 
     const room = document.getElementById('izyChatRoomView');
     room.classList.add('hidden');
@@ -16047,40 +16327,9 @@ let inboxSesiAktifNamaID = "";
     if (btnBack) { btnBack.classList.add('hidden'); btnBack.classList.remove('flex'); }
 
     document.getElementById('izyChatBoxTitle').textContent = 'Pengguna Sedang Login';
-    document.getElementById('izyChatBoxSub').textContent = 'Klik nama untuk mulai chat (Cloudflare D1)';
-    fetchOnlineAndUnread();
+    document.getElementById('izyChatBoxSub').textContent = 'Klik nama untuk mulai chat (Firebase Realtime)';
+    window.izyRenderOnlineList();
   };
-
-  async function loadRoomMessages(forceScroll) {
-    if (!_currentUser || !_activeChatPartner) return;
-    const targetKey = _activeChatPartner.user_key;
-    const area = document.getElementById('izyChatMessagesArea');
-    if (!area) return;
-    const reqSeq = ++_roomFetchSeq;
-    const fetchStartedAt = Date.now();
-    try {
-      const url = `${WORKER_CHAT_URL}/messages?me=${encodeURIComponent(_currentUser.user_key)}&partner=${encodeURIComponent(targetKey)}`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
-      if (reqSeq !== _roomFetchSeq || !_activeChatPartner || _activeChatPartner.user_key !== targetKey) return;
-      const msgs = (data && Array.isArray(data.messages)) ? data.messages : [];
-
-      _roomServerMsgs[targetKey] = msgs;
-      if (_roomPendingMsgs[targetKey] && _roomPendingMsgs[targetKey].length > 0) {
-        _roomPendingMsgs[targetKey] = _roomPendingMsgs[targetKey].filter(p => !(p._sentConfirmed && fetchStartedAt >= (p._confirmedAt || 0)));
-      }
-
-      renderRoomMessagesUI(targetKey, forceScroll);
-      if (_unreadMap[targetKey]) {
-        fetchOnlineAndUnread();
-      }
-    } catch (e) {
-      if (forceScroll && !(_roomServerMsgs[targetKey] && _roomServerMsgs[targetKey].length) && !(_roomPendingMsgs[targetKey] && _roomPendingMsgs[targetKey].length)) {
-        area.innerHTML = '<div class="my-auto text-center text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-4">Belum dapat terhubung ke Cloudflare Worker (<b>chat-izy-portal</b>). Pastikan Worker &amp; D1 Database sudah di-deploy.</div>';
-      }
-    }
-  }
 
   const chatSendForm = document.getElementById('izyChatSendForm');
   if (chatSendForm) {
@@ -16113,7 +16362,7 @@ let inboxSesiAktifNamaID = "";
       inp.focus();
       renderRoomMessagesUI(partner.user_key, true);
 
-      // Kirim ke Cloudflare D1 di latar belakang
+      // Kirim ke Firebase Realtime Database di latar belakang
       dispatchPendingChatMsg(partner, tempMsg);
     });
   }
@@ -16160,12 +16409,13 @@ let inboxSesiAktifNamaID = "";
     }).then(res => {
       if (!res.isConfirmed) return;
       if (_currentUser) {
-        try {
-          fetch(WORKER_CHAT_URL + '/logout?user_key=' + encodeURIComponent(_currentUser.user_key));
-        } catch (e) {}
+        markPresenceOffline(_currentUser.user_key);
       }
       _currentUser = null;
       _activeChatPartner = null;
+      _unreadMap = {};
+      _totalUnread = 0;
+      _recentPartners = [];
       stopPresenceLoops();
       window.izyToggleOnlineChatBox(false);
       try { sessionStorage.removeItem('izy_portal_user'); } catch (e) {}
@@ -16177,7 +16427,7 @@ let inboxSesiAktifNamaID = "";
       if (errEl) errEl.classList.add('hidden');
       const gate = document.getElementById('izyLoginGate');
       if (gate) gate.classList.remove('hidden');
-      fetchOnlineAndUnread();
+      recomputePresenceState();
     });
   };
 
@@ -16489,20 +16739,15 @@ let inboxSesiAktifNamaID = "";
     });
   }
 
-  // Bersihkan status online saat tab ditutup
+  // Bersihkan status online saat tab ditutup (didukung otomatis oleh Firebase onDisconnect)
   window.addEventListener('beforeunload', function() {
-    if (_currentUser && navigator.sendBeacon) {
-      // Gunakan fetch keepalive untuk DELETE presence
-      try {
-        fetch(WORKER_CHAT_URL + '/logout?user_key=' + encodeURIComponent(_currentUser.user_key), {
-          keepalive: true
-        });
-      } catch (e) {}
+    if (_currentUser) {
+      markPresenceOffline(_currentUser.user_key);
     }
   });
 
   loadLoginDirectory();
-  fetchOnlineAndUnread();
+  attachPresenceListener();
 
   try {
     const saved = JSON.parse(sessionStorage.getItem('izy_portal_user') || 'null');
