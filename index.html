@@ -1402,9 +1402,14 @@
                   <h2 class="text-xs font-black tracking-widest uppercase">Form Input Bank Soal</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Pembuatan soal Choice (PG) dan Essay per mata pelajaran</p>
                 </div>
-                <button type="button" onclick="toggleMenu('menuRekap'); pindahMenu('daftarSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1">
-                  <i class="fa-solid fa-folder-open"></i> Daftar Soal
-                </button>
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('daftarSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-folder-open"></i> Daftar Soal
+                  </button>
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('cekBankSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-file-circle-check"></i> Cek Bank Soal
+                  </button>
+                </div>
               </div>
 
               <form id="bsFormSoal" class="p-3.5 md:p-4 flex-1 flex flex-col justify-between min-h-0 gap-3">
@@ -1560,9 +1565,14 @@
                   <h2 class="text-xs font-black tracking-widest uppercase">Daftar Bank Soal Tersimpan</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Verifikasi akun guru untuk melihat, memilih cetak, edit, dan konfirmasi soal</p>
                 </div>
-                <button type="button" onclick="toggleMenu('menuInput'); pindahMenu('inputSoal')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1">
-                  <i class="fa-solid fa-file-circle-plus"></i> Input Bank Soal
-                </button>
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button type="button" onclick="if (!document.getElementById('sub-menuInput')?.style.maxHeight || document.getElementById('sub-menuInput').style.maxHeight === '0px') toggleMenu('menuInput'); pindahMenu('inputSoal')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-file-circle-plus"></i> Input Bank Soal
+                  </button>
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('cekBankSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-file-circle-check"></i> Cek Bank Soal
+                  </button>
+                </div>
               </div>
 
               <div class="p-4 flex flex-col flex-1 overflow-hidden">
@@ -1634,9 +1644,17 @@
                   <h2 class="text-xs font-black tracking-widest uppercase">Rekap Bank Soal</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Monitoring Jumlah Input Soal</p>
                 </div>
-                <span class="text-[9px] font-bold text-emerald-100 bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-500/30 uppercase tracking-wider">
-                  <i class="fa-solid fa-rotate mr-1"></i> Auto-Sync
-                </span>
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button type="button" onclick="if (!document.getElementById('sub-menuInput')?.style.maxHeight || document.getElementById('sub-menuInput').style.maxHeight === '0px') toggleMenu('menuInput'); pindahMenu('inputSoal')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-file-circle-plus"></i> Input Bank Soal
+                  </button>
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('daftarSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-folder-open"></i> Daftar Soal
+                  </button>
+                  <span class="text-[9px] font-bold text-emerald-100 bg-emerald-900/60 px-2 py-1 rounded border border-emerald-500/30 uppercase tracking-wider">
+                    <i class="fa-solid fa-rotate mr-1"></i> Auto-Sync
+                  </span>
+                </div>
               </div>
 
               <div class="p-4 flex flex-col flex-1 overflow-hidden bg-slate-50/50 space-y-3">
@@ -1944,9 +1962,14 @@
                   <h2 class="text-xs font-black tracking-widest uppercase">Form Jurnal Mengajar</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Catatan agenda kegiatan belajar mengajar guru</p>
                 </div>
-                <button type="button" onclick="toggleMenu('menuRekap'); pindahMenu('rekapKbm')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1">
-                  <i class="fa-solid fa-list-check"></i> Rekap
-                </button>
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('rekapKbm')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-table-list"></i> Rekap Jurnal KBM
+                  </button>
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('cekJurnal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-magnifying-glass"></i> Cek Jurnal KBM
+                  </button>
+                </div>
               </div>
 
               <form id="kbmForm" class="p-3.5 md:p-4 gap-2 flex-1 flex flex-col min-h-0">
@@ -2357,9 +2380,17 @@
                   <h2 class="text-xs font-black tracking-widest uppercase">Database Jurnal Mengajar</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Rekaman terpadu riwayat pengajaran seluruh guru</p>
                 </div>
-                <span class="text-[9px] font-bold text-emerald-100 bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-500/30 uppercase tracking-wider">
-                  <i class="fa-solid fa-rotate mr-1"></i> Auto-Sync
-                </span>
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button type="button" onclick="if (!document.getElementById('sub-menuInput')?.style.maxHeight || document.getElementById('sub-menuInput').style.maxHeight === '0px') toggleMenu('menuInput'); pindahMenu('inputKbm')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-chalkboard-user"></i> Jurnal Guru KBM
+                  </button>
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('cekJurnal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-magnifying-glass"></i> Cek Jurnal KBM
+                  </button>
+                  <span class="text-[9px] font-bold text-emerald-100 bg-emerald-900/60 px-2 py-1 rounded border border-emerald-500/30 uppercase tracking-wider">
+                    <i class="fa-solid fa-rotate mr-1"></i> Auto-Sync
+                  </span>
+                </div>
               </div>
 
               <div class="p-4 md:p-5">
@@ -2764,6 +2795,14 @@
                 <div>
                   <h2 class="text-xs font-black tracking-widest uppercase">CEK KEPATUHAN JURNAL KBM</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Pemeriksaan & verifikasi kelengkapan jurnal mengajar guru</p>
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button type="button" onclick="if (!document.getElementById('sub-menuInput')?.style.maxHeight || document.getElementById('sub-menuInput').style.maxHeight === '0px') toggleMenu('menuInput'); pindahMenu('inputKbm')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-chalkboard-user"></i> Jurnal Guru KBM
+                  </button>
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('rekapKbm')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-table-list"></i> Rekap Jurnal KBM
+                  </button>
                 </div>
               </div>
               <div class="p-4 flex-1 overflow-y-auto bg-slate-50/50">
