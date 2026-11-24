@@ -987,18 +987,6 @@
           </div>
         </div>
 
-        <!-- MENU PENGATURAN BANK SOAL -->
-        <div>
-          <button id="tabBtnSettingSoal" onclick="pindahMenu('settingSoal')" class="menu-induk w-full flex items-center justify-between p-2.5 rounded-xl transition group">
-            <div class="flex items-center gap-3">
-              <div class="w-7 h-7 rounded-lg bg-teal-800/50 flex items-center justify-center group-hover:bg-emerald-500/20 transition">
-                <i class="fa-solid fa-sliders text-emerald-400 text-xs"></i>
-              </div>
-              <span class="text-xs font-bold text-yellow-400 uppercase tracking-wider">Setting Ujian Soal</span>
-            </div>
-          </button>
-        </div>
-
         <!-- MENU UTAMA DOWNLOAD / EXPORT -->
         <div>
           <button id="tabBtnDownload" onclick="pindahMenu('download')" class="menu-induk w-full flex items-center justify-between p-2.5 rounded-xl transition group">
@@ -1031,7 +1019,7 @@
             </span>
           </div>
         </button>
-        <p class="text-[9px] text-emerald-400 font-bold tracking-widest">UPDATE : 21.11.2026</p>
+        <p class="text-[9px] text-emerald-400 font-bold tracking-widest">UPDATE : 24.11.2026</p>
       </div>
     </aside>
 
@@ -1411,6 +1399,9 @@
                   <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('cekBankSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
                     <i class="fa-solid fa-file-circle-check"></i> Cek Bank Soal
                   </button>
+                  <button type="button" onclick="pindahMenu('settingSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-sliders"></i> Setting Ujian Soal
+                  </button>
                 </div>
               </div>
 
@@ -1584,6 +1575,9 @@
                   <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('cekBankSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
                     <i class="fa-solid fa-file-circle-check"></i> Cek Bank Soal
                   </button>
+                  <button type="button" onclick="pindahMenu('settingSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-sliders"></i> Setting Ujian Soal
+                  </button>
                 </div>
               </div>
 
@@ -1663,6 +1657,9 @@
                   <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('daftarSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
                     <i class="fa-solid fa-folder-open"></i> Daftar Soal
                   </button>
+                  <button type="button" onclick="pindahMenu('settingSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-sliders"></i> Setting Ujian Soal
+                  </button>
                 </div>
               </div>
 
@@ -1703,6 +1700,17 @@
                 <div>
                   <h2 class="text-xs font-black tracking-widest uppercase">Setting Password & Waktu Ujian</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Pengaturan token dan durasi pengerjaan PH, PTS, dan PAS</p>
+                </div>
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button type="button" onclick="if (!document.getElementById('sub-menuInput')?.style.maxHeight || document.getElementById('sub-menuInput').style.maxHeight === '0px') toggleMenu('menuInput'); pindahMenu('inputSoal')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-file-circle-plus"></i> Input Bank Soal
+                  </button>
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('daftarSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-folder-open"></i> Daftar Soal
+                  </button>
+                  <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('cekBankSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-file-circle-check"></i> Cek Bank Soal
+                  </button>
                 </div>
               </div>
 
@@ -5701,7 +5709,7 @@
         if (typeof window.updateCekBankSoal === 'function') window.updateCekBankSoal();
       } else if (menu === 'settingSoal') {
         document.getElementById('panelSettingSoal').classList.remove('hidden');
-        document.getElementById('tabBtnSettingSoal').classList.add('active');
+        document.getElementById('tabBtnSettingSoal')?.classList.add('active');
       } else if (menu === 'setoran') {
         document.getElementById('panelSetoran').classList.remove('hidden');
         document.getElementById('tabBtnSetoran').classList.add('active');
