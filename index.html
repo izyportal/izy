@@ -6494,6 +6494,10 @@
       document.getElementById('bsOptD').value = '';
       document.getElementById('bsOptE').value = '';
       document.getElementById('bsKunciPG').value = 'A';
+      if (typeof window.setBsTextDir === 'function') {
+        window.setBsTextDir('soal', 'IN', false);
+        window.setBsTextDir('opsi', 'IN', false);
+      }
       
       document.getElementById('bsEssayListContainer').innerHTML = '';
       bsAddEssayItem();
@@ -6529,6 +6533,11 @@
           document.getElementById('bsOptE').value = item.options.E || '';
           document.getElementById('bsKunciPG').value = item.answer || 'A';
         }
+        if (typeof window.setBsTextDir === 'function') {
+          window.setBsTextDir('soal', _isBsTextRtl(item.question, item.soalDir) ? 'AR' : 'IN', false);
+          const sampleOpt = item.options ? (item.options.A || item.options.B || '') : '';
+          window.setBsTextDir('opsi', _isBsTextRtl(sampleOpt, item.opsiDir) ? 'AR' : 'IN', false);
+        }
       } else {
         document.getElementById('bsEssayListContainer').innerHTML = '';
         bsAddEssayItem(item.question || '', item.gambar || '');
@@ -6561,7 +6570,16 @@
       });
     };
 
-    window.setBsTextDir = function(target, mode) {
+    function _isBsTextRtl(text, savedDir) {
+      if (savedDir === 'rtl') return true;
+      if (savedDir === 'ltr') return false;
+      const s = String(text || '');
+      const hasArabic = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(s);
+      const hasLatin = /[A-Za-z]/.test(s);
+      return hasArabic && !hasLatin;
+    }
+
+    window.setBsTextDir = function(target, mode, shouldFocus = true) {
       const isAr = mode === 'AR';
       const dir = isAr ? 'rtl' : 'ltr';
       const align = isAr ? 'right' : 'left';
@@ -6577,7 +6595,7 @@
         if (el) {
           el.setAttribute('dir', dir);
           el.style.textAlign = align;
-          el.focus();
+          if (shouldFocus) el.focus();
         }
         setBtnStyle(document.getElementById('bsSoalDirAR'), isAr);
         setBtnStyle(document.getElementById('bsSoalDirIN'), !isAr);
@@ -6643,6 +6661,8 @@
           ...baseData,
           type: 'pg',
           question: document.getElementById('bsTeksSoal').value.trim(),
+          soalDir: document.getElementById('bsTeksSoal').getAttribute('dir') === 'rtl' ? 'rtl' : 'ltr',
+          opsiDir: document.getElementById('bsOptA').getAttribute('dir') === 'rtl' ? 'rtl' : 'ltr',
           gambar: document.getElementById('bsLinkGambar').value.trim()
         };
         const optA = document.getElementById('bsOptA').value.trim();
@@ -6853,7 +6873,7 @@
           <button type="button" onclick="bsEditQuestion('${item.firebaseKey}')" class="px-2.5 py-1 rounded bg-teal-50 hover:bg-teal-700 text-teal-700 hover:text-white border border-teal-600 text-[10px] font-bold transition">✏️ Edit</button>
           <button type="button" onclick="bsDeleteQuestion('${item.firebaseKey}')" class="px-2.5 py-1 rounded bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white border border-rose-500 text-[10px] font-bold transition">🗑️ Hapus</button>
         </div>
-        <div class="text-xs font-semibold text-slate-800 whitespace-pre-line mb-2.5">${number}. ${escapeHtml(item.question)}</div>
+        <div class="text-xs font-semibold text-slate-800 whitespace-pre-line mb-2.5">${number}. ${_isBsTextRtl(item.question, item.soalDir) ? `<span dir="rtl" style="unicode-bidi: isolate;">${escapeHtml(item.question)}</span>` : escapeHtml(item.question)}</div>
       `;
 
       if (item.gambar) {
@@ -6869,7 +6889,8 @@
         for (let key in item.options) {
           if (item.options[key]) {
             const isCorrect = key === item.answer;
-            contentHTML += `<li class="bs-opt-item px-2.5 py-1.5 rounded border border-slate-200 bg-slate-50 ${isCorrect ? 'correct' : ''}"><strong>${key}.</strong> ${escapeHtml(item.options[key])} ${isCorrect ? '✓' : ''}</li>`;
+            const optTextHtml = _isBsTextRtl(item.options[key], item.opsiDir) ? `<span dir="rtl" style="unicode-bidi: isolate;">${escapeHtml(item.options[key])}</span>` : escapeHtml(item.options[key]);
+            contentHTML += `<li class="bs-opt-item px-2.5 py-1.5 rounded border border-slate-200 bg-slate-50 ${isCorrect ? 'correct' : ''}"><strong>${key}.</strong> ${optTextHtml} ${isCorrect ? '✓' : ''}</li>`;
           }
         }
         contentHTML += `</ul>`;
@@ -10612,18 +10633,20 @@
 
         const { Document, Packer, Paragraph, TextRun, AlignmentType, SectionType, Table, TableRow, TableCell, BorderStyle, WidthType, HeightRule, VerticalAlign, ImageRun } = docx;
 
-        function createRuns(text, isBold) {
+        function createRuns(text, isBold, isRtl) {
           if (!text) return [];
           const lines = text.toString().split('\n');
           const runs = [];
           const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
           lines.forEach((line, lineIndex) => {
+            const lineRuns = [];
             let currentSegment = "";
             let isCurrentArabic = null;
             const pushSegment = () => {
               if (currentSegment.length > 0) {
                 const runProps = { text: currentSegment, bold: !!isBold, size: isCurrentArabic ? 32 : 20, font: isCurrentArabic ? "Traditional Arabic" : "Arial" };
-                runs.push(new TextRun(runProps));
+                if (isRtl) runProps.rightToLeft = true;
+                lineRuns.push(runProps);
                 currentSegment = "";
               }
             };
@@ -10636,9 +10659,20 @@
               currentSegment += char;
             }
             pushSegment();
+            if (isRtl && lineRuns.length > 0) {
+              lineRuns[0].text = '\u200F' + lineRuns[0].text;
+              lineRuns[lineRuns.length - 1].text = lineRuns[lineRuns.length - 1].text + '\u200F';
+            }
+            lineRuns.forEach(rp => runs.push(new TextRun(rp)));
             if (lineIndex < lines.length - 1) runs.push(new TextRun({ text: "", break: 1, size: 20 }));
           });
           return runs;
+        }
+
+        function createItemRuns(prefix, bodyText, isBold, savedDir) {
+          const isRtl = _isBsTextRtl(bodyText, savedDir);
+          const prefixRun = new TextRun({ text: prefix, bold: !!isBold, size: 20, font: "Arial" });
+          return [prefixRun, ...createRuns(bodyText || '', isBold, isRtl)];
         }
 
         const logoUrl = 'https://i.ibb.co.com/FLzrRM59/Logo-hijau.png';
@@ -10694,7 +10728,7 @@
           childrenSoal.push(new Paragraph({ children: [new TextRun({ text: "A. PILIHLAH JAWABAN YANG BENAR !", bold: true, size: 20 })], alignment: AlignmentType.LEFT, spacing: { before: 0, after: 200 } }));
           for (let idx = 0; idx < soalPG.length; idx++) {
             const item = soalPG[idx];
-            childrenSoal.push(new Paragraph({ children: createRuns((idx + 1) + '.\t' + (item.question || ''), true), alignment: AlignmentType.LEFT, indent: { left: 360, hanging: 360 }, spacing: { before: 100, after: 50 }, keepNext: true }));
+            childrenSoal.push(new Paragraph({ children: createItemRuns((idx + 1) + '.\t', item.question || '', true, item.soalDir), alignment: AlignmentType.LEFT, indent: { left: 360, hanging: 360 }, spacing: { before: 100, after: 50 }, keepNext: true }));
             const imgUrl = item.image || item.gambar || item.linkGambar || item.urlGambar;
             if (imgUrl && String(imgUrl).indexOf('http') === 0) {
               const imgData = await _esGetImageData(imgUrl, 96);
@@ -10706,7 +10740,7 @@
               const availableOpts = ['A','B','C','D','E'].filter(opt => { const v = item.options[opt]; return v && String(v).trim() !== '' && String(v).trim() !== '-'; });
               availableOpts.forEach((opt, oi) => {
                 const isLast = oi === availableOpts.length - 1;
-                childrenSoal.push(new Paragraph({ children: createRuns(opt.toLowerCase() + '.\t' + item.options[opt]), alignment: AlignmentType.LEFT, indent: { left: 660, hanging: 300 }, spacing: { before: 0, after: isLast ? 100 : 0 }, keepNext: !isLast }));
+                childrenSoal.push(new Paragraph({ children: createItemRuns(opt.toLowerCase() + '.\t', item.options[opt], false, item.opsiDir), alignment: AlignmentType.LEFT, indent: { left: 660, hanging: 300 }, spacing: { before: 0, after: isLast ? 100 : 0 }, keepNext: !isLast }));
               });
             }
           }
@@ -10719,7 +10753,7 @@
             const imgUrl = item.image || item.gambar || item.linkGambar || item.urlGambar;
             const hasImage = imgUrl && String(imgUrl).indexOf('http') === 0;
             if (hasImage) {
-              childrenSoal.push(new Paragraph({ children: createRuns((idx + 1) + '.\t' + (item.question || ''), true), alignment: AlignmentType.LEFT, indent: { left: 360, hanging: 360 }, spacing: { before: 100, after: 0 }, keepNext: true }));
+              childrenSoal.push(new Paragraph({ children: createItemRuns((idx + 1) + '.\t', item.question || '', true, item.soalDir), alignment: AlignmentType.LEFT, indent: { left: 360, hanging: 360 }, spacing: { before: 100, after: 0 }, keepNext: true }));
               const imgData = await _esGetImageData(imgUrl, 96);
               if (imgData && imgData.buffer) {
                 childrenSoal.push(new Paragraph({ children: [new ImageRun({ data: imgData.buffer, transformation: { width: imgData.width, height: imgData.height } })], alignment: AlignmentType.LEFT, indent: { left: 360 }, spacing: { before: 50, after: 1200 } }));
@@ -10727,7 +10761,7 @@
                 childrenSoal.push(new Paragraph({ text: "", spacing: { after: 250 } }));
               }
             } else {
-              childrenSoal.push(new Paragraph({ children: createRuns((idx + 1) + '.\t' + (item.question || ''), true), alignment: AlignmentType.LEFT, indent: { left: 360, hanging: 360 }, spacing: { before: 60, after: 0 } }));
+              childrenSoal.push(new Paragraph({ children: createItemRuns((idx + 1) + '.\t', item.question || '', true, item.soalDir), alignment: AlignmentType.LEFT, indent: { left: 360, hanging: 360 }, spacing: { before: 60, after: 0 } }));
             }
           }
         }
