@@ -1108,17 +1108,19 @@
 
               <!-- Tengah: Nama Pengguna + Tombol Logout & Ubah Password Akun -->
               <div id="izyHomeUserBar" class="hidden flex-col items-center justify-center text-center flex-1 min-w-0 px-2">
-                <div class="inline-flex items-center gap-1.5 text-[10px] md:text-[11px] font-extrabold text-amber-200 max-w-full">
-                  <i class="fa-solid fa-user-check text-amber-300 text-[10px] shrink-0"></i>
-                  <span class="truncate"><b id="izyHomeUserName">-</b> <span id="izyHomeUserRole" class="opacity-85 font-semibold text-teal-100"></span></span>
-                </div>
-                <div class="flex items-center justify-center gap-1.5 mt-1">
-                  <button type="button" onclick="izyBukaUbahPassword()" class="inline-flex items-center gap-1 bg-white/15 hover:bg-white hover:text-teal-900 border border-white/30 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-md transition cursor-pointer">
-                    <i class="fa-solid fa-key text-[8px]"></i> Ubah Password Akun
-                  </button>
-                  <button type="button" onclick="izyLogoutPortal()" class="inline-flex items-center gap-1 bg-rose-500/85 hover:bg-rose-600 border border-rose-300/40 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-md transition cursor-pointer">
-                    <i class="fa-solid fa-right-from-bracket text-[8px]"></i> Logout
-                  </button>
+                <div class="inline-flex flex-col items-stretch max-w-full">
+                  <div class="inline-flex items-center justify-center gap-1.5 text-[10px] md:text-[11px] font-extrabold text-amber-200 max-w-full">
+                    <i class="fa-solid fa-user-check text-amber-300 text-[10px] shrink-0"></i>
+                    <span class="truncate"><b id="izyHomeUserName">-</b> <span id="izyHomeUserRole" class="opacity-85 font-semibold text-teal-100"></span></span>
+                  </div>
+                  <div class="flex items-center gap-1.5 mt-1 w-full">
+                    <button type="button" onclick="izyBukaUbahPassword()" class="flex-1 inline-flex items-center justify-center gap-1 whitespace-nowrap bg-white/15 hover:bg-white hover:text-teal-900 border border-white/30 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-md transition cursor-pointer">
+                      <i class="fa-solid fa-key text-[8px]"></i> Ubah Password Akun
+                    </button>
+                    <button type="button" onclick="izyLogoutPortal()" class="flex-1 inline-flex items-center justify-center gap-1 whitespace-nowrap bg-rose-500/85 hover:bg-rose-600 border border-rose-300/40 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-md transition cursor-pointer">
+                      <i class="fa-solid fa-right-from-bracket text-[8px]"></i> Logout
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1661,9 +1663,6 @@
                   <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('daftarSoal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
                     <i class="fa-solid fa-folder-open"></i> Daftar Soal
                   </button>
-                  <span class="text-[9px] font-bold text-emerald-100 bg-emerald-900/60 px-2 py-1 rounded border border-emerald-500/30 uppercase tracking-wider">
-                    <i class="fa-solid fa-rotate mr-1"></i> Auto-Sync
-                  </span>
                 </div>
               </div>
 
@@ -2397,9 +2396,6 @@
                   <button type="button" onclick="if (!document.getElementById('sub-menuRekap')?.style.maxHeight || document.getElementById('sub-menuRekap').style.maxHeight === '0px') toggleMenu('menuRekap'); pindahMenu('cekJurnal')" class="bg-white/10 hover:bg-white text-white hover:text-teal-900 px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition flex items-center gap-1 cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass"></i> Cek Jurnal KBM
                   </button>
-                  <span class="text-[9px] font-bold text-emerald-100 bg-emerald-900/60 px-2 py-1 rounded border border-emerald-500/30 uppercase tracking-wider">
-                    <i class="fa-solid fa-rotate mr-1"></i> Auto-Sync
-                  </span>
                 </div>
               </div>
 
@@ -3008,7 +3004,6 @@
                         <i class="fa-solid fa-users text-teal-400"></i>
                         <h3 class="text-[11px] font-black uppercase tracking-wider m-0">Data Santri Per Kelas (Live)</h3>
                       </div>
-                      <span class="bg-teal-800 px-2 py-0.5 rounded text-[9px] font-bold shadow-sm border border-teal-700">Auto-Sync</span>
                     </div>
                     <div class="overflow-x-auto">
                       <table class="w-full text-xs text-left">
@@ -3801,9 +3796,6 @@
                   <p class="text-[9px] text-teal-100 font-medium">Distribusi mata pelajaran dan jam mengajar guru per hari</p>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="bg-white/15 border border-white/20 text-white px-2.5 py-1 rounded text-[9px] font-bold shadow-sm border border-teal-700 uppercase tracking-wider">
-                    Auto-Sync
-                  </span>
                   <a href="https://6ab8572b6482efa64806aa50--unrivaled-jelly-d3640b.netlify.app/" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1.5">
                     <i class="fa-solid fa-cloud-arrow-down"></i> Download
                   </a>
@@ -3854,7 +3846,6 @@
                   <p class="text-[9px] text-teal-100 font-medium">Peringkat nilai akademik (PH + PTS + PAS) per kelas &amp; gender</p>
                 </div>
                 <div class="flex items-center gap-2">
-                  <span class="bg-white/15 border border-white/20 text-white px-2.5 py-1 rounded text-[9px] font-bold shadow-sm uppercase tracking-wider">Auto-Sync</span>
                   <button type="button" onclick="exportRankingExcel()" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[9px] uppercase font-bold tracking-wider transition shadow flex items-center gap-1.5">
                     <i class="fa-solid fa-cloud-arrow-down"></i> Excel
                   </button>
@@ -3951,7 +3942,6 @@
                   <h2 class="text-xs font-black tracking-widest uppercase">Rekap Tasmi' Qur'an</h2>
                   <p class="text-[9px] text-teal-100 font-medium">Data tasmi' bacaan santri per tanggal, juz &amp; halaqoh</p>
                 </div>
-                <span class="bg-white/15 border border-white/20 text-white px-2.5 py-1 rounded text-[9px] font-bold shadow-sm uppercase tracking-wider">Auto-Sync</span>
               </div>
 
               <div class="p-4 flex flex-col flex-1 overflow-hidden space-y-3 bg-slate-50/50">
@@ -7562,12 +7552,105 @@
       }
     }
 
-    document.getElementById('kbmForm').addEventListener('submit', (e) => {
+    function cekDuplikatJurnalKbm(tanggal, mapel, kelas, jamMasuk, guru, sebagaiGuru, sourceList) {
+      const list = Array.isArray(sourceList) ? sourceList : rekapAllData;
+      const tNorm = String(tanggal || '').trim().split('T')[0];
+      const mNorm = String(mapel || '').trim().toLowerCase();
+      const kNorm = String(kelas || '').trim().toLowerCase();
+      const jNorm = konversiKeJamBlok(jamMasuk || '');
+      const isSubmitPengganti = (sebagaiGuru === 'Guru Pengganti');
+      const esc = (txt) => (typeof escapeHtml === 'function' ? escapeHtml(String(txt || '')) : String(txt || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])));
+
+      const existing = list.find(v => {
+        if (!v) return false;
+        const vt = String(v.tanggal || '').trim().split('T')[0];
+        const vm = String(v.mapel || '').trim().toLowerCase();
+        const vk = String(v.kelas || '').trim().toLowerCase();
+        const vj = konversiKeJamBlok(v.jamMasuk || '');
+        const jamCocok = (!vj || !jNorm) ? true : (vj === jNorm);
+        return vt === tNorm && vm === mNorm && vk === kNorm && jamCocok;
+      });
+
+      if (!existing) return { isDuplicate: false };
+
+      const isExistingPengganti = (
+        existing.sebagaiGuru === 'Guru Pengganti' ||
+        String(existing.pertemuan || '').trim() === '-' ||
+        String(existing.pertemuan || '').trim().toLowerCase() === 'pengganti'
+      );
+      const isSameGuru = normalizeNameStr(existing.guru || '') === normalizeNameStr(guru || '');
+      const infoSlot = `<b>${esc(mapel)}</b> kelas <b>${esc(kelas)}</b>${jNorm ? ` jam <b>${esc(jNorm)}</b>` : ''} pada tanggal <b>${esc(tNorm)}</b>`;
+
+      if (!isSubmitPengganti) {
+        if (isExistingPengganti) {
+          return {
+            isDuplicate: true,
+            title: 'Jurnal Sudah Diisi Guru Pengganti',
+            html: `Jurnal ${infoSlot} sudah diisi oleh Guru Pengganti (<b>${esc(existing.guru || '-')}</b>). Guru Mapel Asli tidak dapat mengisi lagi agar data tidak double.`,
+            icon: 'warning',
+            existing
+          };
+        }
+        return {
+          isDuplicate: true,
+          title: 'Anda Sudah Mengisi Jurnal ini Sebelumnya',
+          html: `Jurnal ${infoSlot} sudah terisi sebelumnya atas nama <b>${esc(existing.guru || guru)}</b>.`,
+          icon: 'warning',
+          existing
+        };
+      } else {
+        if (isSameGuru) {
+          return {
+            isDuplicate: true,
+            title: 'Anda Sudah Mengisi Jurnal ini Sebelumnya',
+            html: `Jurnal ${infoSlot} sudah Anda isi sebelumnya sebagai Guru Pengganti.`,
+            icon: 'warning',
+            existing
+          };
+        }
+        if (!isExistingPengganti) {
+          return {
+            isDuplicate: true,
+            title: 'Jurnal Sudah Diisi Guru Asli',
+            html: `Jurnal ${infoSlot} sudah diisi oleh Guru Mapel Asli (<b>${esc(existing.guru || '-')}</b>), sehingga tidak dapat diisi lagi agar tidak double.`,
+            icon: 'warning',
+            existing
+          };
+        }
+        return {
+          isDuplicate: true,
+          title: 'Jurnal Sudah Diisi Guru Pengganti',
+          html: `Jurnal ${infoSlot} sudah diisi oleh Guru Pengganti lain (<b>${esc(existing.guru || '-')}</b>), sehingga tidak dapat diisi lagi agar tidak double.`,
+          icon: 'warning',
+          existing
+        };
+      }
+    }
+
+    async function fetchJurnalTerbaruUntukCek(tanggal) {
+      const bulanStr = tanggal ? String(tanggal).substring(0, 7) : new Date().toISOString().substring(0, 7);
+      try {
+        const res = await fetch(`${WORKER_JURNAL_URL}?bulan=${encodeURIComponent(bulanStr)}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const validServer = data.filter(Boolean);
+          return [...validServer, ...rekapAllData];
+        }
+      } catch (err) {
+        console.warn('Gagal cek jurnal terbaru dari server, menggunakan data lokal:', err);
+      }
+      return rekapAllData;
+    }
+
+    document.getElementById('kbmForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (document.getElementById('btnSimpanKbm').disabled) {
+      const btnSimpan = document.getElementById('btnSimpanKbm');
+      if (btnSimpan.disabled) {
         Swal.fire('Waktu Input Ditutup', 'Input jurnal hanya dapat dilakukan pada Senin-Sabtu pukul 08:00 - 22:59 WIB.', 'warning');
         return;
       }
+      const tgl = document.getElementById('kbmTanggal').value;
       const g = document.getElementById('kbmGuru').value, m = document.getElementById('kbmMapel').value,
             k = document.getElementById('kbmKelas').value, jam = document.getElementById('kbmJamMasuk').value,
             sg = document.getElementById('kbmSebagaiGuru').value;
@@ -7583,8 +7666,32 @@
       if (!jam || jam.includes("Tidak ada")) return Swal.fire('Perhatian', 'Pilih Jam Masuk yang valid.', 'warning');
       if (getPasswordForStaf(g) === null) return Swal.fire('Otorisasi', `Guru <b>${g}</b> belum memiliki password. Hubungi Admin.`, 'warning');
 
+      // Cek duplikat cepat dari data lokal
+      const cekLokal = cekDuplikatJurnalKbm(tgl, m, k, jam, g, sg, rekapAllData);
+      if (cekLokal.isDuplicate) {
+        return Swal.fire({ title: cekLokal.title, html: cekLokal.html, icon: cekLokal.icon });
+      }
+
+      // Cek duplikat langsung ke server terbaru agar tidak double jika baru diisi guru lain
+      const prevBtnHtml = btnSimpan.innerHTML;
+      btnSimpan.disabled = true;
+      btnSimpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memeriksa Data...';
+      let cekServer = { isDuplicate: false };
+      try {
+        const latestList = await fetchJurnalTerbaruUntukCek(tgl);
+        cekServer = cekDuplikatJurnalKbm(tgl, m, k, jam, g, sg, latestList);
+      } finally {
+        btnSimpan.innerHTML = prevBtnHtml;
+        if (typeof updateTimerKbm === 'function') updateTimerKbm();
+        else btnSimpan.disabled = false;
+      }
+
+      if (cekServer.isDuplicate) {
+        return Swal.fire({ title: cekServer.title, html: cekServer.html, icon: cekServer.icon });
+      }
+
       pendingKbmPayload = {
-        tanggal: document.getElementById('kbmTanggal').value, guru: g, sebagaiGuru: sg, mapel: m, kelas: k, jamMasuk: jam,
+        tanggal: tgl, guru: g, sebagaiGuru: sg, mapel: m, kelas: k, jamMasuk: jam,
         pertemuan: isG ? "-" : document.getElementById('kbmPertemuan').value,
         statusJurnal: isG ? "-" : document.getElementById('kbmStatusJurnal').value,
         judul: document.getElementById('kbmJudul').value.trim(), ringkasan: document.getElementById('kbmRingkasan').value.trim(),
@@ -8758,6 +8865,21 @@
           const b = document.getElementById('btnSimpanKbm');
           b.disabled = true; b.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
           try {
+            const latestBeforePost = await fetchJurnalTerbaruUntukCek(pendingKbmPayload.tanggal);
+            const cekAkhir = cekDuplikatJurnalKbm(
+              pendingKbmPayload.tanggal,
+              pendingKbmPayload.mapel,
+              pendingKbmPayload.kelas,
+              pendingKbmPayload.jamMasuk,
+              pendingKbmPayload.guru,
+              pendingKbmPayload.sebagaiGuru,
+              latestBeforePost
+            );
+            if (cekAkhir.isDuplicate) {
+              Swal.fire({ title: cekAkhir.title, html: cekAkhir.html, icon: cekAkhir.icon });
+              return;
+            }
+
             const nowTs = Date.now();
             const idUnik = `jurnal_${nowTs}_${Math.random().toString(36).substring(2, 8)}`;
             const bulanStr = pendingKbmPayload.tanggal
