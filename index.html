@@ -1483,10 +1483,15 @@
 
                       <div class="flex-1 flex flex-col min-h-0">
                         <label class="block text-[9px] font-bold text-slate-500 uppercase mb-0.5 shrink-0">Pertanyaannya</label>
-                        <div class="mb-1.5 shrink-0" data-scope="default">
-                          <button type="button" class="math-toggle-btn w-full flex items-center justify-center gap-1.5 px-2 py-1.5 bg-teal-600 border border-teal-700 rounded-md text-[9px] font-bold text-white uppercase tracking-wider hover:bg-teal-700 transition shadow-sm">
+                        <div class="mb-1.5 shrink-0 flex items-center gap-1.5" data-scope="default">
+                          <button type="button" class="math-toggle-btn flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 bg-teal-600 border border-teal-700 rounded-md text-[9px] font-bold text-white uppercase tracking-wider hover:bg-teal-700 transition shadow-sm">
                             <i class="fa-solid fa-square-root-variable"></i> Buka Menu Rumus &amp; Simbol Matematika <i class="fa-solid fa-up-right-from-square text-[8px] opacity-80"></i>
                           </button>
+                          <div class="inline-flex items-center rounded-md border border-teal-700 overflow-hidden shrink-0 shadow-sm bg-white" role="group" aria-label="Format arah teks pertanyaan">
+                            <button type="button" id="bsSoalDirAR" onclick="setBsTextDir('soal', 'AR')" class="px-2 py-1.5 text-[9px] font-black uppercase tracking-wider text-slate-600 hover:bg-teal-50 transition cursor-pointer">AR</button>
+                            <span class="text-[9px] text-slate-300 select-none">|</span>
+                            <button type="button" id="bsSoalDirIN" onclick="setBsTextDir('soal', 'IN')" class="px-2 py-1.5 text-[9px] font-black uppercase tracking-wider bg-teal-700 text-white transition cursor-pointer">IN</button>
+                          </div>
                         </div>
                         <textarea id="bsTeksSoal" placeholder="Tuliskan pertanyaan di sini..." required class="w-full flex-1 p-2 text-xs border border-slate-300 rounded-md focus:ring-1 focus:ring-teal-600 bg-white outline-none font-medium resize-none shadow-sm"></textarea>
                       </div>
@@ -1503,8 +1508,13 @@
                     <!-- Mode PG Options -->
                     <div id="bsSectionPG" class="flex-1 flex flex-col justify-between space-y-2">
                       <div>
-                        <div class="pb-1 mb-2 border-b border-slate-200">
+                        <div class="pb-1 mb-2 border-b border-slate-200 flex items-center justify-between gap-2">
                           <span class="text-[10px] font-black text-teal-900 tracking-wider uppercase"><i class="fa-solid fa-list-check text-teal-600 mr-1"></i> 3. Pilihan Jawaban & Kunci</span>
+                          <div class="inline-flex items-center rounded-md border border-teal-700 overflow-hidden shrink-0 shadow-sm bg-white" role="group" aria-label="Format arah teks pilihan jawaban">
+                            <button type="button" id="bsOptDirAR" onclick="setBsTextDir('opsi', 'AR')" class="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-slate-600 hover:bg-teal-50 transition cursor-pointer">AR</button>
+                            <span class="text-[9px] text-slate-300 select-none">|</span>
+                            <button type="button" id="bsOptDirIN" onclick="setBsTextDir('opsi', 'IN')" class="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider bg-teal-700 text-white transition cursor-pointer">IN</button>
+                          </div>
                         </div>
                         <div class="space-y-2">
                           <div class="flex items-center gap-2"><span class="text-xs font-black text-teal-700 w-4">A.</span><input type="text" id="bsOptA" required placeholder="Opsi jawaban A..." class="w-full p-1.5 text-xs border border-slate-300 rounded-md bg-white outline-none focus:ring-1 focus:ring-teal-600 font-medium shadow-sm"></div>
@@ -6549,6 +6559,39 @@
             .catch(err => Swal.fire('Gagal', 'Gagal menghapus soal: ' + err.message, 'error'));
         }
       });
+    };
+
+    window.setBsTextDir = function(target, mode) {
+      const isAr = mode === 'AR';
+      const dir = isAr ? 'rtl' : 'ltr';
+      const align = isAr ? 'right' : 'left';
+      const setBtnStyle = (btn, active) => {
+        if (!btn) return;
+        btn.classList.toggle('bg-teal-700', active);
+        btn.classList.toggle('text-white', active);
+        btn.classList.toggle('text-slate-600', !active);
+        btn.classList.toggle('hover:bg-teal-50', !active);
+      };
+      if (target === 'soal') {
+        const el = document.getElementById('bsTeksSoal');
+        if (el) {
+          el.setAttribute('dir', dir);
+          el.style.textAlign = align;
+          el.focus();
+        }
+        setBtnStyle(document.getElementById('bsSoalDirAR'), isAr);
+        setBtnStyle(document.getElementById('bsSoalDirIN'), !isAr);
+      } else if (target === 'opsi') {
+        ['bsOptA', 'bsOptB', 'bsOptC', 'bsOptD', 'bsOptE'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.setAttribute('dir', dir);
+            el.style.textAlign = align;
+          }
+        });
+        setBtnStyle(document.getElementById('bsOptDirAR'), isAr);
+        setBtnStyle(document.getElementById('bsOptDirIN'), !isAr);
+      }
     };
 
     // Submit Form Input Bank Soal
