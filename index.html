@@ -5942,12 +5942,116 @@
 
     // (dbJurnal diakses via Cloudflare Worker + D1 — lihat WORKER_JURNAL_URL di atas)
     const dbKBM = getDatabase(initializeApp({
-      apiKey: "AIzaSyBAfPvt8dcH5Wj-zzTjBS0x7Vv5jM3HhHw",
-      authDomain: "nilaikbm-2b05b.firebaseapp.com",
-      databaseURL: "https://nilaikbm-2b05b-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "nilaikbm-2b05b",
-      appId: "1:180568073226:web:5be378e01d94c2ca07abf3"
+      authDomain: "nilai-absensi-kbm-01.firebaseapp.com",
+      databaseURL: "https://nilai-absensi-kbm-01-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "nilai-absensi-kbm-01"
     }, "kbmApp"));
+
+    // ==========================================
+    // OPTIMASI KUOTA DOWNLOADS FIREBASE dbKBM
+    // (Partisi: akademik/{tipe}/{kelas}/{mapel}/{pushId} + akademik_index + Cache)
+    // ==========================================
+    const KBM_CACHE_TTL_MS = 10 * 60 * 1000; // Cache memori 10 menit
+    const _kbmMemCache = {
+      akademikAll: null,
+      akademikAllTs: 0,
+      index: {},
+      node: {}
+    };
+
+    window.kbmSanitizeKey = function(str) {
+      return String(str || '').trim().replace(/[.#$\[\]\/]/g, '_') || 'Lainnya';
+    };
+
+    window.kbmInvalidateAkademikCache = function(tipe) {
+      _kbmMemCache.akademikAll = null;
+      _kbmMemCache.akademikAllTs = 0;
+      if (tipe) {
+        delete _kbmMemCache.index[tipe];
+        Object.keys(_kbmMemCache.node).forEach(k => {
+          if (k.startsWith(tipe + '::')) delete _kbmMemCache.node[k];
+        });
+      } else {
+        _kbmMemCache.index = {};
+        _kbmMemCache.node = {};
+      }
+    };
+
+    // Mendukung struktur baru (akademik/{tipe}/{kelas}/{mapel}/{pushId}) & fallback struktur lama (flat)
+    window.kbmFlattenAkademikTipe = function(rawTipe, tipeName) {
+      const out = {};
+      if (!rawTipe || typeof rawTipe !== 'object') return out;
+      Object.entries(rawTipe).forEach(([k1, v1]) => {
+        if (!v1 || typeof v1 !== 'object') return;
+        if (v1.nama !== undefined && v1.skor !== undefined) {
+          out[k1] = { ...v1, _fbKey: k1, _fbPath: `akademik/${tipeName}/${k1}` };
+          return;
+        }
+        Object.entries(v1).forEach(([k2, v2]) => {
+          if (!v2 || typeof v2 !== 'object') return;
+          if (v2.nama !== undefined && v2.skor !== undefined) {
+            out[k2] = { ...v2, _fbKey: k2, _fbPath: `akademik/${tipeName}/${k1}/${k2}` };
+            return;
+          }
+          Object.entries(v2).forEach(([k3, v3]) => {
+            if (!v3 || typeof v3 !== 'object') return;
+            out[k3] = { ...v3, _fbKey: k3, _fbPath: `akademik/${tipeName}/${k1}/${k2}/${k3}` };
+          });
+        });
+      });
+      return out;
+    };
+
+    window.kbmGetAkademikIndex = async function(tipe, forceRefresh = false) {
+      const now = Date.now();
+      const cached = _kbmMemCache.index[tipe];
+      if (!forceRefresh && cached && (now - cached.ts) < KBM_CACHE_TTL_MS) {
+        return cached.data;
+      }
+      const snapIdx = await get(ref(dbKBM, `akademik_index/${tipe}`));
+      if (snapIdx.exists()) {
+        const idxData = snapIdx.val() || {};
+        _kbmMemCache.index[tipe] = { data: idxData, ts: now };
+        return idxData;
+      }
+      // Fallback otomatis jika node akademik_index belum tersedia
+      const snapAll = await get(ref(dbKBM, `akademik/${tipe}`));
+      const built = {};
+      if (snapAll.exists()) {
+        const flat = window.kbmFlattenAkademikTipe(snapAll.val(), tipe);
+        Object.values(flat).forEach(val => {
+          const skorStr = (val.skor !== undefined && val.skor !== null) ? String(val.skor).trim() : '';
+          if (!skorStr || !val.mapel) return;
+          const klsKey = window.kbmSanitizeKey(val.kelas || 'Lainnya');
+          const mplKey = window.kbmSanitizeKey(val.mapel);
+          if (!built[klsKey]) built[klsKey] = {};
+          if (!built[klsKey][mplKey]) built[klsKey][mplKey] = { count: 0, g: {} };
+          built[klsKey][mplKey].count++;
+          const g = String(val.gender || '').trim().toUpperCase();
+          if (g.startsWith('L') || g === 'PUTRA') built[klsKey][mplKey].g.L = true;
+          else if (g.startsWith('P') || g === 'PUTRI') built[klsKey][mplKey].g.P = true;
+        });
+      }
+      _kbmMemCache.index[tipe] = { data: built, ts: now };
+      return built;
+    };
+
+    window.kbmFetchAllAkademik = async function(forceRefresh = false) {
+      const now = Date.now();
+      if (!forceRefresh && _kbmMemCache.akademikAll && (now - _kbmMemCache.akademikAllTs) < KBM_CACHE_TTL_MS) {
+        return _kbmMemCache.akademikAll;
+      }
+      const snapAka = await get(ref(dbKBM, "akademik"));
+      const raw = snapAka.exists() ? (snapAka.val() || {}) : {};
+      const normalized = {
+        PH: window.kbmFlattenAkademikTipe(raw.PH, 'PH'),
+        PTS: window.kbmFlattenAkademikTipe(raw.PTS, 'PTS'),
+        PAS: window.kbmFlattenAkademikTipe(raw.PAS, 'PAS')
+      };
+      _kbmMemCache.akademikAll = normalized;
+      _kbmMemCache.akademikAllTs = now;
+      return normalized;
+    };
 
     const dbAbsensi = getDatabase(initializeApp({
       apiKey: "AIzaSyAYoigAy-KhXy7Wynt0envOJdcLtwBiWno",
@@ -8477,6 +8581,7 @@
             <label class="text-[10px] font-bold text-slate-500 uppercase">Nilai Ke-${idx + 1}</label>
             <input type="number" class="w-20 p-1.5 text-xs border border-slate-300 rounded text-center outline-none focus:border-teal-600 font-bold input-nilai-edit-rekap" 
                    data-key="${item.firebaseKey}" 
+                   data-path="${item.firebasePath || ''}" 
                    value="${item.skor}">
           </div>
         `;
@@ -8511,14 +8616,18 @@
         let dataUpdates = {};
         inputs.forEach(input => {
           const fbKey = input.getAttribute('data-key');
+          const fbPath = input.getAttribute('data-path') || `akademik/${tipe}/${fbKey}`;
           let nilaiBaru = input.value.trim();
           nilaiBaru = nilaiBaru === '' ? 0 : parseInt(nilaiBaru); 
-          dataUpdates[`akademik/${tipe}/${fbKey}/skor`] = nilaiBaru;
+          dataUpdates[`${fbPath}/skor`] = nilaiBaru;
+          dataUpdates[`${fbPath}/timestamp_update_nilai`] = Date.now();
         });
 
         await update(ref(dbKBM), dataUpdates); 
+        window.kbmInvalidateAkademikCache(tipe);
         document.getElementById('modalEditNilai').classList.add('hidden'); 
         Swal.fire('Berhasil', 'Nilai berhasil diperbarui!', 'success');
+        window.fetchDataRekapNilai(true);
       } catch (error) {
         console.error("Gagal memproses request:", error);
         Swal.fire('Error', 'Terjadi kesalahan sistem saat menghubungi database!', 'error');
@@ -8539,19 +8648,18 @@
       select.innerHTML = '<option value="">Memuat mapel...</option>';
 
       try {
-        const nilaiSnapshot = await get(ref(dbKBM, `akademik/${tipe}`));
+        const idxData = await window.kbmGetAkademikIndex(tipe);
         if(requestId !== loadMapelRequestId) return;
 
         const mapelTerisiMap = new Map();
-        nilaiSnapshot.forEach(child => {
-          const nilai = child.val();
-          const sesuaiKelas = !kls || nilai.kelas === kls;
-          const skorTerisi = nilai.skor !== undefined && nilai.skor !== null && String(nilai.skor).trim() !== '';
-
-          if(sesuaiKelas && skorTerisi && nilai.mapel) {
-            const rawM = String(nilai.mapel).trim();
-            mapelTerisiMap.set(rawM.toLowerCase(), rawM);
-          }
+        const klsTarget = kls ? window.kbmSanitizeKey(kls) : '';
+        Object.entries(idxData).forEach(([klsKey, mapelsObj]) => {
+          if (klsTarget && klsKey !== klsTarget) return;
+          if (!mapelsObj || typeof mapelsObj !== 'object') return;
+          Object.keys(mapelsObj).forEach(mplKey => {
+            const rawM = String(mplKey).trim();
+            if (rawM) mapelTerisiMap.set(rawM.toLowerCase(), rawM);
+          });
         });
 
         const daftarMapel = Array.from(mapelTerisiMap.values()).sort((a, b) => a.localeCompare(b, 'id-ID'));
@@ -8573,15 +8681,16 @@
       }
     }
 
-    window.fetchDataRekapNilai = function() {
+    window.fetchDataRekapNilai = async function(forceRefresh = false) {
       const kls = document.getElementById('rekapNilaiFilterKelas').value;
       const tipe = window.currentTipeRekapNilai;
       const mpl = document.getElementById('rekapNilaiMapel').value;
       const filterGender = document.getElementById('rekapNilaiFilterJK').value;
       const tbody = document.getElementById('tabelRekapNilaiBody');
 
+      if(unsubscribeNilai) { unsubscribeNilai(); unsubscribeNilai = null; }
+
       if (!mpl) {
-        if(unsubscribeNilai) unsubscribeNilai();
         tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-400 font-medium">Silakan pilih mapel terlebih dahulu</td></tr>`;
         document.getElementById('rekapNilaiStatTotal').innerText = 0;
         document.getElementById('rekapNilaiStatRata').innerText = 0;
@@ -8589,16 +8698,48 @@
         return; 
       }
 
-      if(unsubscribeNilai) unsubscribeNilai();
-      unsubscribeNilai = onValue(ref(dbKBM, `akademik/${tipe}`), (snap) => {
+      tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-teal-600 font-medium"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat nilai ${mpl}...</td></tr>`;
+
+      try {
+        const mplKey = window.kbmSanitizeKey(mpl);
+        const klsListToFetch = [];
+
+        if (kls) {
+          klsListToFetch.push(window.kbmSanitizeKey(kls));
+        } else {
+          const idxData = await window.kbmGetAkademikIndex(tipe, forceRefresh);
+          Object.entries(idxData).forEach(([klsKey, mapelsObj]) => {
+            if (mapelsObj && Object.keys(mapelsObj).some(m => m.toLowerCase() === mplKey.toLowerCase())) {
+              klsListToFetch.push(klsKey);
+            }
+          });
+        }
+
+        const now = Date.now();
+        const records = [];
+
+        await Promise.all(klsListToFetch.map(async (klsKey) => {
+          const cacheId = `${tipe}::${klsKey}::${mplKey}`;
+          let nodeObj = null;
+          if (!forceRefresh && _kbmMemCache.node[cacheId] && (now - _kbmMemCache.node[cacheId].ts) < KBM_CACHE_TTL_MS) {
+            nodeObj = _kbmMemCache.node[cacheId].data;
+          } else {
+            const snapNode = await get(ref(dbKBM, `akademik/${tipe}/${klsKey}/${mplKey}`));
+            nodeObj = snapNode.exists() ? (snapNode.val() || {}) : {};
+            _kbmMemCache.node[cacheId] = { data: nodeObj, ts: now };
+          }
+          Object.entries(nodeObj).forEach(([fbKey, val]) => {
+            if (val && typeof val === 'object') {
+              records.push({ fbKey, fbPath: `akademik/${tipe}/${klsKey}/${mplKey}/${fbKey}`, val });
+            }
+          });
+        }));
+
         tbody.innerHTML = "";
         let rekapData = {};
         let daftarGuru = new Set();
 
-        snap.forEach(child => {
-          const fbKey = child.key; 
-          const val = child.val();
-          
+        records.forEach(({ fbKey, fbPath, val }) => {
           const matchKelas = !kls || val.kelas === kls;
           const matchMapel = !mpl || (val.mapel && val.mapel.toLowerCase() === mpl.toLowerCase());
           const matchGender = !filterGender || val.gender === filterGender;
@@ -8621,7 +8762,7 @@
             }
             
             const skor = parseInt(val.skor) || 0;
-            rekapData[key].rincianData.push({ firebaseKey: fbKey, skor: skor });
+            rekapData[key].rincianData.push({ firebaseKey: fbKey, firebasePath: fbPath, skor: skor });
             rekapData[key].totalSkor += skor;
           }
         });
@@ -8697,7 +8838,10 @@
         document.getElementById('rekapNilaiStatTotal').innerText = totalBaris;
         document.getElementById('rekapNilaiStatRata').innerText = totalBaris > 0 ? (totalNilaiSeluruh / totalBaris).toFixed(1) : 0;
         if(totalBaris === 0) tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-slate-400 font-medium">Data tidak ditemukan</td></tr>`;
-      });
+      } catch (err) {
+        console.error('Gagal memuat rekap nilai:', err);
+        tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-rose-500 font-medium">Gagal memuat data nilai</td></tr>`;
+      }
     }
 
     // ==========================================
@@ -8705,7 +8849,7 @@
     // ==========================================
     let unsubscribeAbsenKbm = null;
 
-    window.fetchDataRekapAbsenKbm = function() {
+    window.fetchDataRekapAbsenKbm = async function() {
       const tgl = document.getElementById('rekapAbsenKbmTgl').value;
       const kls = document.getElementById('rekapAbsenKbmKelas').value;
       const mpl = document.getElementById('rekapAbsenKbmMapel').value;
@@ -8714,8 +8858,12 @@
       
       if(!tgl) return;
 
-      if(unsubscribeAbsenKbm) unsubscribeAbsenKbm();
-      unsubscribeAbsenKbm = onValue(ref(dbKBM, `absensi_kbm/${tgl}`), (snap) => {
+      if(unsubscribeAbsenKbm) { unsubscribeAbsenKbm(); unsubscribeAbsenKbm = null; }
+      container.innerHTML = `<div class="text-center py-8 text-teal-600 text-xs font-bold"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat absensi...</div>`;
+
+      try {
+        const targetPath = mpl ? `absensi_kbm/${tgl}/${mpl}` : `absensi_kbm/${tgl}`;
+        const snap = await get(ref(dbKBM, targetPath));
         container.innerHTML = "";
         let dataFound = 0;
 
@@ -8725,11 +8873,12 @@
           return;
         }
 
-        snap.forEach(mapelNode => {
-          if(mpl && mapelNode.key !== mpl) return;
+        const mapelEntries = mpl ? [[mpl, snap.val() || {}]] : Object.entries(snap.val() || {});
+        mapelEntries.forEach(([mapelKey, santriMap]) => {
+          if(mpl && mapelKey !== mpl) return;
 
-          mapelNode.forEach(santriNode => {
-            const d = santriNode.val();
+          Object.values(santriMap || {}).forEach(d => {
+            if(!d) return;
             if(snt && d.nama !== snt) return;
             
             let cocokKelas = true;
@@ -8771,7 +8920,10 @@
         if(dataFound === 0) {
           container.innerHTML = `<div class="text-center py-10 text-slate-400"><i class="fa-solid fa-folder-open text-3xl mb-2"></i><p class="text-xs font-bold uppercase tracking-wider">Tidak ada kecocokan data</p></div>`;
         }
-      });
+      } catch (err) {
+        console.error('Gagal memuat absensi KBM:', err);
+        container.innerHTML = `<div class="text-center py-10 text-rose-500 text-xs font-bold">Gagal memuat data absensi</div>`;
+      }
     }
 
     // ==========================================
@@ -8942,17 +9094,21 @@
             const mpl = document.getElementById('nilaiMapel').value;
             const kategoriNilai = document.getElementById('nilaiKategori').value;
             const judulTugas = document.getElementById('nilaiJudulTugas').value;
-            const akademikRef = ref(dbKBM, `akademik/${window.currentTipeNilai}`);
+            const tipeSimpan = window.currentTipeNilai;
+            const klsKey = window.kbmSanitizeKey(kls);
+            const mplKey = window.kbmSanitizeKey(mpl);
+            const akademikRef = ref(dbKBM, `akademik/${tipeSimpan}/${klsKey}/${mplKey}`);
 
             const tasks = [];
+            const genderFlags = {};
             inps.forEach(inp => {
               const nilaiInput = inp.value.trim();
               const skor = nilaiInput === "" ? "-" : parseInt(nilaiInput);
               let genderAsli = inp.dataset.gender ? inp.dataset.gender.toUpperCase() : "L";
               genderAsli = (genderAsli.startsWith('P') || genderAsli === 'PUTRI') ? "P" : "L";
+              genderFlags[genderAsli] = true;
 
               tasks.push(push(akademikRef, {
-                id_santri: inp.dataset.nama,
                 nama: inp.dataset.nama,
                 kelas: kls,
                 gender: genderAsli,
@@ -8965,7 +9121,14 @@
               }));
             });
 
+            const idxUpdates = { [`akademik_index/${tipeSimpan}/${klsKey}/${mplKey}/updatedAt`]: Date.now() };
+            Object.keys(genderFlags).forEach(g => {
+              idxUpdates[`akademik_index/${tipeSimpan}/${klsKey}/${mplKey}/g/${g}`] = true;
+            });
+            tasks.push(update(ref(dbKBM), idxUpdates));
+
             await Promise.all(tasks);
+            window.kbmInvalidateAkademikCache(tipeSimpan);
             Swal.fire({
               icon: 'success',
               title: 'Berhasil!',
@@ -9116,35 +9279,23 @@
         if(listEl) listEl.innerHTML = `<div class="text-center py-12 text-teal-700 font-bold text-xs"><i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i><br>Memuat data nilai ${tipe}...</div>`;
 
         try {
-            const snapshot = await get(ref(dbKBM, `akademik/${tipe}`));
+            const idxData = await window.kbmGetAkademikIndex(tipe);
             let mapelSudahDiinput = new Set();
 
-            if (snapshot.exists()) {
-                snapshot.forEach(child => {
-                    let val = child.val();
-                    if (val.mapel && val.kelas && (val.skor !== undefined && val.skor !== null && String(val.skor).trim() !== '')) {
-                        let mapelVal = val.mapel.trim().toLowerCase();
-                        let kelasVal = String(val.kelas).trim().toLowerCase().replace(/kelas\s+/g, "");
-                        let kelasAngka = parseInt(kelasVal) || 0;
-                        
-                        let matchKey = `${mapelVal}_${kelasVal}`;
-
-                        if (kelasAngka >= 7 && kelasAngka <= 9) {
-                            let gender = val.gender ? String(val.gender).trim().toLowerCase() : "";
-                            let genderCode = "";
-                            
-                            if (gender === "putra" || gender === "l") genderCode = "l";
-                            else if (gender === "putri" || gender === "p") genderCode = "p";
-
-                            if (genderCode !== "") {
-                                matchKey += `_${genderCode}`;
-                            }
-                        }
-
-                        mapelSudahDiinput.add(matchKey);
+            Object.entries(idxData).forEach(([klsRaw, mapelsObj]) => {
+                let kelasVal = String(klsRaw).trim().toLowerCase().replace(/kelas\s+/g, "");
+                let kelasAngka = parseInt(kelasVal) || 0;
+                Object.entries(mapelsObj || {}).forEach(([mplRaw, info]) => {
+                    let mapelVal = String(mplRaw).trim().toLowerCase();
+                    if (kelasAngka >= 7 && kelasAngka <= 9) {
+                        const gObj = (info && info.g) ? info.g : {};
+                        if (gObj.L) mapelSudahDiinput.add(`${mapelVal}_${kelasVal}_l`);
+                        if (gObj.P) mapelSudahDiinput.add(`${mapelVal}_${kelasVal}_p`);
+                    } else {
+                        mapelSudahDiinput.add(`${mapelVal}_${kelasVal}`);
                     }
                 });
-            }
+            });
 
             window.renderUICekNilai(mapelSudahDiinput);
 
@@ -9813,9 +9964,8 @@
           });
         }
         Object.keys(masterData).forEach(gk => { masterData[gk].mapels = Array.from(masterData[gk].mapels).sort(); });
-        // 3. Nilai akademik PH / PTS / PAS
-        const snapAka = await get(ref(dbKBM, "akademik"));
-        const raw = snapAka.exists() ? snapAka.val() : {};
+        // 3. Nilai akademik PH / PTS / PAS (terpartisi + cache 10 menit)
+        const raw = await window.kbmFetchAllAkademik();
         ["PH", "PTS", "PAS"].forEach(type => {
           if (!raw[type]) return;
           Object.values(raw[type]).forEach(v => {
@@ -11458,11 +11608,9 @@
       container.innerHTML = `<div class="text-center py-12 text-teal-700 font-bold text-xs"><i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i><br>Memuat data dari server...</div>`;
 
       try {
-        const [snapPH, snapPTS, snapPAS] = await Promise.all([
-          get(ref(dbKBM, 'akademik/PH')),
-          get(ref(dbKBM, 'akademik/PTS')),
-          get(ref(dbKBM, 'akademik/PAS'))
-        ]);
+        const allAka = await window.kbmFetchAllAkademik(isForceRefresh);
+        const makeSnap = (obj) => ({ exists: () => obj && Object.keys(obj).length > 0, val: () => obj || {} });
+        const [snapPH, snapPTS, snapPAS] = [makeSnap(allAka.PH), makeSnap(allAka.PTS), makeSnap(allAka.PAS)];
 
         let rekap = {};
 
@@ -11720,7 +11868,7 @@
         let snapMapel = { exists: () => false, val: () => ({}) };
 
         await Promise.all([
-          get(ref(dbKBM, "akademik")).then(s => rawAka = s.val() || {}).catch(e => console.error("Error Aka:", e)),
+          window.kbmFetchAllAkademik(isForceRefresh).then(d => rawAka = d || {}).catch(e => console.error("Error Aka:", e)),
           get(ref(dbAdab, "laporan_adab")).then(s => rawAdab = s.val() || {}).catch(e => console.error("Error Adab:", e)),
           get(ref(dbUjianTahfizh, "nilai_ujian_tahfizh")).then(s => rawKst = s.val() || {}).catch(e => console.error("Error KST:", e)),
           get(ref(dbKBM, "master_mapel")).then(s => snapMapel = s).catch(e => console.error("Error Mapel:", e))
@@ -12994,7 +13142,7 @@ let inboxSesiAktifNamaID = "";
         const [snapBio, snapMapel, snapAka] = await Promise.all([
           apiGet("biodata", "/"),
           get(ref(dbKBM, "master_mapel")),
-          get(ref(dbKBM, "akademik"))
+          window.kbmFetchAllAkademik(forceReload)
         ]);
 
         const dataBio = snapBio.val() || {};
@@ -13041,7 +13189,7 @@ let inboxSesiAktifNamaID = "";
           masterData[gk].mapels = Array.from(masterData[gk].mapels).sort();
         });
 
-        const rawAka = snapAka.exists() ? snapAka.val() : {};
+        const rawAka = snapAka || {};
         ["PH", "PTS", "PAS"].forEach(type => {
           if (!rawAka[type]) return;
           Object.values(rawAka[type]).forEach(v => {
