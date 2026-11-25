@@ -7611,13 +7611,41 @@
       }
     }
 
+    function isMapelPisahPutraPutri(mapel) {
+      const m = String(mapel || '').trim().toLowerCase();
+      return m.includes('komputer') || m.includes('pkwu');
+    }
+
+    function updateOpsiKelasKbm() {
+      const mapelEl = document.getElementById('kbmMapel');
+      const kelasEl = document.getElementById('kbmKelas');
+      if (!kelasEl) return;
+      const pisah = isMapelPisahPutraPutri(mapelEl ? mapelEl.value : '');
+      const modeTarget = pisah ? 'pisah' : 'gabung';
+      if (kelasEl.dataset.kelasMode === modeTarget) return;
+      const prevVal = kelasEl.value;
+      kelasEl.dataset.kelasMode = modeTarget;
+
+      const opsi = pisah
+        ? ['7 Putra', '8 Putra', '9 Putra', '7 Putri', '8 Putri', '9 Putri', '10 Putra', '11 Putra', '12 Putra', '10 Putri', '11 Putri', '12 Putri']
+        : ['7 Putra', '8 Putra', '9 Putra', '7 Putri', '8 Putri', '9 Putri', '10', '11', '12'];
+
+      kelasEl.innerHTML = '<option value="">-- Pilih --</option>';
+      opsi.forEach(k => kelasEl.appendChild(new Option(k, k)));
+      kelasEl.value = (prevVal && opsi.includes(prevVal)) ? prevVal : '';
+    }
+
     function hitungPertemuanKbm() {
       const g = document.getElementById('kbmGuru').value, m = document.getElementById('kbmMapel').value, 
             k = document.getElementById('kbmKelas').value, el = document.getElementById('kbmPertemuan');
       if (g && m && k) {
         let mx = 0;
+        const pisah = isMapelPisahPutraPutri(m);
+        const kaBase = String(k).trim().split(' ')[0];
         rekapAllData.forEach(v => {
-          if (normalizeNameStr(v.guru) === normalizeNameStr(g) && v.mapel && v.mapel.toLowerCase() === m.toLowerCase() && v.kelas === k) {
+          const vk = String(v.kelas || '').trim();
+          const kelasCocok = (vk === k) || (pisah && /^(10|11|12)$/.test(kaBase) && vk === kaBase);
+          if (normalizeNameStr(v.guru) === normalizeNameStr(g) && v.mapel && v.mapel.toLowerCase() === m.toLowerCase() && kelasCocok) {
             let p = parseInt(v.pertemuan) || 0;
             if (p > mx) mx = p;
           }
@@ -7629,6 +7657,7 @@
     }
 
     ['kbmGuru', 'kbmMapel', 'kbmKelas'].forEach(i => document.getElementById(i).addEventListener('change', () => {
+      if (i === 'kbmMapel') updateOpsiKelasKbm();
       hitungPertemuanKbm(); updateJamMasukKbm();
     }));
 
@@ -7767,6 +7796,10 @@
             k = document.getElementById('kbmKelas').value, jam = document.getElementById('kbmJamMasuk').value,
             sg = document.getElementById('kbmSebagaiGuru').value;
       const isG = (sg === 'Guru Pengganti');
+
+      if (isMapelPisahPutraPutri(m) && /^(10|11|12)$/.test(String(k || '').trim())) {
+        return Swal.fire('Perhatian', `Khusus mapel <b>${m}</b> kelas 10–12 dipisah Putra dan Putri. Silakan pilih kelas Putra atau Putri.`, 'warning');
+      }
 
       let pt = k.split(" "), ka = pt[0], gd = pt[1] || "";
       const isTerjadwal = globalJadwalKBM.some(j => 
@@ -15015,7 +15048,11 @@ let inboxSesiAktifNamaID = "";
       const guruName = String(item.namaGuru).trim();
       const hari = String(item.hari || "").trim();
       const mapel = String(item.namaMapel || "-").trim();
-      const kelas = String(item.kelas || "-").trim();
+      const rawKelas = String(item.kelas || "-").trim();
+      const rawJk = String(item.jenisKelamin || "").trim();
+      const mapelLower = mapel.toLowerCase();
+      const isPisah1012 = (mapelLower.includes("komputer") || mapelLower.includes("pkwu")) && /^(10|11|12)\b/.test(rawKelas);
+      const kelas = (isPisah1012 && rawJk && !/putra|putri/i.test(rawKelas)) ? `${rawKelas} ${rawJk}` : rawKelas;
       const waktuAsli = String(item.jamMasuk || "").trim();
       const waktuBlok = getBlokWaktu(waktuAsli);
       guruList.add(guruName);
@@ -15102,12 +15139,20 @@ let inboxSesiAktifNamaID = "";
     if (!s1 || !s2) return false;
     return s1.includes(s2) || s2.includes(s1);
   }
-  function isMatchKelas(kelasJadwal, kelasRPP) {
+  function isMatchKelas(kelasJadwal, kelasRPP, mapelName) {
     let j = (kelasJadwal || "").toString().toLowerCase().trim();
     let r = (kelasRPP || "").toString().toLowerCase().trim();
     if (j === r) return true;
     let numJ = j.match(/\d+/), numR = r.match(/\d+/);
     if (numJ && numR && numJ[0] !== numR[0]) return false;
+    const mLow = String(mapelName || "").toLowerCase();
+    const isPisahMapel = mLow.includes("komputer") || mLow.includes("pkwu");
+    const genJ = j.includes("putra") ? "putra" : (j.includes("putri") ? "putri" : "");
+    const genR = r.includes("putra") ? "putra" : (r.includes("putri") ? "putri" : "");
+    if (isPisahMapel && numJ && (numJ[0] === '10' || numJ[0] === '11' || numJ[0] === '12')) {
+      if (genJ && genR) return genJ === genR;
+      return true;
+    }
     if (numJ && (numJ[0] === '10' || numJ[0] === '11' || numJ[0] === '12')) return true;
     let cleanJ = j.replace(/\s+/g, ''), cleanR = r.replace(/\s+/g, '');
     return cleanJ.includes(cleanR) || cleanR.includes(cleanJ);
@@ -15118,7 +15163,7 @@ let inboxSesiAktifNamaID = "";
     const matchedIndex = jurnalArray.findIndex((jurnal, index) => {
       if (usedJurnalTracker.has(index)) return false;
       if (jurnal.tanggal !== targetDateStr) return false;
-      return isMatchFlexible(guruName, jurnal.guru) && isMatchFlexible(mapelTarget, jurnal.mapel) && isMatchKelas(jadwalItem.kelas, jurnal.kelas);
+      return isMatchFlexible(guruName, jurnal.guru) && isMatchFlexible(mapelTarget, jurnal.mapel) && isMatchKelas(jadwalItem.kelas, jurnal.kelas, mapelTarget);
     });
     if (matchedIndex === -1) return "NONE";
     usedJurnalTracker.add(matchedIndex);
