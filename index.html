@@ -5966,6 +5966,8 @@
     window.kbmInvalidateAkademikCache = function(tipe) {
       _kbmMemCache.akademikAll = null;
       _kbmMemCache.akademikAllTs = 0;
+      try { sessionStorage.removeItem('rekapKinerjaGuru'); } catch (e) {}
+      if (typeof window._kgResetCache === 'function') window._kgResetCache();
       if (tipe) {
         delete _kbmMemCache.index[tipe];
         Object.keys(_kbmMemCache.node).forEach(k => {
@@ -5984,18 +5986,21 @@
       Object.entries(rawTipe).forEach(([k1, v1]) => {
         if (!v1 || typeof v1 !== 'object') return;
         if (v1.nama !== undefined && v1.skor !== undefined) {
-          out[k1] = { ...v1, _fbKey: k1, _fbPath: `akademik/${tipeName}/${k1}` };
+          const p1 = `akademik/${tipeName}/${k1}`;
+          out[p1] = { ...v1, _fbKey: k1, _fbPath: p1 };
           return;
         }
         Object.entries(v1).forEach(([k2, v2]) => {
           if (!v2 || typeof v2 !== 'object') return;
           if (v2.nama !== undefined && v2.skor !== undefined) {
-            out[k2] = { ...v2, _fbKey: k2, _fbPath: `akademik/${tipeName}/${k1}/${k2}` };
+            const p2 = `akademik/${tipeName}/${k1}/${k2}`;
+            out[p2] = { ...v2, _fbKey: k2, _fbPath: p2 };
             return;
           }
           Object.entries(v2).forEach(([k3, v3]) => {
             if (!v3 || typeof v3 !== 'object') return;
-            out[k3] = { ...v3, _fbKey: k3, _fbPath: `akademik/${tipeName}/${k1}/${k2}/${k3}` };
+            const p3 = `akademik/${tipeName}/${k1}/${k2}/${k3}`;
+            out[p3] = { ...v3, _fbKey: k3, _fbPath: p3 };
           });
         });
       });
@@ -8670,6 +8675,23 @@
       }
     }
 
+    function normalizeKelasRekap(val) {
+      const s = String(val || '').trim();
+      const m = s.match(/\d+/);
+      return m ? String(parseInt(m[0], 10)) : s.toLowerCase();
+    }
+
+    function normalizeGenderRekap(val) {
+      const g = String(val || '').trim().toUpperCase();
+      if (g.startsWith('P') || g === 'PUTRI') return 'P';
+      if (g.startsWith('L') || g === 'PUTRA') return 'L';
+      return g;
+    }
+
+    function normalizeNamaRekap(val) {
+      return String(val || '').trim().toUpperCase().replace(/\s+/g, ' ');
+    }
+
     window.loadMapelListRekapNilai = async function() {
       const kls = document.getElementById('rekapNilaiFilterKelas').value;
       const tipe = window.currentTipeRekapNilai;
@@ -8681,18 +8703,19 @@
       select.innerHTML = '<option value="">Memuat mapel...</option>';
 
       try {
-        const idxData = await window.kbmGetAkademikIndex(tipe);
+        const allAka = await window.kbmFetchAllAkademik();
         if(requestId !== loadMapelRequestId) return;
 
+        const tipeObj = (allAka && allAka[tipe]) ? allAka[tipe] : {};
         const mapelTerisiMap = new Map();
-        const klsTarget = kls ? window.kbmSanitizeKey(kls) : '';
-        Object.entries(idxData).forEach(([klsKey, mapelsObj]) => {
-          if (klsTarget && klsKey !== klsTarget) return;
-          if (!mapelsObj || typeof mapelsObj !== 'object') return;
-          Object.keys(mapelsObj).forEach(mplKey => {
-            const rawM = String(mplKey).trim();
-            if (rawM) mapelTerisiMap.set(rawM.toLowerCase(), rawM);
-          });
+        const klsTargetNorm = kls ? normalizeKelasRekap(kls) : '';
+        Object.values(tipeObj).forEach(val => {
+          if (!val || typeof val !== 'object') return;
+          if (klsTargetNorm && normalizeKelasRekap(val.kelas) !== klsTargetNorm) return;
+          const rawM = String(val.mapel || '').trim();
+          if (rawM && !mapelTerisiMap.has(rawM.toLowerCase())) {
+            mapelTerisiMap.set(rawM.toLowerCase(), rawM);
+          }
         });
 
         const daftarMapel = Array.from(mapelTerisiMap.values()).sort((a, b) => a.localeCompare(b, 'id-ID'));
@@ -8734,68 +8757,50 @@
       tbody.innerHTML = `<tr><td colspan="3" class="text-center py-6 text-teal-600 font-medium"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memuat nilai ${mpl}...</td></tr>`;
 
       try {
-        const mplKey = window.kbmSanitizeKey(mpl);
-        const klsListToFetch = [];
-
-        if (kls) {
-          klsListToFetch.push(window.kbmSanitizeKey(kls));
-        } else {
-          const idxData = await window.kbmGetAkademikIndex(tipe, forceRefresh);
-          Object.entries(idxData).forEach(([klsKey, mapelsObj]) => {
-            if (mapelsObj && Object.keys(mapelsObj).some(m => m.toLowerCase() === mplKey.toLowerCase())) {
-              klsListToFetch.push(klsKey);
-            }
-          });
-        }
-
-        const now = Date.now();
-        const records = [];
-
-        await Promise.all(klsListToFetch.map(async (klsKey) => {
-          const cacheId = `${tipe}::${klsKey}::${mplKey}`;
-          let nodeObj = null;
-          if (!forceRefresh && _kbmMemCache.node[cacheId] && (now - _kbmMemCache.node[cacheId].ts) < KBM_CACHE_TTL_MS) {
-            nodeObj = _kbmMemCache.node[cacheId].data;
-          } else {
-            const snapNode = await get(ref(dbKBM, `akademik/${tipe}/${klsKey}/${mplKey}`));
-            nodeObj = snapNode.exists() ? (snapNode.val() || {}) : {};
-            _kbmMemCache.node[cacheId] = { data: nodeObj, ts: now };
-          }
-          Object.entries(nodeObj).forEach(([fbKey, val]) => {
-            if (val && typeof val === 'object') {
-              records.push({ fbKey, fbPath: `akademik/${tipe}/${klsKey}/${mplKey}/${fbKey}`, val });
-            }
-          });
-        }));
+        const allAka = await window.kbmFetchAllAkademik(forceRefresh);
+        const tipeObj = (allAka && allAka[tipe]) ? allAka[tipe] : {};
+        const klsTargetNorm = kls ? normalizeKelasRekap(kls) : '';
+        const mplTargetNorm = String(mpl || '').trim().toLowerCase();
+        const genderTargetNorm = filterGender ? normalizeGenderRekap(filterGender) : '';
 
         tbody.innerHTML = "";
         let rekapData = {};
         let daftarGuru = new Set();
 
-        records.forEach(({ fbKey, fbPath, val }) => {
-          const matchKelas = !kls || val.kelas === kls;
-          const matchMapel = !mpl || (val.mapel && val.mapel.toLowerCase() === mpl.toLowerCase());
-          const matchGender = !filterGender || val.gender === filterGender;
+        Object.entries(tipeObj).forEach(([flatKey, val]) => {
+          if (!val || typeof val !== 'object') return;
+          const valKelasNorm = normalizeKelasRekap(val.kelas);
+          const valMapelTrim = String(val.mapel || '').trim();
+          const valGenderNorm = normalizeGenderRekap(val.gender || val.jk);
+
+          const matchKelas = !klsTargetNorm || valKelasNorm === klsTargetNorm;
+          const matchMapel = !mplTargetNorm || valMapelTrim.toLowerCase() === mplTargetNorm;
+          const matchGender = !genderTargetNorm || valGenderNorm === genderTargetNorm;
 
           if(matchKelas && matchMapel && matchGender) {
-            let namaGuruInput = val.nama_guru || val.guru || "";
+            let namaGuruInput = String(val.nama_guru || val.guru || "").trim();
             if (namaGuruInput) daftarGuru.add(namaGuruInput);
 
-            const key = `${val.nama}_${val.mapel}_${val.kelas}`;
+            const namaNorm = normalizeNamaRekap(val.nama || 'Fulan');
+            const key = `${namaNorm}_${valMapelTrim.toLowerCase()}_${valKelasNorm}`;
             if(!rekapData[key]) {
               rekapData[key] = {
                 keyUnikRekap: key,
-                nama: val.nama,
-                mapel: val.mapel,
+                nama: String(val.nama || '').trim(),
+                mapel: valMapelTrim,
                 kelas: val.kelas,
                 guru: namaGuruInput, 
                 rincianData: [], 
                 totalSkor: 0
               };
+            } else if (!rekapData[key].guru && namaGuruInput) {
+              rekapData[key].guru = namaGuruInput;
             }
             
             const skor = parseInt(val.skor) || 0;
-            rekapData[key].rincianData.push({ firebaseKey: fbKey, firebasePath: fbPath, skor: skor });
+            const fbKey = val._fbKey || flatKey;
+            const fbPath = val._fbPath || `akademik/${tipe}/${fbKey}`;
+            rekapData[key].rincianData.push({ firebaseKey: fbKey, firebasePath: fbPath, skor: skor, timestamp: Number(val.timestamp) || 0 });
             rekapData[key].totalSkor += skor;
           }
         });
@@ -8812,6 +8817,7 @@
         
         let rekapArray = Object.keys(rekapData).map(key => {
           const item = rekapData[key];
+          item.rincianData.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
           item.jmlData = item.rincianData.length;
           item.nilaiAkhir = Math.round(item.totalSkor / item.jmlData);
           return item;
@@ -8823,6 +8829,7 @@
           const jmlData = item.jmlData;
           const nilaiAkhir = item.nilaiAkhir;
           const detailId = `detail_rekap_nilai_${i}`;
+          const safeKeyRekap = String(item.keyUnikRekap).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
           
           totalNilaiSeluruh += nilaiAkhir;
           totalBaris++;
@@ -8844,7 +8851,7 @@
                     <div class="font-bold text-slate-700 text-xs">${toTitleCase(item.nama)}</div>
                     <span class="text-[9px] text-slate-500">(${jmlData} kali input - Klik rincian)</span>
                   </div>
-                  <button class="text-teal-600 hover:text-teal-800 p-1" onclick="editSantriRekapNilai(event, '${item.keyUnikRekap}')" title="Edit">
+                  <button class="text-teal-600 hover:text-teal-800 p-1" onclick="editSantriRekapNilai(event, '${safeKeyRekap}')" title="Edit">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
                 </div>
@@ -11613,6 +11620,10 @@
     let kgDataGlobal = [];
     let kgCurrentRenderedData = [];
     let kgLoadedOnce = false;
+    window._kgResetCache = function() {
+      kgLoadedOnce = false;
+      kgDataGlobal = [];
+    };
 
     window.loadDataKinerjaGuru = async function(isForceRefresh = false) {
       const container = document.getElementById('kgGuruListContainer');
@@ -11657,7 +11668,7 @@
             let mapel = (val.mapel || "-").trim();
             let kelasRaw = String(val.kelas || "-").trim();
             let genderRaw = String(val.gender || val.jk || "").trim().toUpperCase();
-            let namaSantri = (val.nama || "Fulan").trim();
+            let namaSantri = String(val.nama || "Fulan").trim().toUpperCase().replace(/\s+/g, ' ');
 
             let numMatch = kelasRaw.match(/\d+/);
             let kelasNum = numMatch ? parseInt(numMatch[0]) : 0;
@@ -11679,7 +11690,7 @@
 
             if (!rekap[namaGuru]) rekap[namaGuru] = { nama: namaGuru, PH: {}, PTS: {}, PAS: {} };
 
-            let keyMapelKelas = `${mapel}___${formattedKelas}`;
+            let keyMapelKelas = `${mapel.toLowerCase()}___${formattedKelas}`;
 
             if (!rekap[namaGuru][tipe][keyMapelKelas]) {
               rekap[namaGuru][tipe][keyMapelKelas] = { mapel: mapel, kelas: formattedKelas, siswa: {} };
