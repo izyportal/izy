@@ -5966,7 +5966,7 @@
     window.kbmInvalidateAkademikCache = function(tipe) {
       _kbmMemCache.akademikAll = null;
       _kbmMemCache.akademikAllTs = 0;
-      try { sessionStorage.removeItem('rekapKinerjaGuru'); } catch (e) {}
+      try { sessionStorage.removeItem('rekapKinerjaGuru'); sessionStorage.removeItem('rekapKinerjaGuru_v2'); } catch (e) {}
       if (typeof window._kgResetCache === 'function') window._kgResetCache();
       if (tipe) {
         delete _kbmMemCache.index[tipe];
@@ -5979,28 +5979,37 @@
       }
     };
 
-    // Mendukung struktur baru (akademik/{tipe}/{kelas}/{mapel}/{pushId}) & fallback struktur lama (flat)
+    // Mendukung struktur baru (akademik/{tipe}/{kelas}/{mapel}/{pushId}) & fallback struktur lama (flat) + anti-duplikat _fbKey
     window.kbmFlattenAkademikTipe = function(rawTipe, tipeName) {
       const out = {};
+      const seenKeys = {};
       if (!rawTipe || typeof rawTipe !== 'object') return out;
+      const putItem = (fbKey, fbPath, val, depth) => {
+        const prev = seenKeys[fbKey];
+        if (prev) {
+          // Utamakan struktur terpartisi (depth lebih dalam) agar record migrasi tidak terhitung ganda
+          if (depth <= prev.depth) return;
+          delete out[prev.path];
+        }
+        seenKeys[fbKey] = { path: fbPath, depth };
+        out[fbPath] = { ...val, _fbKey: fbKey, _fbPath: fbPath };
+      };
       Object.entries(rawTipe).forEach(([k1, v1]) => {
         if (!v1 || typeof v1 !== 'object') return;
         if (v1.nama !== undefined && v1.skor !== undefined) {
-          const p1 = `akademik/${tipeName}/${k1}`;
-          out[p1] = { ...v1, _fbKey: k1, _fbPath: p1 };
+          putItem(k1, `akademik/${tipeName}/${k1}`, v1, 1);
           return;
         }
         Object.entries(v1).forEach(([k2, v2]) => {
           if (!v2 || typeof v2 !== 'object') return;
           if (v2.nama !== undefined && v2.skor !== undefined) {
-            const p2 = `akademik/${tipeName}/${k1}/${k2}`;
-            out[p2] = { ...v2, _fbKey: k2, _fbPath: p2 };
+            putItem(k2, `akademik/${tipeName}/${k1}/${k2}`, v2, 2);
             return;
           }
           Object.entries(v2).forEach(([k3, v3]) => {
             if (!v3 || typeof v3 !== 'object') return;
-            const p3 = `akademik/${tipeName}/${k1}/${k2}/${k3}`;
-            out[p3] = { ...v3, _fbKey: k3, _fbPath: p3 };
+            if (v3.nama === undefined && v3.skor === undefined) return;
+            putItem(k3, `akademik/${tipeName}/${k1}/${k2}/${k3}`, v3, 3);
           });
         });
       });
@@ -10706,7 +10715,7 @@
         label: "Rapor & Nilai KBM",
         role: "kepsek_operator",
         title: "KHUSUS KEPSEK & OPERATOR",
-        url: "https://6afffb65fec2e5c59744b88a--rad-kitten-45ce25.netlify.app/"
+        url: "https://6b084e41e2deba2309a1dd32--rad-kitten-45ce25.netlify.app/"
       }
     };
 
@@ -11635,16 +11644,22 @@
           window.renderListKinerjaGuru();
           return;
         }
-        const cachedData = sessionStorage.getItem('rekapKinerjaGuru');
-        if (cachedData) {
+        try { sessionStorage.removeItem('rekapKinerjaGuru'); } catch (e) {}
+        const cachedRaw = sessionStorage.getItem('rekapKinerjaGuru_v2');
+        if (cachedRaw) {
           try {
-            kgDataGlobal = JSON.parse(cachedData);
-            kgLoadedOnce = true;
-            kgUpdateSummary(kgDataGlobal);
-            window.renderListKinerjaGuru();
-            return;
+            const parsed = JSON.parse(cachedRaw);
+            if (parsed && Array.isArray(parsed.data) && parsed.ts && (Date.now() - parsed.ts) < KBM_CACHE_TTL_MS) {
+              kgDataGlobal = parsed.data;
+              kgLoadedOnce = true;
+              kgUpdateSummary(kgDataGlobal);
+              window.renderListKinerjaGuru();
+              return;
+            } else {
+              sessionStorage.removeItem('rekapKinerjaGuru_v2');
+            }
           } catch (err) {
-            sessionStorage.removeItem('rekapKinerjaGuru');
+            sessionStorage.removeItem('rekapKinerjaGuru_v2');
           }
         }
       }
@@ -11663,6 +11678,8 @@
           const data = snap.val();
           Object.values(data).forEach(val => {
             if (!val) return;
+            const skorStr = (val.skor !== undefined && val.skor !== null) ? String(val.skor).trim() : '';
+            if (!skorStr || skorStr === '-' || isNaN(Number(skorStr))) return;
 
             let namaGuru = (val.nama_guru || val.guru || "TANPA NAMA GURU").trim().toUpperCase();
             let mapel = (val.mapel || "-").trim();
@@ -11736,7 +11753,7 @@
         kgDataGlobal = finalData;
         kgLoadedOnce = true;
 
-        sessionStorage.setItem('rekapKinerjaGuru', JSON.stringify(kgDataGlobal));
+        try { sessionStorage.setItem('rekapKinerjaGuru_v2', JSON.stringify({ ts: Date.now(), data: kgDataGlobal })); } catch (e) {}
 
         kgUpdateSummary(kgDataGlobal);
         window.renderListKinerjaGuru();
