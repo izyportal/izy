@@ -5645,7 +5645,54 @@
       }
     }
 
-    function pindahMenu(menu) {
+    const IZY_MENU_GROUPS = {
+      inputSoal: 'menuInput', inputKbm: 'menuInput', nilaiKbm: 'menuInput', absenKbm: 'menuInput',
+      setoran: 'menuInputTahfizh', absenKst: 'menuInputTahfizh', inputTasmi: 'menuInputTahfizh',
+      adab: 'menuInputPengasuh', inputAmalYaumi: 'menuInputPengasuh',
+      daftarSoal: 'menuRekap', cekBankSoal: 'menuRekap', rekapKbm: 'menuRekap', cekJurnal: 'menuRekap',
+      rekapNilai: 'menuRekap', nilaiRataAkademik: 'menuRekap', rekapAbsenKbm: 'menuRekap',
+      rekapKinerja: 'menuRekap', cekInputNilai: 'menuRekap', rekapPrestasi: 'menuRekap',
+      rankingKelas: 'menuRekap', rosterMapel: 'menuRekap',
+      rekapTahfizh: 'menuRekapTahfizh', rekapTasmi: 'menuRekapTahfizh', capaianTahfizh: 'menuRekapTahfizh', belumSetoran: 'menuRekapTahfizh',
+      rekapAdab: 'menuRekapPengasuh', klasemenAdab: 'menuRekapPengasuh', rekapAmalYaumi: 'menuRekapPengasuh'
+    };
+
+    const IZY_VALID_MENUS = new Set([
+      'beranda', 'inputSoal', 'daftarSoal', 'cekBankSoal', 'settingSoal',
+      'setoran', 'inputKbm', 'nilaiKbm', 'absenKbm', 'absenKst', 'adab',
+      'rekapKbm', 'rekapTahfizh', 'rekapNilai', 'rekapAbsenKbm', 'rekapAdab',
+      'rekapKinerja', 'cekInputNilai', 'cekJurnal', 'rekapPrestasi', 'profilData',
+      'rosterMapel', 'rankingKelas', 'klasemenAdab', 'rekapTasmi', 'inputTasmi',
+      'capaianTahfizh', 'belumSetoran', 'download', 'inbox', 'ujian', 'kontrolUjian',
+      'kaldik', 'daftar', 'galeri', 'nilaiRataAkademik', 'inputAmalYaumi', 'rekapAmalYaumi'
+    ]);
+
+    let _izyCurrentMenu = 'beranda';
+
+    function _izySyncSidebarGroup(menu) {
+      const semuaGroup = ['menuInput', 'menuRekap', 'menuInputTahfizh', 'menuInputPengasuh', 'menuRekapTahfizh', 'menuRekapPengasuh'];
+      const targetGroup = IZY_MENU_GROUPS[menu] || null;
+      semuaGroup.forEach(g => {
+        const sm = document.getElementById('sub-' + g);
+        const ic = document.getElementById('icon-' + g);
+        if (!sm) return;
+        if (g === targetGroup) {
+          sm.style.maxHeight = sm.scrollHeight + 'px';
+          if (ic) ic.classList.add('chevron-rotate');
+        } else {
+          sm.style.maxHeight = '0px';
+          if (ic) ic.classList.remove('chevron-rotate');
+        }
+      });
+    }
+
+    function _izyHistoryUrlForMenu(menu) {
+      const base = window.location.pathname + window.location.search;
+      return (!menu || menu === 'beranda') ? base : base + '#' + menu;
+    }
+
+    function pindahMenu(menu, options) {
+      const opts = options || {};
       const panels = [
         'panelBeranda', 'panelInputSoal', 'panelDaftarSoal', 'panelCekBankSoal', 'panelSettingSoal',
         'panelSetoran', 'panelInputKbm', 'panelNilaiKbm', 'panelAbsenKbm', 'panelAbsenKst', 'panelAdab',
@@ -5852,7 +5899,48 @@
       }
       
       mainScroll.scrollTop = 0;
+
+      if (IZY_VALID_MENUS.has(menu)) {
+        const prevMenu = _izyCurrentMenu;
+        _izyCurrentMenu = menu;
+        if (opts.syncSidebar) {
+          _izySyncSidebarGroup(menu);
+        }
+        if (!opts.skipHistory && prevMenu !== menu) {
+          try {
+            window.history.pushState({ izyMenu: menu }, '', _izyHistoryUrlForMenu(menu));
+          } catch (e) {}
+        }
+      }
     }
+
+    // Inisialisasi & sinkronisasi tombol Back/Forward browser untuk navigasi menu IZY Portal
+    (function initIzyHistoryNavigation() {
+      const getMenuFromHash = () => {
+        const h = (window.location.hash || '').replace(/^#/, '').trim();
+        return IZY_VALID_MENUS.has(h) ? h : 'beranda';
+      };
+
+      const initialMenu = getMenuFromHash();
+      try {
+        window.history.replaceState({ izyMenu: initialMenu }, '', _izyHistoryUrlForMenu(initialMenu));
+      } catch (e) {}
+
+      if (initialMenu !== 'beranda') {
+        const openInitial = () => pindahMenu(initialMenu, { skipHistory: true, syncSidebar: true });
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', openInitial, { once: true });
+        } else {
+          openInitial();
+        }
+      }
+
+      window.addEventListener('popstate', function(event) {
+        const stateMenu = event.state && event.state.izyMenu;
+        const targetMenu = IZY_VALID_MENUS.has(stateMenu) ? stateMenu : getMenuFromHash();
+        pindahMenu(targetMenu, { skipHistory: true, syncSidebar: true });
+      });
+    })();
 
     function loadUjianFrame() {
       const fr = document.getElementById('ujianFrame');
